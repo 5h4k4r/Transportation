@@ -7,10 +7,8 @@ namespace Transportation.Api.Model
 {
     public partial class transportationContext : DbContext
     {
-        private readonly IConfiguration Configuration;
-        public transportationContext(IConfiguration configuration)
+        public transportationContext()
         {
-            Configuration = configuration;
         }
 
         public transportationContext(DbContextOptions<transportationContext> options)
@@ -132,16 +130,6 @@ namespace Transportation.Api.Model
         public virtual DbSet<VehicleDetail> VehicleDetails { get; set; } = null!;
         public virtual DbSet<VehicleOwner> VehicleOwners { get; set; } = null!;
         public virtual DbSet<VehicleUser> VehicleUsers { get; set; } = null!;
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseMySql(Configuration["MariaDb:ConnectionString"], Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.5.15-mariadb"));
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.UseCollation("utf8mb4_general_ci")
