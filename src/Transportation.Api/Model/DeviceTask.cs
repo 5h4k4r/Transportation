@@ -5,7 +5,6 @@ namespace Transportation.Api.Model
 {
     public partial class DeviceTask
     {
-        public int Id { get; set; }
         public ulong TaskId { get; set; }
         public ulong DeviceId { get; set; }
         public byte ActiveFromStatus { get; set; }

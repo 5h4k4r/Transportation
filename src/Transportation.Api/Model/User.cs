@@ -8,7 +8,6 @@ namespace Transportation.Api.Model
         public User()
         {
             Accounts = new HashSet<Account>();
-            ActiveRoles = new HashSet<ActiveRole>();
             CanceledTasks = new HashSet<CanceledTask>();
             Devices = new HashSet<Device>();
             DiscountCodeUsers = new HashSet<DiscountCodeUser>();
@@ -19,7 +18,6 @@ namespace Transportation.Api.Model
             NoServantRequests = new HashSet<NoServantRequest>();
             RoleUsers = new HashSet<RoleUser>();
             UserAreas = new HashSet<UserArea>();
-            UserTokens = new HashSet<UserToken>();
             VehicleOwners = new HashSet<VehicleOwner>();
             VehicleUsers = new HashSet<VehicleUser>();
         }
@@ -37,10 +35,8 @@ namespace Transportation.Api.Model
         public DateTime? DeletedAt { get; set; }
 
         public virtual Gender? Gender { get; set; }
-        public virtual Employee Employee { get; set; } = null!;
         public virtual Servant Servant { get; set; } = null!;
         public virtual ICollection<Account> Accounts { get; set; }
-        public virtual ICollection<ActiveRole> ActiveRoles { get; set; }
         public virtual ICollection<CanceledTask> CanceledTasks { get; set; }
         public virtual ICollection<Device> Devices { get; set; }
         public virtual ICollection<DiscountCodeUser> DiscountCodeUsers { get; set; }
@@ -51,7 +47,6 @@ namespace Transportation.Api.Model
         public virtual ICollection<NoServantRequest> NoServantRequests { get; set; }
         public virtual ICollection<RoleUser> RoleUsers { get; set; }
         public virtual ICollection<UserArea> UserAreas { get; set; }
-        public virtual ICollection<UserToken> UserTokens { get; set; }
         public virtual ICollection<VehicleOwner> VehicleOwners { get; set; }
         public virtual ICollection<VehicleUser> VehicleUsers { get; set; }
     }

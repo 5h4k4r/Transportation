@@ -5,7 +5,6 @@ namespace Transportation.Api.Model
 {
     public partial class UserToken
     {
-        public int Id { get; set; }
         public ulong UserId { get; set; }
         public string? Environment { get; set; }
         public string Shadow { get; set; } = null!;

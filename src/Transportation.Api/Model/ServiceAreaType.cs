@@ -9,10 +9,8 @@ namespace Transportation.Api.Model
         {
             AttributeServiceAreaTypes = new HashSet<AttributeServiceAreaType>();
             Commissions = new HashSet<Commission>();
-            DiscountCodeServiceAreaTypes = new HashSet<DiscountCodeServiceAreaType>();
             Discounts = new HashSet<Discount>();
             NoServantRequests = new HashSet<NoServantRequest>();
-            OfferServiceAreaTypes = new HashSet<OfferServiceAreaType>();
             OptionServiceAreaTypes = new HashSet<OptionServiceAreaType>();
             Requests = new HashSet<Request>();
             Requirements = new HashSet<Requirement>();
@@ -38,10 +36,8 @@ namespace Transportation.Api.Model
         public virtual Usage? Usage { get; set; }
         public virtual ICollection<AttributeServiceAreaType> AttributeServiceAreaTypes { get; set; }
         public virtual ICollection<Commission> Commissions { get; set; }
-        public virtual ICollection<DiscountCodeServiceAreaType> DiscountCodeServiceAreaTypes { get; set; }
         public virtual ICollection<Discount> Discounts { get; set; }
         public virtual ICollection<NoServantRequest> NoServantRequests { get; set; }
-        public virtual ICollection<OfferServiceAreaType> OfferServiceAreaTypes { get; set; }
         public virtual ICollection<OptionServiceAreaType> OptionServiceAreaTypes { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
         public virtual ICollection<Requirement> Requirements { get; set; }

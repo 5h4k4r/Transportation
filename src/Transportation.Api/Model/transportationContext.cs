@@ -32,14 +32,13 @@ namespace Transportation.Api.Model
         public virtual DbSet<CanceledTask> CanceledTasks { get; set; } = null!;
         public virtual DbSet<Category> Categories { get; set; } = null!;
         public virtual DbSet<CategoryTranslation> CategoryTranslations { get; set; } = null!;
-        public virtual DbSet<City> Cities { get; set; } = null!;
         public virtual DbSet<ClientFile> ClientFiles { get; set; } = null!;
         public virtual DbSet<Commission> Commissions { get; set; } = null!;
-        public virtual DbSet<Country> Countries { get; set; } = null!;
         public virtual DbSet<DailyStatistic> DailyStatistics { get; set; } = null!;
         public virtual DbSet<DeadLine> DeadLines { get; set; } = null!;
         public virtual DbSet<DefaultValue> DefaultValues { get; set; } = null!;
         public virtual DbSet<Department> Departments { get; set; } = null!;
+        public virtual DbSet<DepartmentRoleUser> DepartmentRoleUsers { get; set; } = null!;
         public virtual DbSet<Destination> Destinations { get; set; } = null!;
         public virtual DbSet<Device> Devices { get; set; } = null!;
         public virtual DbSet<DeviceTask> DeviceTasks { get; set; } = null!;
@@ -130,6 +129,8 @@ namespace Transportation.Api.Model
         public virtual DbSet<VehicleDetail> VehicleDetails { get; set; } = null!;
         public virtual DbSet<VehicleOwner> VehicleOwners { get; set; } = null!;
         public virtual DbSet<VehicleUser> VehicleUsers { get; set; } = null!;
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.UseCollation("utf8mb4_general_ci")
@@ -231,6 +232,10 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<ActionUsage>(entity =>
             {
+                entity.HasKey(e => new { e.ActionId, e.UsageId })
+                    .HasName("PRIMARY")
+                    .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
                 entity.ToTable("action_usage");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
@@ -238,10 +243,6 @@ namespace Transportation.Api.Model
                 entity.HasIndex(e => e.ActionId, "action_usage_action_id_foreign");
 
                 entity.HasIndex(e => e.UsageId, "action_usage_usage_id_foreign");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
 
                 entity.Property(e => e.ActionId)
                     .HasColumnType("bigint(20) unsigned")
@@ -270,6 +271,8 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<ActiveRole>(entity =>
             {
+                entity.HasNoKey();
+
                 entity.ToTable("active_role");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
@@ -277,10 +280,6 @@ namespace Transportation.Api.Model
                 entity.HasIndex(e => e.RoleId, "active_role_role_id_index");
 
                 entity.HasIndex(e => e.UserId, "active_role_user_id_index");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("timestamp")
@@ -299,12 +298,12 @@ namespace Transportation.Api.Model
                     .HasColumnName("user_id");
 
                 entity.HasOne(d => d.Role)
-                    .WithMany(p => p.ActiveRoles)
+                    .WithMany()
                     .HasForeignKey(d => d.RoleId)
                     .HasConstraintName("active_role_role_id_foreign");
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.ActiveRoles)
+                    .WithMany()
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("active_role_user_id_foreign");
             });
@@ -344,13 +343,6 @@ namespace Transportation.Api.Model
                 entity.Property(e => e.UpdatedAt)
                     .HasColumnType("timestamp")
                     .HasColumnName("updated_at");
-
-                entity.HasOne(d => d.ActionByNavigation)
-                    .WithMany(p => p.ActivityLogs)
-                    .HasPrincipalKey(p => p.UserId)
-                    .HasForeignKey(d => d.ActionBy)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("activity_logs_action_by_foreign");
             });
 
             modelBuilder.Entity<AreaDepartment>(entity =>
@@ -810,48 +802,6 @@ namespace Transportation.Api.Model
                     .HasConstraintName("category_translations_language_id_foreign");
             });
 
-            modelBuilder.Entity<City>(entity =>
-            {
-                entity.ToTable("cities");
-
-                entity.UseCollation("utf8mb4_unicode_ci");
-
-                entity.HasIndex(e => e.CountryId, "cities_country_id_foreign");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("bigint(20) unsigned")
-                    .HasColumnName("id");
-
-                entity.Property(e => e.CountryId)
-                    .HasColumnType("mediumint(8) unsigned")
-                    .HasColumnName("country_id");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("timestamp")
-                    .HasColumnName("created_at");
-
-                entity.Property(e => e.DeletedAt)
-                    .HasColumnType("timestamp")
-                    .HasColumnName("deleted_at");
-
-                entity.Property(e => e.TimeZone)
-                    .HasMaxLength(32)
-                    .HasColumnName("time_zone");
-
-                entity.Property(e => e.Title)
-                    .HasMaxLength(32)
-                    .HasColumnName("title");
-
-                entity.Property(e => e.UpdatedAt)
-                    .HasColumnType("timestamp")
-                    .HasColumnName("updated_at");
-
-                entity.HasOne(d => d.Country)
-                    .WithMany(p => p.Cities)
-                    .HasForeignKey(d => d.CountryId)
-                    .HasConstraintName("cities_country_id_foreign");
-            });
-
             modelBuilder.Entity<ClientFile>(entity =>
             {
                 entity.ToTable("client_files");
@@ -934,7 +884,7 @@ namespace Transportation.Api.Model
                     .HasColumnName("updated_at");
 
                 entity.Property(e => e.Value)
-                    .HasColumnType("double(6,5)")
+                    .HasColumnType("double(5,5)")
                     .HasColumnName("value");
 
                 entity.HasOne(d => d.ServiceAreaType)
@@ -942,37 +892,6 @@ namespace Transportation.Api.Model
                     .HasForeignKey(d => d.ServiceAreaTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("commissions_service_area_type_id_foreign");
-            });
-
-            modelBuilder.Entity<Country>(entity =>
-            {
-                entity.ToTable("countries");
-
-                entity.UseCollation("utf8mb4_unicode_ci");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("mediumint(8) unsigned")
-                    .HasColumnName("id");
-
-                entity.Property(e => e.CreatedAt)
-                    .HasColumnType("timestamp")
-                    .HasColumnName("created_at");
-
-                entity.Property(e => e.Currency)
-                    .HasMaxLength(8)
-                    .HasColumnName("currency");
-
-                entity.Property(e => e.DeletedAt)
-                    .HasColumnType("timestamp")
-                    .HasColumnName("deleted_at");
-
-                entity.Property(e => e.Title)
-                    .HasMaxLength(32)
-                    .HasColumnName("title");
-
-                entity.Property(e => e.UpdatedAt)
-                    .HasColumnType("timestamp")
-                    .HasColumnName("updated_at");
             });
 
             modelBuilder.Entity<DailyStatistic>(entity =>
@@ -1172,6 +1091,51 @@ namespace Transportation.Api.Model
                     .HasColumnName("updated_at");
             });
 
+            modelBuilder.Entity<DepartmentRoleUser>(entity =>
+            {
+                entity.ToTable("department_role_user");
+
+                entity.UseCollation("utf8mb4_unicode_ci");
+
+                entity.HasIndex(e => e.DepartmentId, "department_role_user_department_id_foreign");
+
+                entity.HasIndex(e => e.RoleUserId, "department_role_user_role_user_id_foreign");
+
+                entity.Property(e => e.Id)
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasColumnName("id");
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnType("timestamp")
+                    .HasColumnName("created_at");
+
+                entity.Property(e => e.DeletedAt)
+                    .HasColumnType("timestamp")
+                    .HasColumnName("deleted_at");
+
+                entity.Property(e => e.DepartmentId)
+                    .HasColumnType("mediumint(8) unsigned")
+                    .HasColumnName("department_id");
+
+                entity.Property(e => e.RoleUserId)
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasColumnName("role_user_id");
+
+                entity.Property(e => e.UpdatedAt)
+                    .HasColumnType("timestamp")
+                    .HasColumnName("updated_at");
+
+                entity.HasOne(d => d.Department)
+                    .WithMany(p => p.DepartmentRoleUsers)
+                    .HasForeignKey(d => d.DepartmentId)
+                    .HasConstraintName("department_role_user_department_id_foreign");
+
+                entity.HasOne(d => d.RoleUser)
+                    .WithMany(p => p.DepartmentRoleUsers)
+                    .HasForeignKey(d => d.RoleUserId)
+                    .HasConstraintName("department_role_user_role_user_id_foreign");
+            });
+
             modelBuilder.Entity<Destination>(entity =>
             {
                 entity.ToTable("destinations");
@@ -1265,6 +1229,8 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<DeviceTask>(entity =>
             {
+                entity.HasNoKey();
+
                 entity.ToTable("device_task");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
@@ -1272,10 +1238,6 @@ namespace Transportation.Api.Model
                 entity.HasIndex(e => e.DeviceId, "device_task_device_id_foreign");
 
                 entity.HasIndex(e => e.TaskId, "device_task_task_id_foreign");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
 
                 entity.Property(e => e.ActiveFromStatus)
                     .HasColumnType("tinyint(3) unsigned")
@@ -1290,13 +1252,13 @@ namespace Transportation.Api.Model
                     .HasColumnName("task_id");
 
                 entity.HasOne(d => d.Device)
-                    .WithMany(p => p.DeviceTasks)
+                    .WithMany()
                     .HasForeignKey(d => d.DeviceId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("device_task_device_id_foreign");
 
                 entity.HasOne(d => d.Task)
-                    .WithMany(p => p.DeviceTasks)
+                    .WithMany()
                     .HasForeignKey(d => d.TaskId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("device_task_task_id_foreign");
@@ -1343,7 +1305,7 @@ namespace Transportation.Api.Model
                     .HasColumnName("updated_at");
 
                 entity.Property(e => e.Value)
-                    .HasColumnType("double(6,5)")
+                    .HasColumnType("double(5,5)")
                     .HasColumnName("value");
 
                 entity.HasOne(d => d.ServiceAreaType)
@@ -1425,6 +1387,8 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<DiscountCodeServiceAreaType>(entity =>
             {
+                entity.HasNoKey();
+
                 entity.ToTable("discount_code_service_area_type");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
@@ -1432,10 +1396,6 @@ namespace Transportation.Api.Model
                 entity.HasIndex(e => e.DiscountCodeId, "discount_code_service_area_type_discount_code_id_foreign");
 
                 entity.HasIndex(e => e.ServiceAreaTypeId, "discount_code_service_area_type_service_area_type_id_foreign");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
 
                 entity.Property(e => e.DiscountCodeId)
                     .HasColumnType("bigint(20) unsigned")
@@ -1446,13 +1406,13 @@ namespace Transportation.Api.Model
                     .HasColumnName("service_area_type_id");
 
                 entity.HasOne(d => d.DiscountCode)
-                    .WithMany(p => p.DiscountCodeServiceAreaTypes)
+                    .WithMany()
                     .HasForeignKey(d => d.DiscountCodeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("discount_code_service_area_type_discount_code_id_foreign");
 
                 entity.HasOne(d => d.ServiceAreaType)
-                    .WithMany(p => p.DiscountCodeServiceAreaTypes)
+                    .WithMany()
                     .HasForeignKey(d => d.ServiceAreaTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("discount_code_service_area_type_service_area_type_id_foreign");
@@ -1558,16 +1518,14 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<Employee>(entity =>
             {
+                entity.HasNoKey();
+
                 entity.ToTable("employees");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
 
-                entity.HasIndex(e => e.UserId, "employees_user_id_unique")
+                entity.HasIndex(e => e.UserId, "user_id")
                     .IsUnique();
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
 
                 entity.Property(e => e.AreaId)
                     .HasColumnType("bigint(20) unsigned")
@@ -1602,7 +1560,7 @@ namespace Transportation.Api.Model
                     .HasColumnName("user_id");
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.Employee)
+                    .WithOne()
                     .HasForeignKey<Employee>(d => d.UserId)
                     .HasConstraintName("employees_user_id_foreign");
             });
@@ -2040,9 +1998,9 @@ namespace Transportation.Api.Model
                     .HasMaxLength(64)
                     .HasColumnName("account_number");
 
-                entity.Property(e => e.AreaId)
+                entity.Property(e => e.CityId)
                     .HasColumnType("bigint(20) unsigned")
-                    .HasColumnName("area_id");
+                    .HasColumnName("city_id");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("timestamp")
@@ -2500,6 +2458,8 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<OfferServiceAreaType>(entity =>
             {
+                entity.HasNoKey();
+
                 entity.ToTable("offer_service_area_type");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
@@ -2507,10 +2467,6 @@ namespace Transportation.Api.Model
                 entity.HasIndex(e => e.OfferId, "offer_service_area_type_offer_id_foreign");
 
                 entity.HasIndex(e => e.ServiceAreaTypeId, "offer_service_area_type_service_area_type_id_foreign");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
 
                 entity.Property(e => e.OfferId)
                     .HasColumnType("bigint(20) unsigned")
@@ -2521,13 +2477,13 @@ namespace Transportation.Api.Model
                     .HasColumnName("service_area_type_id");
 
                 entity.HasOne(d => d.Offer)
-                    .WithMany(p => p.OfferServiceAreaTypes)
+                    .WithMany()
                     .HasForeignKey(d => d.OfferId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("offer_service_area_type_offer_id_foreign");
 
                 entity.HasOne(d => d.ServiceAreaType)
-                    .WithMany(p => p.OfferServiceAreaTypes)
+                    .WithMany()
                     .HasForeignKey(d => d.ServiceAreaTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("offer_service_area_type_service_area_type_id_foreign");
@@ -2593,13 +2549,11 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<OfferUser>(entity =>
             {
+                entity.HasNoKey();
+
                 entity.ToTable("offer_user");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("timestamp")
@@ -2610,7 +2564,7 @@ namespace Transportation.Api.Model
                     .HasColumnName("offer_id");
 
                 entity.Property(e => e.Progress)
-                    .HasColumnType("double(8,2)")
+                    .HasColumnType("float unsigned")
                     .HasColumnName("progress");
 
                 entity.Property(e => e.Status)
@@ -2751,15 +2705,13 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<PasswordReset>(entity =>
             {
+                entity.HasNoKey();
+
                 entity.ToTable("password_resets");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
 
                 entity.HasIndex(e => e.Email, "password_resets_email_index");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("timestamp")
@@ -3650,9 +3602,11 @@ namespace Transportation.Api.Model
 
                 entity.UseCollation("utf8mb4_unicode_ci");
 
+                entity.HasIndex(e => e.ServantId, "servant_id");
+
                 entity.HasIndex(e => e.AreaId, "servant_status_area_id_index");
 
-                entity.HasIndex(e => e.ServantId, "servant_status_servant_id_foreign");
+                entity.HasIndex(e => e.ServiceId, "service_id");
 
                 entity.Property(e => e.Id)
                     .HasColumnType("bigint(20) unsigned")
@@ -4330,13 +4284,13 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<TaxiMeter>(entity =>
             {
+                entity.HasNoKey();
+
                 entity.ToTable("taxi_meter");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
 
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
+                entity.HasIndex(e => e.TaskId, "task_id");
 
                 entity.Property(e => e.Amount)
                     .HasColumnType("int(10) unsigned")
@@ -4379,6 +4333,8 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<TelescopeEntriesTag>(entity =>
             {
+                entity.HasNoKey();
+
                 entity.ToTable("telescope_entries_tags");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
@@ -4387,16 +4343,12 @@ namespace Transportation.Api.Model
 
                 entity.HasIndex(e => e.Tag, "telescope_entries_tags_tag_index");
 
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
-
                 entity.Property(e => e.EntryUuid).HasColumnName("entry_uuid");
 
                 entity.Property(e => e.Tag).HasColumnName("tag");
 
                 entity.HasOne(d => d.EntryUu)
-                    .WithMany(p => p.TelescopeEntriesTags)
+                    .WithMany()
                     .HasPrincipalKey(p => p.Uuid)
                     .HasForeignKey(d => d.EntryUuid)
                     .HasConstraintName("telescope_entries_tags_entry_uuid_foreign");
@@ -4450,13 +4402,11 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<TelescopeMonitoring>(entity =>
             {
+                entity.HasNoKey();
+
                 entity.ToTable("telescope_monitoring");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
 
                 entity.Property(e => e.Tag)
                     .HasMaxLength(255)
@@ -4471,7 +4421,7 @@ namespace Transportation.Api.Model
 
                 entity.HasIndex(e => new { e.ModelType, e.ModelId }, "traces_model_type_model_id_index");
 
-                entity.HasIndex(e => new { e.Status, e.ModelType, e.ModelId }, "traces_status_model_type_model_id_unique")
+                entity.HasIndex(e => new { e.Status, e.ModelType, e.ModelId, e.CreatedAt }, "traces_status_model_type_model_id_unique")
                     .IsUnique();
 
                 entity.Property(e => e.Id)
@@ -4695,10 +4645,10 @@ namespace Transportation.Api.Model
 
                 entity.UseCollation("utf8mb4_unicode_ci");
 
-                entity.HasIndex(e => e.GenderId, "users_gender_id_foreign");
-
-                entity.HasIndex(e => e.Mobile, "users_mobile_unique")
+                entity.HasIndex(e => e.Mobile, "mobile")
                     .IsUnique();
+
+                entity.HasIndex(e => e.GenderId, "users_gender_id_foreign");
 
                 entity.Property(e => e.Id)
                     .HasColumnType("bigint(20) unsigned")
@@ -4802,15 +4752,13 @@ namespace Transportation.Api.Model
 
             modelBuilder.Entity<UserToken>(entity =>
             {
+                entity.HasNoKey();
+
                 entity.ToTable("user_tokens");
 
                 entity.UseCollation("utf8mb4_unicode_ci");
 
                 entity.HasIndex(e => e.UserId, "user_tokens_user_id_index");
-
-                entity.Property(e => e.Id)
-                    .HasColumnType("int(11)")
-                    .HasColumnName("id");
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("timestamp")
@@ -4839,7 +4787,7 @@ namespace Transportation.Api.Model
                     .HasColumnName("user_id");
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.UserTokens)
+                    .WithMany()
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("user_tokens_user_id_foreign");

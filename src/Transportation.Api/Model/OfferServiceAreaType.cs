@@ -5,7 +5,6 @@ namespace Transportation.Api.Model
 {
     public partial class OfferServiceAreaType
     {
-        public int Id { get; set; }
         public ulong OfferId { get; set; }
         public ulong ServiceAreaTypeId { get; set; }
 

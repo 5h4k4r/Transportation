@@ -5,11 +5,6 @@ namespace Transportation.Api.Model
 {
     public partial class Offer
     {
-        public Offer()
-        {
-            OfferServiceAreaTypes = new HashSet<OfferServiceAreaType>();
-        }
-
         public ulong Id { get; set; }
         public byte RoleId { get; set; }
         public ulong AreaId { get; set; }
@@ -25,6 +20,5 @@ namespace Transportation.Api.Model
 
         public virtual AreaInfo Area { get; set; } = null!;
         public virtual Role Role { get; set; } = null!;
-        public virtual ICollection<OfferServiceAreaType> OfferServiceAreaTypes { get; set; }
     }
 }

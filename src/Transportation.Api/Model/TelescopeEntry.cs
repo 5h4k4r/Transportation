@@ -5,11 +5,6 @@ namespace Transportation.Api.Model
 {
     public partial class TelescopeEntry
     {
-        public TelescopeEntry()
-        {
-            TelescopeEntriesTags = new HashSet<TelescopeEntriesTag>();
-        }
-
         public ulong Sequence { get; set; }
         public Guid Uuid { get; set; }
         public Guid BatchId { get; set; }
@@ -18,7 +13,5 @@ namespace Transportation.Api.Model
         public string Type { get; set; } = null!;
         public string Content { get; set; } = null!;
         public DateTime? CreatedAt { get; set; }
-
-        public virtual ICollection<TelescopeEntriesTag> TelescopeEntriesTags { get; set; }
     }
 }

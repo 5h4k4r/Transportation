@@ -8,7 +8,6 @@ namespace Transportation.Api.Model
         public Task()
         {
             CanceledTasks = new HashSet<CanceledTask>();
-            DeviceTasks = new HashSet<DeviceTask>();
             MemberPaymentTypes = new HashSet<MemberPaymentType>();
             Scores = new HashSet<Score>();
             TaskFactors = new HashSet<TaskFactor>();
@@ -26,7 +25,6 @@ namespace Transportation.Api.Model
         public virtual Request Request { get; set; } = null!;
         public virtual Servant Servant { get; set; } = null!;
         public virtual ICollection<CanceledTask> CanceledTasks { get; set; }
-        public virtual ICollection<DeviceTask> DeviceTasks { get; set; }
         public virtual ICollection<MemberPaymentType> MemberPaymentTypes { get; set; }
         public virtual ICollection<Score> Scores { get; set; }
         public virtual ICollection<TaskFactor> TaskFactors { get; set; }

@@ -8,7 +8,6 @@ namespace Transportation.Api.Model
         public Role()
         {
             Accounts = new HashSet<Account>();
-            ActiveRoles = new HashSet<ActiveRole>();
             CanceledTasks = new HashSet<CanceledTask>();
             Gifts = new HashSet<Gift>();
             Offers = new HashSet<Offer>();
@@ -27,7 +26,6 @@ namespace Transportation.Api.Model
         public DateTime? DeletedAt { get; set; }
 
         public virtual ICollection<Account> Accounts { get; set; }
-        public virtual ICollection<ActiveRole> ActiveRoles { get; set; }
         public virtual ICollection<CanceledTask> CanceledTasks { get; set; }
         public virtual ICollection<Gift> Gifts { get; set; }
         public virtual ICollection<Offer> Offers { get; set; }

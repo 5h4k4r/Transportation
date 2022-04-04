@@ -8,6 +8,7 @@ namespace Transportation.Api.Model
         public Department()
         {
             AreaDepartments = new HashSet<AreaDepartment>();
+            DepartmentRoleUsers = new HashSet<DepartmentRoleUser>();
         }
 
         public uint Id { get; set; }
@@ -17,5 +18,6 @@ namespace Transportation.Api.Model
         public DateTime? DeletedAt { get; set; }
 
         public virtual ICollection<AreaDepartment> AreaDepartments { get; set; }
+        public virtual ICollection<DepartmentRoleUser> DepartmentRoleUsers { get; set; }
     }
 }

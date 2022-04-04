@@ -5,7 +5,6 @@ namespace Transportation.Api.Model
 {
     public partial class TaxiMeter
     {
-        public int Id { get; set; }
         public ulong TaskId { get; set; }
         public string Point1 { get; set; } = null!;
         public string? Point2 { get; set; }

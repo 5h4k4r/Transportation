@@ -5,7 +5,6 @@ namespace Transportation.Api.Model
 {
     public partial class ActiveRole
     {
-        public int Id { get; set; }
         public ulong UserId { get; set; }
         public byte RoleId { get; set; }
         public DateTime? CreatedAt { get; set; }

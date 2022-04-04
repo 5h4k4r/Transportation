@@ -6,7 +6,7 @@ namespace Transportation.Api.Model
     public partial class KubakAccount
     {
         public ulong Id { get; set; }
-        public ulong? AreaId { get; set; }
+        public ulong? CityId { get; set; }
         public string? Title { get; set; }
         public string AccountNumber { get; set; } = null!;
         public string Currency { get; set; } = null!;

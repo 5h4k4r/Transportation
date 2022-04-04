@@ -7,7 +7,6 @@ namespace Transportation.Api.Model
     {
         public DiscountCode()
         {
-            DiscountCodeServiceAreaTypes = new HashSet<DiscountCodeServiceAreaType>();
             DiscountCodeUsers = new HashSet<DiscountCodeUser>();
         }
 
@@ -26,7 +25,6 @@ namespace Transportation.Api.Model
         public DateTime? DeletedAt { get; set; }
 
         public virtual AreaInfo Area { get; set; } = null!;
-        public virtual ICollection<DiscountCodeServiceAreaType> DiscountCodeServiceAreaTypes { get; set; }
         public virtual ICollection<DiscountCodeUser> DiscountCodeUsers { get; set; }
     }
 }
