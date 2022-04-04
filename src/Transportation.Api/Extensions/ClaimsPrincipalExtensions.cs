@@ -1,6 +1,4 @@
 using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
-using Transportation.Api.Model;
 
 namespace BabyCareApi.Extensions;
 
