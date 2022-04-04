@@ -32,8 +32,9 @@ public class GatewayAuthHandler : AuthenticationHandler<UserAuthOptions>
     {
         var auth = Request.Headers["user"].FirstOrDefault();
 
-        // if (string.IsNullOrEmpty(userHeader))
-        // return AuthenticateResult.Fail(new GatewayAuthException(GatewayAuthException.ErrorCode.HeaderMissing, "User header is missing"));
+        //  TODO: when the header is empty the returned result is empty
+        if (string.IsNullOrEmpty(auth))
+            return Task.FromResult(AuthenticateResult.Fail("No Header is found"));
 
         try
         {
