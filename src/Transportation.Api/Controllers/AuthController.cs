@@ -1,29 +1,32 @@
-using System.Text.Json;
-using BabyCareApi.Extensions;
+using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Payroll.PaygridApi.Helpers;
 using Transportation.Api.Http;
 using Transportation.Api.Model;
+using Transportation.Api.Models;
+using Transportation.Api.Responses;
+using Transportation.Api.Services;
 
 namespace Transportation.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("v1/auth")]
+[Produces(MediaTypeNames.Application.Json)]
+[Consumes(MediaTypeNames.Application.Json)]
+[Route("v3/auth")]
 public class AuthController : ControllerBase
 {
 
-    private static transportationContext context;
+    private readonly AuthService _authService;
     private readonly ILogger<AuthController> _logger;
 
-    public record AuthRequest(string Mobile);
 
-    public AuthController(ILogger<AuthController> logger, transportationContext Context)
+    public AuthController(ILogger<AuthController> logger, AuthService authService)
     {
         _logger = logger;
-        context = Context;
+        _authService = authService;
     }
 
     [Authorize(AuthenticationSchemes = "Basic")]
@@ -31,16 +34,16 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<Language>> Check()
     {
 
-        // model.Name;
-        // model.Mobile;
-        // model.AuthId;
-        // model.GenderId;
-        // model.LanguageId;
-        // model.BirthDate;
-        // model.AreaId;
-        // model.CreatedAt;
-        // model.UpdatedAt;
-        // model.DeletedAt;
+        //     // model.Name;
+        //     // model.Mobile;
+        //     // model.AuthId;
+        //     // model.GenderId;
+        //     // model.LanguageId;
+        //     // model.BirthDate;
+        //     // model.AreaId;
+        //     // model.CreatedAt;
+        //     // model.UpdatedAt;
+        //     // model.DeletedAt;
 
 
 
@@ -56,40 +59,13 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpGet("info")]
-    public async Task<ActionResult<User>> GetAuthInfo([FromServices] UserAuthContext authContext)
+    public async Task<ActionResult<AuthInfoResponse>> GetAuthInfo([FromServices] UserAuthContext authContext)
     {
-        var authUser = authContext.GetAuthUser();
-        var user = await context.Users
-                            .Where(x => x.AuthId == authUser.Id)
-                            .Include(x => x.Gender)
-                            .ThenInclude(x => x.GenderTranslations)
-                            .Include(x => x.UserAreas)
-                            .FirstOrDefaultAsync();
+        AuthInfoResponse? authInfoResponse = await _authService.AuthInfo(authContext);
+        return Ok(authInfoResponse);
+        // var user2 = user;
+        return Ok(new ApiResponse<AuthInfoResponse>(authInfoResponse, Message: "Done"));
 
-        // .Where(user => user.RoleUsers.Where(role => (int)role.RoleId == 2).FirstOrDefault() != null).FirstOrDefault();
 
-        // var person = (from users in context.Users
-        //               join employee in context.Employees
-        //               on users.AuthId equals "610fb39200b1010010be304a"
-        //               join s in context.Accounts
-        //               on users.AuthId equals "610fb39200b1010010be304a"
-        //               join t in context.AreaDepartments
-        //               on s.UserId equals 11
-        //               where t.Id == 11
-        //               select new
-        //               {
-        //                   ID = e.BusinessEntityID,
-        //                   FirstName = p.FirstName,
-        //                   MiddleName = p.MiddleName,
-        //                   LastName = p.LastName,
-        //                   Region = t.CountryRegionCode
-        //               }).FirstOrDefault();
-
-        if (user is null)
-            return NotFound();
-
-        return Ok(new ApiResponse<User>(user));
     }
-
-
 }
