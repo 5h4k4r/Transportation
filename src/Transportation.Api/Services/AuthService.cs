@@ -35,7 +35,7 @@ public class AuthService
         RoleUsers.OrderBy(x => x.RoleId).ToList().ForEach(RoleUser =>
         {
 
-            var AreaDepartment = context.AreaDepartments.Where(x => x.RoleUserId == RoleUser.Id).FirstOrDefault();
+            var AreaDepartment = context.AreaDepartments.Where(x => x.RoleUserId == RoleUser.Id).Include(x => x.Department).FirstOrDefault();
             if (AreaDepartment?.Department is not null)
                 RoleUserWithDepartment = RoleUser;
         });

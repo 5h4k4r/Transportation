@@ -1,11 +1,10 @@
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Payroll.PaygridApi.Helpers;
+using Transportation.Api.Common;
 using Transportation.Api.Http;
 using Transportation.Api.Model;
-using Transportation.Api.Models;
 using Transportation.Api.Responses;
 using Transportation.Api.Services;
 
@@ -62,8 +61,9 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<AuthInfoResponse>> GetAuthInfo([FromServices] UserAuthContext authContext)
     {
         AuthInfoResponse? authInfoResponse = await _authService.AuthInfo(authContext);
-        return Ok(authInfoResponse);
-        // var user2 = user;
+        if (authInfoResponse is null)
+            return NotFound(new ApiResponse<Object>(null, "404", true, false, ErrorCode.ResourceDoesNotExist.ToString()));
+
         return Ok(new ApiResponse<AuthInfoResponse>(authInfoResponse, Message: "Done"));
 
 
