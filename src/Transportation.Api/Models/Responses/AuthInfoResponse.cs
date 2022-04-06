@@ -1,3 +1,5 @@
+using Transportation.Api.Model;
+
 namespace Transportation.Api.Responses;
 
 public class AuthInfoResponse
@@ -10,8 +12,8 @@ public class Info
     public ulong? Id { get; set; }
     public ulong? AreaId { get; set; }
     public string? AuthId { get; set; } = string.Empty;
-    public string AvatarId { get; set; } = string.Empty;
-    public DateTime BirthDate { get; set; }
+    public string Avatar { get; set; } = string.Empty;
+    public DateOnly? BirthDate { get; set; }
     public Department? Department { get; set; }
     public ulong GenderId { get; set; }
     public bool IsAdmin { get; set; }
@@ -33,9 +35,9 @@ public class Department
 
 public class Role
 {
-    public ulong Id { get; set; }
+    public ulong? Id { get; set; }
     public IEnumerable<Permission> Permissions { get; set; } = Array.Empty<Permission>();
-    public string Title { get; set; } = string.Empty;
+    public string? Title { get; set; } = string.Empty;
 }
 
 public class Permission
@@ -49,4 +51,18 @@ public class MapCenter
 {
     public string Lat { get; set; } = string.Empty;
     public string Lng { get; set; } = string.Empty;
+    public MapCenter(string? LatLng)
+    {
+        if (LatLng is null)
+            return;
+
+        var coordinates = LatLng.Split(",");
+
+        if (coordinates.Length > 1)
+        {
+
+            Lat = coordinates[0];
+            Lng = coordinates[0];
+        }
+    }
 }
