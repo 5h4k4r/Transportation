@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Payroll.PaygridApi.Helpers;
 using Transportation.Api.Helpers;
 using Transportation.Api.Model;
+using Transportation.Api.Services;
 using Transportation.Api.Settings;
 using Transportation.Api.Swagger;
 
@@ -10,7 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var config = builder.Configuration;
 // Add services to the container.
-
 services
     .AddControllers()
     .AddJsonOptions(x =>
@@ -27,6 +27,7 @@ services.AddEndpointsApiExplorer();
 services.ConfigureSwaggerGenerator(config);
 
 services
+    .AddScoped<AuthService>()
     .AddScoped<UserAuthContext>()
     .AddAuthentication(x =>
     {
@@ -42,14 +43,13 @@ var configurationSection = config.GetSection(DatabaseOptions.Config).GetChildren
 if (configurationSection is not null)
     services.AddDbContext<transportationContext>(x => x.UseMySql(configurationSection.Value, Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.5.15-mariadb")));
 
-
 var app = builder.Build();
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// if (app.Environment.IsDevelopment())
+// {
+app.UseSwagger();
+app.UseSwaggerUI();
+// }
 
 app.UseAuthentication();
 app.UseAuthorization();
