@@ -4,11 +4,6 @@ namespace Transportation.Api.Responses;
 
 public class AuthInfoResponse
 {
-    public Info? Infos { get; set; }
-}
-
-public class Info
-{
     public ulong? Id { get; set; }
     public ulong? AreaId { get; set; }
     public string? AuthId { get; set; } = string.Empty;

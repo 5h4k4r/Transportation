@@ -5,6 +5,8 @@ using Payroll.PaygridApi.Helpers;
 using Transportation.Api.Common;
 using Transportation.Api.Http;
 using Transportation.Api.Model;
+using Transportation.Api.Repositories;
+using Transportation.Api.Requests;
 using Transportation.Api.Responses;
 using Transportation.Api.Services;
 
@@ -18,53 +20,58 @@ namespace Transportation.Api.Controllers;
 public class AuthController : ControllerBase
 {
 
-    private readonly AuthService _authService;
+    private readonly IAuthRepository _authService;
     private readonly ILogger<AuthController> _logger;
 
 
-    public AuthController(ILogger<AuthController> logger, AuthService authService)
+    public AuthController(ILogger<AuthController> logger, IAuthRepository authService)
     {
         _logger = logger;
         _authService = authService;
     }
 
-    [Authorize(AuthenticationSchemes = "Basic")]
-    [HttpGet("check")]
-    public async Task<ActionResult<Language>> Check()
-    {
+    // [Authorize(AuthenticationSchemes = "Basic")]
+    // [HttpGet("check")]
+    // public async Task<ActionResult<Language>> Check()
+    // {
 
-        //     // model.Name;
-        //     // model.Mobile;
-        //     // model.AuthId;
-        //     // model.GenderId;
-        //     // model.LanguageId;
-        //     // model.BirthDate;
-        //     // model.AreaId;
-        //     // model.CreatedAt;
-        //     // model.UpdatedAt;
-        //     // model.DeletedAt;
-
-
+    //     //     // model.Name;
+    //     //     // model.Mobile;
+    //     //     // model.AuthId;
+    //     //     // model.GenderId;
+    //     //     // model.LanguageId;
+    //     //     // model.BirthDate;
+    //     //     // model.AreaId;
+    //     //     // model.CreatedAt;
+    //     //     // model.UpdatedAt;
+    //     //     // model.DeletedAt;
 
 
-        return Ok(User.Claims.FirstOrDefault());
-    }
 
+
+    //     return Ok(User.Claims.FirstOrDefault());
+    // }
+    [Authorize]
     [HttpPost("login")]
-    public async Task<ActionResult<Language>> Login()
+    public async Task<ActionResult<object?>> Login(LoginRequest model)
     {
-        return Ok();
+        var result = await _authService.Login(model);
+
+        if (result is ErrorCode.ResourceDoesNotExist)
+            return NotFound();
+
+        return Ok(result);
     }
 
     [Authorize]
     [HttpGet("info")]
     public async Task<ActionResult<AuthInfoResponse>> GetAuthInfo([FromServices] UserAuthContext authContext)
     {
-        AuthInfoResponse? authInfoResponse = await _authService.AuthInfo(authContext);
+        AuthInfoResponse? authInfoResponse = await _authService.GetAuthInfo(authContext);
         if (authInfoResponse is null)
-            return NotFound(new ApiResponse<Object>(null, "404", true, false, ErrorCode.ResourceDoesNotExist.ToString()));
+            return NotFound();
 
-        return Ok(new ApiResponse<AuthInfoResponse>(authInfoResponse, Message: "Done"));
+        return Ok(authInfoResponse);
 
 
     }

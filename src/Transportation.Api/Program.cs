@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Payroll.PaygridApi.Helpers;
 using Transportation.Api.Helpers;
 using Transportation.Api.Model;
+using Transportation.Api.Repositories;
 using Transportation.Api.Services;
 using Transportation.Api.Settings;
 using Transportation.Api.Swagger;
@@ -27,7 +28,7 @@ services.AddEndpointsApiExplorer();
 services.ConfigureSwaggerGenerator(config);
 
 services
-    .AddScoped<AuthService>()
+    .AddScoped<IAuthRepository, AuthRepository>()
     .AddScoped<UserAuthContext>()
     .AddAuthentication(x =>
     {
