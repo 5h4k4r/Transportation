@@ -8,8 +8,15 @@ public static partial class SwaggerExtensions
 {
     public static IServiceCollection ConfigureSwaggerGenerator(this IServiceCollection services, IConfiguration configuration)
     {
+
         services.AddSwaggerGen(c =>
         {
+            c.SwaggerDoc("v1",
+                            new OpenApiInfo
+                            {
+                                Title = "Transportation Api",
+                                Version = "v3"
+                            });
             if (configuration.GetValue<string?>("BasePath", null) is string serverUrl && !string.IsNullOrEmpty(serverUrl))
             {
                 c.AddServer(new OpenApiServer()
