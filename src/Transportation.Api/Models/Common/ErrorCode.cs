@@ -26,6 +26,7 @@ public enum ErrorCode
     TooManyPasswordResetRequests,
     OldPasswordIncorrect,
     NewPasswordEqualsOldPassword,
+    PermissionDenied
 
 }
 
