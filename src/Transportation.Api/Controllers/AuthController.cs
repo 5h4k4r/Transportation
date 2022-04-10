@@ -1,14 +1,15 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.PaygridApi.Helpers;
 using Transportation.Api.Common;
-using Transportation.Api.Http;
-using Transportation.Api.Model;
-using Transportation.Api.Repositories;
+using Transportation.Api.Helpers;
+using Transportation.Api.Interfaces;
+using Transportation.Api.Models.Common;
 using Transportation.Api.Requests;
 using Transportation.Api.Responses;
-using Transportation.Api.Services;
+using Transportation.Api.Settings;
 
 namespace Transportation.Api.Controllers;
 
@@ -20,56 +21,69 @@ namespace Transportation.Api.Controllers;
 public class AuthController : ControllerBase
 {
 
-    private readonly IAuthRepository _authService;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<AuthController> _logger;
+    private readonly IConfiguration config;
 
 
-    public AuthController(ILogger<AuthController> logger, IAuthRepository authService)
+    public AuthController(ILogger<AuthController> logger, IUnitOfWork unitOfWork, IConfiguration _config)
     {
         _logger = logger;
-        _authService = authService;
+        _unitOfWork = unitOfWork;
+        config = _config;
     }
 
-    // [Authorize(AuthenticationSchemes = "Basic")]
-    // [HttpGet("check")]
-    // public async Task<ActionResult<Language>> Check()
-    // {
+    [HttpPost("check")]
+    public async Task<ActionResult<AuthCheckResponse?>> Check([Required] AuthCheckRequest model)
+    {
 
-    //     //     // model.Name;
-    //     //     // model.Mobile;
-    //     //     // model.AuthId;
-    //     //     // model.GenderId;
-    //     //     // model.LanguageId;
-    //     //     // model.BirthDate;
-    //     //     // model.AreaId;
-    //     //     // model.CreatedAt;
-    //     //     // model.UpdatedAt;
-    //     //     // model.DeletedAt;
+        var user = await _unitOfWork.Auth.Check(model.Mobile);
+
+        if (user is null)
+            return NotFound(BasicResponse.ResourceNotFound);
 
 
+        if (!user.HasRole("superadmin") && !user.HasRole("admin"))
+            return Forbid();
+
+        var authServer = config.GetSection(VariableSettings.Config).Get<VariableSettings>();
+
+        AuthCheckResponse authCheckResponse = new()
+        {
+            AuthUrl = authServer?.AuthServer?.AuthUrl ?? "",
+            ServiceId = authServer?.AuthServer?.ServiceId ?? ""
+        };
+
+        return Ok(authCheckResponse);
 
 
-    //     return Ok(User.Claims.FirstOrDefault());
-    // }
-    [Authorize]
+    }
+
     [HttpPost("login")]
     public async Task<ActionResult<object?>> Login(LoginRequest model)
     {
-        var result = await _authService.Login(model);
+        var user = await _unitOfWork.Auth.Login(model);
 
-        if (result is ErrorCode.ResourceDoesNotExist)
-            return NotFound();
+        if (user is null)
+            return NotFound(BasicResponse.ResourceNotFound);
 
-        return Ok(result);
+        user.AuthId = model.AuthId;
+
+        _unitOfWork.Save();
+
+        return NoContent();
     }
 
-    [Authorize]
+    /// <summary>
+    /// Gets the current signed in user.
+    /// </summary>
     [HttpGet("info")]
     public async Task<ActionResult<AuthInfoResponse>> GetAuthInfo([FromServices] UserAuthContext authContext)
     {
-        AuthInfoResponse? authInfoResponse = await _authService.GetAuthInfo(authContext);
+        AuthInfoResponse? authInfoResponse = await _unitOfWork.Auth.AuthInfo(authContext);
+
         if (authInfoResponse is null)
-            return NotFound();
+            return NotFound(ErrorCode.ResourceDoesNotExist);
 
         return Ok(authInfoResponse);
 
