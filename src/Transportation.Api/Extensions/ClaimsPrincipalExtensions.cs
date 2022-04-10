@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace BabyCareApi.Extensions;
+namespace Transportation.Api.Extensions;
 
 public static class ClaimsPrincipalExtensions
 {
