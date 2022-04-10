@@ -1,10 +1,9 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Payroll.PaygridApi.Helpers;
+using Transportation.Api.Extensions;
 using Transportation.Api.Helpers;
 using Transportation.Api.Model;
-using Transportation.Api.Repositories;
-using Transportation.Api.Services;
 using Transportation.Api.Settings;
 using Transportation.Api.Swagger;
 
@@ -24,25 +23,18 @@ services
     });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-services.AddEndpointsApiExplorer();
-services.ConfigureSwaggerGenerator(config);
-
 services
-    .AddScoped<IAuthRepository, AuthRepository>()
-    .AddScoped<UserAuthContext>()
-    .AddAuthentication(x =>
-    {
-        x.DefaultChallengeScheme = "Basic";
-        x.DefaultAuthenticateScheme = "Basic";
-    })
-    .AddScheme<UserAuthOptions, GatewayAuthHandler>("Basic", null);
-
-
-var configurationSection = config.GetSection(DatabaseOptions.Config).GetChildren().FirstOrDefault();
-
-
-if (configurationSection is not null)
-    services.AddDbContext<transportationContext>(x => x.UseMySql(configurationSection.Value, Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.5.15-mariadb")));
+.AddEndpointsApiExplorer()
+.ConfigureSwaggerGenerator(config)
+.ConfigureRepositoryWrapper()
+.ConfigureDatabase(config)
+.AddScoped<UserAuthContext>()
+.AddAuthentication(x =>
+{
+    x.DefaultChallengeScheme = "Basic";
+    x.DefaultAuthenticateScheme = "Basic";
+})
+.AddScheme<UserAuthOptions, GatewayAuthHandler>("Basic", null);
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
