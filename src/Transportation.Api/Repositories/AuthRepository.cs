@@ -1,8 +1,8 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Payroll.PaygridApi.Helpers;
+using Repository;
 using Transportation.Api.Common;
+using Transportation.Api.Interfaces;
 using Transportation.Api.Model;
 using Transportation.Api.Requests;
 using Transportation.Api.Responses;
@@ -15,24 +15,22 @@ public class AuthRepository : IAuthRepository
 
     protected transportationContext _context;
     protected readonly ILogger<AuthRepository> _logger;
-
-    public AuthRepository(ILogger<AuthRepository> logger, transportationContext context)
+    public AuthRepository(transportationContext context)
     {
-        _logger = logger;
         _context = context;
     }
-
-    public Task<AuthCheckResponse?> Check()
+    public Task<User?> Login(LoginRequest model)
     {
-        throw new NotImplementedException();
+
+        string phone = PreparePhoneNumber(model.Mobile);
+        return _context.Users.Where(x => x.Mobile == phone).FirstOrDefaultAsync();
+
     }
 
-    public async Task<AuthInfoResponse?> GetAuthInfo(UserAuthContext authContext)
+    public async Task<AuthInfoResponse?> AuthInfo(UserAuthContext authContext)
     {
         var authUser = authContext.GetAuthUser();
-        var MySqlUser = await _context.Users
-                                    .Where(x => x.AuthId == authUser.Id)
-                                    .FirstOrDefaultAsync();
+        var MySqlUser = await _context.Users.Where(x => x.AuthId == authUser.Id).FirstOrDefaultAsync();
 
         if (MySqlUser is null)
             return null;
@@ -46,6 +44,7 @@ public class AuthRepository : IAuthRepository
         {
 
             var AreaDepartment = _context.AreaDepartments.Where(x => x.RoleUserId == RoleUser.Id).Include(x => x.Department).FirstOrDefault();
+
             if (AreaDepartment?.Department is not null)
                 RoleUserWithDepartment = RoleUser;
         });
@@ -85,21 +84,10 @@ public class AuthRepository : IAuthRepository
 
         return authInfoResponse;
     }
-
-    public async Task<object?> Login(LoginRequest model)
+    public Task<User?> Check(string mobile)
     {
-
-        string phone = PreparePhoneNumber(model.Mobile);
-        var user = await _context.Users.Where(x => x.Mobile == phone).FirstOrDefaultAsync();
-
-        if (user is null)
-            return ErrorCode.ResourceDoesNotExist;
-
-        user.AuthId = model.AuthId;
-
-        _context.SaveChanges();
-
-        return null;
+        string phone = PreparePhoneNumber(mobile);
+        return _context.Users.Where(x => x.Mobile == phone).Include(x => x.RoleUsers).FirstOrDefaultAsync();
 
     }
 
@@ -111,5 +99,7 @@ public class AuthRepository : IAuthRepository
 
         return model;
     }
+
+
 
 }
