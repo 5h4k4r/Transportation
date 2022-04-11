@@ -1,0 +1,51 @@
+include:
+  - project: 'gitlab-examples/dotnet'
+    file: 'dotnet.yml'
+  - project: 'gitlab-examples/deployment'
+    file: 'deploy-map.yml'
+
+variables:
+  URL_WIP: "https://transportationdotnet.wip.kubakbank.com"
+  URL_ALPHA: "https://transportationdotnet.alpha.kubakbank.com"
+  URL_BETA: "https://transportationdotnet.beta.kbkapi.com"
+  URL_MASTER: "https://transportationdotnet.kbkapi.com"
+
+stages:
+  - build
+  - test
+  - analyze
+  - build-image
+  - deploy
+
+test:
+  extends: .test
+
+sonarqube-check:
+  extends: .sonarqube_check
+
+build_project:
+  extends: .build_image
+
+wip_deploy_project:
+  extends: .wip_deploy_image
+  environment:
+    name: wip
+    url: $URL_WIP
+alpha_deploy_project:
+  extends: .alpha_deploy_image
+  environment:
+    name: alpha
+    url: $URL_ALPHA
+beta_deploy_project:
+  extends: .beta_deploy_image
+  environment:
+    name: beta
+    url: $URL_BETA      
+
+master_deploy_project:
+  extends: .master_deploy_image
+  tags:
+    - master-deploy
+  environment:
+    name: master
+    url: $URL_MASTER
