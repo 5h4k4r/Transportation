@@ -2,10 +2,43 @@
 version : '3'
 
 services:
-  transportation_dotnet_beta:
+  transportation_dotnet-beta:
     image: $REGISTRY_FULL_PATH:$BRANCH
-    container_name: $PROJECT_NAME_beta
+    container_name: ${PROJECT_NAME}-beta
+    volumes:
+      -  /root/$PROJECT_NAME/:/var/www/html/storage/app/public/
+    environment:
+      - DB_CONNECTION
+      - DB_PASSWORD
+      - DB_PORT
+      - DB_USERNAME
+      - DB_DATABASE
+      - DB_HOST
+      - ServiceId
+      - AuthUrl=$AuthUrl_beta
     restart: always
+  transportationdotnet-middle-beta:
+    image: reg.kubakgroup.com/auth-middleware/auth-middleware:wip
+    container_name: ${CI_PROJECT_NAME}-middle-beta
+    environment:
+      - USER_ADDED_ENDPOINT
+      - UPDATE_USER_ENDPOINT
+      - REDIS_HOST_DISCOVERY
+      - REDIS_HOST_AUTH
+      - REDIS_PORT_AUTH
+      - SERVICE_ID=$SERVICE_ID_wip
+      - SERVICE_ADDRESS=http://${CI_PROJECT_NAME}-beta
+      - SERVICE_HEADERKEY
+      - SERVICE_DOMAIN=${CI_ENVIRONMENT_URL}
+      - SERVICE_NAME=${CI_PROJECT_NAME}
+      - MASTER_ADDRESS
+      - KEYMANAGER_ADDRESS
+      - GET_SETTINGS_ENDPOINT
+      - RETRY_TIMES
+    restart: always
+    depends_on:
+      - transportation
+
 networks:
   default:
     external:
