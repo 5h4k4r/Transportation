@@ -2,7 +2,7 @@ include:
   - project: 'gitlab-examples/dotnet'
     file: 'dotnet.yml'
   - project: 'gitlab-examples/deployment'
-    file: 'deploy-dotnet.yml'
+    file: 'deploy_dotnet.yml'
 
 variables:
   URL_WIP: "https://transportationdotnet.wip.kubakbank.com"
