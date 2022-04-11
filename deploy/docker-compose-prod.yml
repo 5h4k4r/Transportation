@@ -1,0 +1,12 @@
+
+version : '3'
+
+services:
+  transportation_dotnet:
+    image: $REGISTRY_FULL_PATH:$BRANCH
+    container_name: $PROJECT_NAME
+    restart: always
+networks:
+  default:
+    external:
+      name: mynet
