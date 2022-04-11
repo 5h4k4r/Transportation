@@ -37,7 +37,7 @@ services:
       - RETRY_TIMES
     restart: always
     depends_on:
-      - transportation
+      - transportation_dotnet
 
 networks:
   default:
