@@ -9,13 +9,15 @@ services:
       -  /root/$PROJECT_NAME/:/var/www/html/storage/app/public/
     environment:
       - DB_CONNECTION
+      - Database__ConnectionString
+      - Settings__AuthServer__AuthUrl
+      - Settings__AuthServer__ServiceId
       - DB_PASSWORD
       - DB_PORT
       - DB_USERNAME
       - DB_DATABASE
       - DB_HOST
       - ServiceId
-      - AuthUrl=$AuthUrl_alpha
     restart: always
   transportationdotnet-middle:
     image: reg.kubakgroup.com/auth-middleware/auth-middleware:wip

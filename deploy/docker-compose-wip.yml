@@ -10,8 +10,8 @@ services:
     environment:
       - DB_CONNECTION
       - Database__ConnectionString
-      - Settings_AuthServer_AuthUrl
-      - Settings_AuthServer_ServiceId
+      - Settings__AuthServer__AuthUrl
+      - Settings__AuthServer__ServiceId
       - DB_PASSWORD
       - DB_PORT
       - DB_USERNAME
