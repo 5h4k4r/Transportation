@@ -1,10 +1,6 @@
 using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
-using Payroll.PaygridApi.Helpers;
 using Transportation.Api.Extensions;
 using Transportation.Api.Helpers;
-using Transportation.Api.Model;
-using Transportation.Api.Settings;
 using Transportation.Api.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
