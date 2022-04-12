@@ -14,7 +14,6 @@ public class AuthRepository : IAuthRepository
 {
 
     protected transportationContext _context;
-    protected readonly ILogger<AuthRepository> _logger;
     public AuthRepository(transportationContext context)
     {
         _context = context;
@@ -61,10 +60,10 @@ public class AuthRepository : IAuthRepository
         AuthInfoResponse authInfoResponse = new AuthInfoResponse
         {
             BirthDate = MySqlUser.BirthDate,
-            Id = MySqlUser.Id,
-            AreaId = AreaInfo.Id,
+            Id = MySqlUser?.Id,
+            AreaId = AreaInfo?.Id,
             AuthId = authUser.Id,
-            MapCenter = new MapCenter(AreaInfo.Center),
+            MapCenter = new MapCenter(AreaInfo?.Center),
             Department = new Responses.Department
             {
                 Id = Department.Id,
@@ -75,8 +74,8 @@ public class AuthRepository : IAuthRepository
                     Title = CurrentRole?.Title,
                 }
             },
-            Mobile = MySqlUser.Mobile,
-            Name = MySqlUser.Name,
+            Mobile = MySqlUser!.Mobile,
+            Name = MySqlUser?.Name,
             Version = "V3",
             IsAdmin = CurrentRole?.Id == 2 || CurrentRole?.Id == 6,
             IsSuperAdmin = CurrentRole?.Id == 1
