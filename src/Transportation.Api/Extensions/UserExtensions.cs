@@ -1,8 +1,8 @@
 using Transportation.Api.Model;
 
-namespace Transportation.Api.Helpers;
+namespace Transportation.Api.Extensions;
 
-public static class UserLibrary
+public static class UserExtensions
 {
     public static bool HasRole(this User user, int roleId)
     {
@@ -10,12 +10,12 @@ public static class UserLibrary
     }
     public static bool HasRole(this User user, string roleName)
     {
-        var loweredRoleName = roleName.ToLower();
+        var lowercasedRoleName = roleName.ToLower();
 
 
         int roleId = 4;
 
-        switch (loweredRoleName)
+        switch (lowercasedRoleName)
         {
             case "superadmin":
                 roleId = 2;
