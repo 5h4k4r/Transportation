@@ -10,16 +10,28 @@ public class UnitOfWork : IUnitOfWork
     {
         _repoContext = repositoryContext;
     }
-    private IAuthRepository _auth;
+    private IAuthRepository _Auth;
     public IAuthRepository Auth
     {
         get
         {
-            if (_auth == null)
+            if (_Auth == null)
             {
-                _auth = new AuthRepository(_repoContext);
+                _Auth = new AuthRepository(_repoContext);
             }
-            return _auth;
+            return _Auth;
+        }
+    }
+    private IServantsPerformanceRepository _ServantPerformance;
+    public IServantsPerformanceRepository ServantPerformance
+    {
+        get
+        {
+            if (_ServantPerformance == null)
+            {
+                _ServantPerformance = new ServantPerformanceRepository(_repoContext);
+            }
+            return _ServantPerformance;
         }
     }
 
