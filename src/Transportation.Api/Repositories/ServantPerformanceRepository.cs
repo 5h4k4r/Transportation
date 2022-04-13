@@ -35,7 +35,7 @@ public class ServantPerformanceRepository : IServantsPerformanceRepository
             {
                 IEnumerable<Destination> destinations = _context.Destinations.Where(y => y.ModelId == x.Id).ToList();
 
-                Task task = new Task
+                Task task = new()
                 {
                     Distance = destinations.Sum(d => d.Distance),
                     Duration = destinations.Sum(d => d.Duration),
