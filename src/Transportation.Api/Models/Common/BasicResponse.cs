@@ -121,7 +121,7 @@ public sealed class BasicResponse
     /// </summary>
     /// <param name="resourceId">Id of the requested resource</param>
     public static BasicResponse ResourceDoesNotExist(in string resourceName,
-                                                     in string resourceId)
+                                                     in int resourceId)
     {
         return new(ErrorCode.ResourceDoesNotExist,
             $"Resource '{resourceName}' with id '{resourceId}' does not exist.");
