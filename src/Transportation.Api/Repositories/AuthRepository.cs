@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Repository;
-using Transportation.Api.Common;
 using Transportation.Api.Helpers;
 using Transportation.Api.Interfaces;
 using Transportation.Api.Model;
@@ -38,7 +36,7 @@ public class AuthRepository : IAuthRepository
         var Employee = await _context.Employees.Where(x => x.UserId == MySqlUser.Id).FirstOrDefaultAsync();
         var RoleUsers = await _context.RoleUsers.Where(x => x.UserId == MySqlUser.Id).ToListAsync();
 
-        RoleUser RoleUserWithDepartment = null;
+        RoleUser? RoleUserWithDepartment = new();
         RoleUsers.OrderBy(x => x.RoleId).ToList().ForEach(RoleUser =>
         {
 
@@ -53,11 +51,14 @@ public class AuthRepository : IAuthRepository
         var AreaDepartments = await _context.AreaDepartments.Where(x => x.RoleUserId == RoleUserWithDepartment.Id).ToListAsync();
         var Department = await _context.Departments.Where(x => x.Id == 1).FirstOrDefaultAsync();
 
+        if (Department is null)
+            return null;
+
         Department.AreaDepartments = AreaDepartments;
 
         var CurrentRole = await _context.Roles.Where(x => x.Id == RoleUserWithDepartment.RoleId).FirstOrDefaultAsync();
 
-        AuthInfoResponse authInfoResponse = new AuthInfoResponse
+        AuthInfoResponse authInfoResponse = new()
         {
             BirthDate = MySqlUser.BirthDate,
             Id = MySqlUser?.Id,
@@ -92,7 +93,7 @@ public class AuthRepository : IAuthRepository
 
     public string PreparePhoneNumber(string model)
     {
-        if (model.Substring(0, 1) != "+")
+        if (model[0] != '+')
             model = "+" + model;
 
 

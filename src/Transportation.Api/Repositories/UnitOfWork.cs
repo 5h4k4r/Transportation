@@ -5,12 +5,12 @@ namespace Transportation.Api.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private transportationContext _repoContext;
+    private readonly transportationContext _repoContext;
     public UnitOfWork(transportationContext repositoryContext)
     {
         _repoContext = repositoryContext;
     }
-    private IAuthRepository _Auth;
+    private IAuthRepository? _Auth;
     public IAuthRepository Auth
     {
         get
@@ -22,7 +22,7 @@ public class UnitOfWork : IUnitOfWork
             return _Auth;
         }
     }
-    private IServantsPerformanceRepository _ServantPerformance;
+    private IServantsPerformanceRepository? _ServantPerformance;
     public IServantsPerformanceRepository ServantPerformance
     {
         get
@@ -40,6 +40,7 @@ public class UnitOfWork : IUnitOfWork
     {
         _repoContext.SaveChanges();
     }
+
     public void Dispose()
     {
         _repoContext.Dispose();
