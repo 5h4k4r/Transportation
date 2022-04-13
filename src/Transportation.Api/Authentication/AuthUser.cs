@@ -56,7 +56,7 @@ public class TokenObject
 public class AuthUser
 {
     [JsonPropertyName("region")]
-    public Region Region { get; set; }
+    public Region? Region { get; set; }
 
     [JsonPropertyName("_id")]
     public string Id { get; set; } = string.Empty;
@@ -65,13 +65,13 @@ public class AuthUser
     public string Mobile { get; set; } = string.Empty;
 
     [JsonPropertyName("language")]
-    public Language Language { get; set; }
+    public Language? Language { get; set; }
 
     [JsonPropertyName("readonly")]
     public bool Readonly { get; set; }
 
     [JsonPropertyName("roles")]
-    public List<object> Roles { get; set; }
+    public List<object>? Roles { get; set; }
 
     [JsonPropertyName("createdAt")]
     public DateTime CreatedAt { get; set; }
@@ -80,6 +80,6 @@ public class AuthUser
     public string Avatar { get; set; } = string.Empty;
 
     [JsonPropertyName("token")]
-    public TokenObject Token { get; set; }
+    public TokenObject? Token { get; set; }
 }
 
