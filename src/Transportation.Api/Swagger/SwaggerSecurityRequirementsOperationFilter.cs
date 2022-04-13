@@ -33,18 +33,17 @@ public class SwaggerSecurityRequirementsOperationFilter : IOperationFilter
         if (!operation.Responses.ContainsKey("403"))
             operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
 
-        var oAuthScheme = new OpenApiSecurityScheme
+        operation.Parameters.Add(new OpenApiParameter
         {
-            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-        };
-
-        operation.Security = new List<OpenApiSecurityRequirement>
-                {
-                    new OpenApiSecurityRequirement
-                    {
-                        [ oAuthScheme ] = Array.Empty<string>()
-                    }
-                };
+            Name = "user",
+            @In = ParameterLocation.Header,
+            Description = "This header field is required",
+            Required = true,
+            Schema = new OpenApiSchema
+            {
+                Type = "string"
+            }
+        });
     }
 
 }

@@ -28,7 +28,7 @@ public static partial class SwaggerExtensions
             //c.UseAllOfToExtendReferenceSchemas();
             c.SupportNonNullableReferenceTypes();
 
-            AddSecurity(c);
+            // AddSecurity(c);
             AddXmlComments(c);
             AddOperationFilters(c);
 
@@ -37,6 +37,8 @@ public static partial class SwaggerExtensions
         {
             return apiDesc.TryGetMethodInfo(out System.Reflection.MethodInfo methodInfo) ? methodInfo.Name : null;
         });
+
+
         });
 
         return services;
@@ -66,6 +68,7 @@ public static partial class SwaggerExtensions
                     Id = "Bearer"
                 }
             };
+
 
             c.AddSecurityDefinition("Bearer", securitySchema);
         }
