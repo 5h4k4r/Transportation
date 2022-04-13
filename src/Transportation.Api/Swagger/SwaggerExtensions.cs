@@ -53,25 +53,6 @@ public static partial class SwaggerExtensions
                 c.IncludeXmlComments(xmlPath);
         }
 
-        static void AddSecurity(SwaggerGenOptions c)
-        {
-            var securitySchema = new OpenApiSecurityScheme
-            {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            };
-
-
-            c.AddSecurityDefinition("Bearer", securitySchema);
-        }
 
         static void AddOperationFilters(SwaggerGenOptions c)
         {
