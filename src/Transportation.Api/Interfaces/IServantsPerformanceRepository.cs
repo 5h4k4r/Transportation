@@ -1,6 +1,6 @@
-using Transportation.Api.Model;
+using Transportation.Api.Repositories;
 using Transportation.Api.Requests;
-using Transportation.Api.Responses;
+using Servant = Transportation.Api.Model.Servant;
 
 namespace Transportation.Api.Interfaces;
 
@@ -9,5 +9,5 @@ public interface IServantsPerformanceRepository
 {
 
     Task<Servant?> GetServantById(int Id);
-    Task<ServantPerformanceResponse?> ServantPerformance(ServantPerformanceRequest model);
+    Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model);
 }

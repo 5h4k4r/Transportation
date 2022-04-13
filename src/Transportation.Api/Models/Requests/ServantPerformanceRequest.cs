@@ -3,8 +3,9 @@ using System.ComponentModel.DataAnnotations;
 namespace Transportation.Api.Requests;
 public class ServantPerformanceRequest
 {
+    [Required]
     public ulong UserId { get; set; }
-    public string EndAt { get; set; } = string.Empty;
-    public string StartAt { get; set; } = string.Empty;
+    public DateTime? EndAt { get; set; } = DateTime.Today;
+    public DateTime? StartAt { get; set; } = DateTime.Today;
 
 }
