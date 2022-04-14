@@ -33,7 +33,7 @@ public class ServantsPerformanceController : ControllerBase
     {
 
         // The servant we get from database
-        Model.Servant? databaseServant = await _unitOfWork.ServantPerformance.GetServantById((int)model.UserId);
+        Model.Servant? databaseServant = await _unitOfWork.ServantPerformance.GetServantById(model.UserId);
 
         if (databaseServant == null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), (int)model.UserId));
@@ -41,6 +41,7 @@ public class ServantsPerformanceController : ControllerBase
         // The servant we send back as a response
         Servant? responseServant = new()
         {
+            Id = databaseServant.Id,
             UserId = databaseServant.UserId,
             FirstName = databaseServant.FirstName,
             LastName = databaseServant.LastName,
@@ -49,9 +50,10 @@ public class ServantsPerformanceController : ControllerBase
             BankId = databaseServant.BankId,
             AreaId = databaseServant.AreaId,
             Address = databaseServant.Address,
+            Rating = databaseServant.ServantScores.Select(x => x.Score).FirstOrDefault()
         };
 
-        ServantPerformance? servantPerformance = await _unitOfWork.ServantPerformance.GetServantPerformance(model);
+        ServantPerformance? servantPerformance = await _unitOfWork.ServantPerformance.GetServantPerformance(model, responseServant.Id);
 
         if (servantPerformance == null)
             return NotFound();

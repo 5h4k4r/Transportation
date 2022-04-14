@@ -14,12 +14,13 @@ public class ServantPerformanceRepository : IServantsPerformanceRepository
         _context = context;
     }
 
-    public Task<Model.Servant?> GetServantById(int UserId) => _context.Servants.Where(x => x.Id == UserId).FirstOrDefaultAsync();
+    public Task<Model.Servant?> GetServantById(ulong UserId) => _context.Servants.Where(x => x.UserId == (ulong)UserId).Include(x => x.ServantScores).FirstOrDefaultAsync();
 
-    public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model)
+    public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int ServantId)
     {
-        var (Tasks, DailyStatistics) = await FilterTasksAndStatistics(model);
 
+        var (Tasks, DailyStatistics) = await FilterTasksAndStatistics(model);
+        IEnumerable<double>? Rates = await _context.ServantScores.Where(x => x.ServantId == (ulong)ServantId).Select(x => x.Score).ToListAsync();
 
         ServantPerformance servantPerformance = new()
         {
@@ -31,22 +32,8 @@ public class ServantPerformanceRepository : IServantsPerformanceRepository
             OnlineDurations = DailyStatistics.Sum(x => (int)x.OnlineDuration),
             DurationOnTasks = DailyStatistics.Sum(x => (int)x.DurationOnTask),
             DistanceOnTasks = DailyStatistics.Sum(x => (int)x.DistanceOnTask),
-            Tasks = DailyStatistics.Select(x =>
-            {
-                IEnumerable<Destination> destinations = _context.Destinations.Where(y => y.ModelId == x.Id).ToList();
-
-                Task task = new()
-                {
-                    Distance = destinations.Sum(d => d.Distance),
-                    Duration = destinations.Sum(d => d.Duration),
-                    CreatedAt = x.CreatedAt,
-                    UpdatedAt = x.UpdatedAt
-                };
-
-                return task;
-            }),
-
         };
+
 
         return servantPerformance;
 

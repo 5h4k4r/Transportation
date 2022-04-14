@@ -8,6 +8,6 @@ namespace Transportation.Api.Interfaces;
 public interface IServantsPerformanceRepository
 {
 
-    Task<Servant?> GetServantById(int Id);
-    Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model);
+    Task<Servant?> GetServantById(ulong Id);
+    Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int ServantId);
 }

@@ -13,9 +13,7 @@ public class ServantPerformance
     public int OnlineDurations { get; set; }
     public int DurationOnTasks { get; set; }
     public int DistanceOnTasks { get; set; }
-    public IEnumerable<Task>? Tasks { get; set; }
     public int Id { get; set; }
-    public IEnumerable<Document>? Documents { get; set; }
 
 }
 
@@ -39,6 +37,7 @@ public class Document
 
 public class Servant
 {
+    public int Id { get; set; }
     public ulong UserId { get; set; }
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
@@ -48,4 +47,5 @@ public class Servant
     public uint AreaId { get; set; }
     public string Address { get; set; } = string.Empty;
     public string Avatar { get; set; } = string.Empty;
+    public double? Rating { get; set; }
 }
