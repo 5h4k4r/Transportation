@@ -1,13 +1,11 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Transportation.Api.Auth;
 
-namespace Payroll.PaygridApi.Helpers;
+namespace Transportation.Api.Helpers;
 
 public class GatewayAuthHandler : AuthenticationHandler<UserAuthOptions>
 {

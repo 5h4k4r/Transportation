@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Payroll.PaygridApi.Helpers;
-using Repository;
-using Transportation.Api.Common;
+using Transportation.Api.Helpers;
 using Transportation.Api.Interfaces;
 using Transportation.Api.Model;
 using Transportation.Api.Requests;
@@ -14,7 +12,6 @@ public class AuthRepository : IAuthRepository
 {
 
     protected transportationContext _context;
-    protected readonly ILogger<AuthRepository> _logger;
     public AuthRepository(transportationContext context)
     {
         _context = context;
@@ -39,7 +36,7 @@ public class AuthRepository : IAuthRepository
         var Employee = await _context.Employees.Where(x => x.UserId == MySqlUser.Id).FirstOrDefaultAsync();
         var RoleUsers = await _context.RoleUsers.Where(x => x.UserId == MySqlUser.Id).ToListAsync();
 
-        RoleUser RoleUserWithDepartment = null;
+        RoleUser? RoleUserWithDepartment = new();
         RoleUsers.OrderBy(x => x.RoleId).ToList().ForEach(RoleUser =>
         {
 
@@ -54,17 +51,20 @@ public class AuthRepository : IAuthRepository
         var AreaDepartments = await _context.AreaDepartments.Where(x => x.RoleUserId == RoleUserWithDepartment.Id).ToListAsync();
         var Department = await _context.Departments.Where(x => x.Id == 1).FirstOrDefaultAsync();
 
+        if (Department is null)
+            return null;
+
         Department.AreaDepartments = AreaDepartments;
 
         var CurrentRole = await _context.Roles.Where(x => x.Id == RoleUserWithDepartment.RoleId).FirstOrDefaultAsync();
 
-        AuthInfoResponse authInfoResponse = new AuthInfoResponse
+        AuthInfoResponse authInfoResponse = new()
         {
             BirthDate = MySqlUser.BirthDate,
-            Id = MySqlUser.Id,
-            AreaId = AreaInfo.Id,
+            Id = MySqlUser?.Id,
+            AreaId = AreaInfo?.Id,
             AuthId = authUser.Id,
-            MapCenter = new MapCenter(AreaInfo.Center),
+            MapCenter = new MapCenter(AreaInfo?.Center),
             Department = new Responses.Department
             {
                 Id = Department.Id,
@@ -75,8 +75,8 @@ public class AuthRepository : IAuthRepository
                     Title = CurrentRole?.Title,
                 }
             },
-            Mobile = MySqlUser.Mobile,
-            Name = MySqlUser.Name,
+            Mobile = MySqlUser!.Mobile,
+            Name = MySqlUser?.Name,
             Version = "V3",
             IsAdmin = CurrentRole?.Id == 2 || CurrentRole?.Id == 6,
             IsSuperAdmin = CurrentRole?.Id == 1
@@ -93,7 +93,7 @@ public class AuthRepository : IAuthRepository
 
     public string PreparePhoneNumber(string model)
     {
-        if (model.Substring(0, 1) != "+")
+        if (model[0] != '+')
             model = "+" + model;
 
 

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 
-namespace Payroll.PaygridApi.Helpers;
+namespace Transportation.Api.Helpers;
 
 public class UserAuthOptions : AuthenticationSchemeOptions
 {
