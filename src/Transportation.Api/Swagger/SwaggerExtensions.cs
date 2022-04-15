@@ -28,7 +28,7 @@ public static partial class SwaggerExtensions
             //c.UseAllOfToExtendReferenceSchemas();
             c.SupportNonNullableReferenceTypes();
 
-            // AddSecurity(c);
+            AddSecurity(c);
             AddXmlComments(c);
             AddOperationFilters(c);
 
@@ -43,6 +43,17 @@ public static partial class SwaggerExtensions
 
         return services;
 
+        static void AddSecurity(SwaggerGenOptions c)
+        {
+
+            c.AddSecurityDefinition("user", new()
+            {
+                Type = SecuritySchemeType.ApiKey,
+                In = ParameterLocation.Header,
+                Name = "user",
+            });
+
+        }
 
         static void AddXmlComments(SwaggerGenOptions c)
         {
@@ -56,7 +67,6 @@ public static partial class SwaggerExtensions
 
         static void AddOperationFilters(SwaggerGenOptions c)
         {
-            c.OperationFilter<SwaggerFileUploadOperationFilter>();
             c.OperationFilter<SwaggerSecurityRequirementsOperationFilter>();
         }
     }
