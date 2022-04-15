@@ -20,19 +20,22 @@ services
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services
-.AddEndpointsApiExplorer()
-.ConfigureSwaggerGenerator(config)
-.ConfigureRepositoryWrapper()
-.ConfigureDatabase(config)
-.AddScoped<UserAuthContext>()
-.AddAuthentication(x =>
-{
-    x.DefaultChallengeScheme = "Basic";
-    x.DefaultAuthenticateScheme = "Basic";
-})
-.AddScheme<UserAuthOptions, GatewayAuthHandler>("Basic", null);
+    .AddEndpointsApiExplorer()
+    .ConfigureSwaggerGenerator(config)
+    .ConfigureRepositoryWrapper()
+    .ConfigureDatabase(config)
+    .AddScoped<UserAuthContext>()
+    .AddAuthentication(x =>
+    {
+        x.DefaultChallengeScheme = "Basic";
+        x.DefaultAuthenticateScheme = "Basic";
+    })
+    .AddScheme<UserAuthOptions, GatewayAuthHandler>("Basic", null);
 
 var app = builder.Build();
+
+app.Services.ValidateOptions();
+
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
 // {
