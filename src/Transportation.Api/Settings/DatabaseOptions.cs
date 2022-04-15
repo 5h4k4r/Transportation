@@ -10,5 +10,5 @@ public class DatabaseOptions
     public string ConnectionString { get; set; } = string.Empty;
 
     [Required]
-    public string ServerVersion { get; set; } = "10.5.15-mariadb"
+    public string ServerVersion { get; set; } = "10.5.15-mariadb";
 }
