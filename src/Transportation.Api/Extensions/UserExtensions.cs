@@ -15,23 +15,13 @@ public static class UserExtensions
 
         int roleId = 4;
 
-        switch (lowercasedRoleName)
+        roleId = lowercasedRoleName switch
         {
-            case "superadmin":
-                roleId = 2;
-                break;
-
-            case "admin":
-                roleId = 2;
-                break;
-
-            case "servant":
-                roleId = 2;
-                break;
-
-            default: roleId = 4; break;
-        }
-
+            "superadmin" => 2,
+            "admin" => 2,
+            "servant" => 2,
+            _ => 4,
+        };
         return user.RoleUsers.Select(x => x.RoleId).Contains((byte)roleId);
     }
 }
