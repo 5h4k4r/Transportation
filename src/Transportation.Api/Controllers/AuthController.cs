@@ -21,13 +21,11 @@ public class AuthController : ControllerBase
 {
 
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<AuthController> _logger;
     private readonly IConfiguration _config;
 
 
-    public AuthController(ILogger<AuthController> logger, IUnitOfWork unitOfWork, IConfiguration config)
+    public AuthController(IUnitOfWork unitOfWork, IConfiguration config)
     {
-        _logger = logger;
         _unitOfWork = unitOfWork;
         _config = config;
     }
