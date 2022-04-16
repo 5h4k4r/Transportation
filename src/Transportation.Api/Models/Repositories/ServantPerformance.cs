@@ -17,23 +17,6 @@ public class ServantPerformance
 
 }
 
-public class Task
-{
-    public DateTime? CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public int Distance { get; set; }
-    public int Duration { get; set; }
-}
-
-public class Document
-{
-    public int Id { get; set; }
-    public string Path { get; set; } = string.Empty;
-    public string Type { get; set; } = string.Empty;
-    public int IsVerified { get; set; }
-    public string ModelType { get; set; } = string.Empty;
-    public int ModelId { get; set; }
-}
 
 public class Servant
 {
