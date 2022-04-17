@@ -37,10 +37,23 @@ public static partial class SwaggerExtensions
         {
             return apiDesc.TryGetMethodInfo(out System.Reflection.MethodInfo methodInfo) ? methodInfo.Name : null;
         });
+
+
         });
 
         return services;
 
+        static void AddSecurity(SwaggerGenOptions c)
+        {
+
+            c.AddSecurityDefinition("user", new()
+            {
+                Type = SecuritySchemeType.ApiKey,
+                In = ParameterLocation.Header,
+                Name = "user",
+            });
+
+        }
 
         static void AddXmlComments(SwaggerGenOptions c)
         {
@@ -51,28 +64,9 @@ public static partial class SwaggerExtensions
                 c.IncludeXmlComments(xmlPath);
         }
 
-        static void AddSecurity(SwaggerGenOptions c)
-        {
-            var securitySchema = new OpenApiSecurityScheme
-            {
-                Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            };
-
-            c.AddSecurityDefinition("Bearer", securitySchema);
-        }
 
         static void AddOperationFilters(SwaggerGenOptions c)
         {
-            c.OperationFilter<SwaggerFileUploadOperationFilter>();
             c.OperationFilter<SwaggerSecurityRequirementsOperationFilter>();
         }
     }

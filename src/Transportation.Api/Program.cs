@@ -1,10 +1,7 @@
 using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
-using Payroll.PaygridApi.Helpers;
+using Tranportation.Api.Converters;
 using Transportation.Api.Extensions;
 using Transportation.Api.Helpers;
-using Transportation.Api.Model;
-using Transportation.Api.Settings;
 using Transportation.Api.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,19 +21,22 @@ services
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services
-.AddEndpointsApiExplorer()
-.ConfigureSwaggerGenerator(config)
-.ConfigureRepositoryWrapper()
-.ConfigureDatabase(config)
-.AddScoped<UserAuthContext>()
-.AddAuthentication(x =>
-{
-    x.DefaultChallengeScheme = "Basic";
-    x.DefaultAuthenticateScheme = "Basic";
-})
-.AddScheme<UserAuthOptions, GatewayAuthHandler>("Basic", null);
+    .AddEndpointsApiExplorer()
+    .ConfigureSwaggerGenerator(config)
+    .ConfigureRepositoryWrapper()
+    .ConfigureDatabase(config)
+    .AddScoped<UserAuthContext>()
+    .AddAuthentication(x =>
+    {
+        x.DefaultChallengeScheme = "Basic";
+        x.DefaultAuthenticateScheme = "Basic";
+    })
+    .AddScheme<UserAuthOptions, UserAuthHandler>("Basic", null);
 
 var app = builder.Build();
+
+app.Services.ValidateOptions();
+
 // Configure the HTTP request pipeline.
 // if (app.Environment.IsDevelopment())
 // {

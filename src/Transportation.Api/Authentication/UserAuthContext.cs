@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Transportation.Api.Auth;
 
-namespace Payroll.PaygridApi.Helpers;
+namespace Transportation.Api.Helpers;
 
 public class UserAuthContext
 {

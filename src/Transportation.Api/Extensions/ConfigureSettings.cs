@@ -10,8 +10,23 @@ public static partial class StartupConfigurations
 
     public static IServiceCollection ConfigureDatabase(this IServiceCollection services, IConfiguration config)
     {
-        var databaseOptions = config.GetSection(DatabaseOptions.Config).Get<DatabaseOptions>();
-        services.AddDbContext<transportationContext>(x => x.UseMySql(databaseOptions.ConnectionString, Microsoft.EntityFrameworkCore.ServerVersion.Parse("10.5.15-mariadb")));
+        var databaseOptions = config.GetSection(DatabaseOptions.Config);
+
+        services
+            .AddOptions<DatabaseOptions>()
+            .Bind(databaseOptions)
+            .ValidateDataAnnotations();
+
+        services.AddDbContext<transportationContext>((sp, b) =>
+        {
+            var options = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value;
+            b.UseMySql(options.ConnectionString, ServerVersion.Parse(options.ServerVersion));
+        });
         return services;
+    }
+
+    public static void ValidateOptions(this IServiceProvider sp)
+    {
+        _ = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value;
     }
 }
