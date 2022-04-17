@@ -14,6 +14,6 @@ public class RoleUserRepository : IRoleUserRepository
         _context = context;
     }
 
-    Task<RoleUser?> GetRoleUserByUserId(ulong userId) => _context.RoleUsers.Where(x => x.UserId == userId).FirstOrDefaultAsync();
+    public Task<RoleUser?> GetRoleUserByUserId(ulong userId) => _context.RoleUsers.Where(x => x.UserId == userId).FirstOrDefaultAsync();
 
 }
