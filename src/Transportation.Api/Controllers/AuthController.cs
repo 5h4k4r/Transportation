@@ -34,7 +34,10 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<AuthCheckResponse?>> Check([Required] AuthCheckRequest model)
     {
 
-        var user = await _unitOfWork.Auth.Check(model.Mobile);
+        var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
+
+
+        var user = await _unitOfWork.User.GetUserByPhone(phone);
 
         if (user is null)
             return NotFound(BasicResponse.ResourceNotFound);
@@ -58,7 +61,10 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<object?>> Login(LoginRequest model)
     {
-        var user = await _unitOfWork.Auth.Login(model);
+
+        var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
+
+        var user = await _unitOfWork.User.GetUserByPhone(phone);
 
         if (user is null)
             return NotFound(BasicResponse.ResourceNotFound);
