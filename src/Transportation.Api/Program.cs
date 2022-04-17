@@ -31,7 +31,7 @@ services
         x.DefaultChallengeScheme = "Basic";
         x.DefaultAuthenticateScheme = "Basic";
     })
-    .AddScheme<UserAuthOptions, GatewayAuthHandler>("Basic", null);
+    .AddScheme<UserAuthOptions, UserAuthHandler>("Basic", null);
 
 var app = builder.Build();
 
