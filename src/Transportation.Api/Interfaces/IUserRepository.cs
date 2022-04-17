@@ -6,7 +6,7 @@ namespace Tranportation.Api.Interfaces;
 public interface IUserRepository
 {
 
-    Task<User?> GetUserById([Required] int Id);
-    Task<User?> GetUserByPhone([Required] string Phone);
-    Task<User?> GetUserByAuthId([Required] string AuthId);
+    Task<User?> GetUserById(int Id);
+    Task<User?> GetUserByPhone(string Phone);
+    Task<User?> GetUserByAuthId(string AuthId);
 }
