@@ -34,7 +34,7 @@ public class PaginatedResponse<T>
     public ICollection<T> Items { get; }
 
     /// <summary>
-    /// Creates a new instance of <see cref="PaginateResponse<T>"/>.
+    /// Creates a new instance of <see cref="PaginatedResponse<T>"/>.
     /// </summary>
     public PaginatedResponse(in int count, in IPagingOptions pagingOptions, in ICollection<T> items)
     {
@@ -46,7 +46,7 @@ public class PaginatedResponse<T>
     }
 
     /// <summary>
-    /// Creates a new instance of <see cref="PaginateResponse<T>"/>.
+    /// Creates a new instance of <see cref="PaginatedResponse<T>"/>.
     /// </summary>
     public PaginatedResponse(in int count, in int page, in int limit, in ICollection<T> items)
     {
