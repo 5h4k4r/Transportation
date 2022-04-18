@@ -1,5 +1,6 @@
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Tranportation.Api.Responses;
 using Transportation.Api.Swagger;
 
 namespace Transportation.Api.Swagger;
@@ -31,7 +32,7 @@ public static partial class SwaggerExtensions
             AddSecurity(c);
             AddXmlComments(c);
             AddOperationFilters(c);
-
+            c.CustomSchemaIds(type => type.ToString());
             // Use method name as operationId
             c.CustomOperationIds(apiDesc =>
         {
@@ -69,5 +70,7 @@ public static partial class SwaggerExtensions
         {
             c.OperationFilter<SwaggerSecurityRequirementsOperationFilter>();
         }
+
+
     }
 }

@@ -1,3 +1,5 @@
+using Tranportation.Api.Interfaces;
+using Tranportation.Api.Repositories;
 using Transportation.Api.Interfaces;
 using Transportation.Api.Model;
 
@@ -16,9 +18,8 @@ public class UnitOfWork : IUnitOfWork
         get
         {
             if (_Auth == null)
-            {
                 _Auth = new AuthRepository(_repoContext);
-            }
+
             return _Auth;
         }
     }
@@ -28,13 +29,46 @@ public class UnitOfWork : IUnitOfWork
         get
         {
             if (_ServantPerformance == null)
-            {
                 _ServantPerformance = new ServantPerformanceRepository(_repoContext);
-            }
+
             return _ServantPerformance;
         }
     }
 
+    private IUserRepository? _User;
+    public IUserRepository User
+    {
+        get
+        {
+            if (_User == null)
+                _User = new UserRepository(_repoContext);
+
+            return _User;
+        }
+    }
+
+    public ITasksRepository _Tasks;
+    public ITasksRepository Tasks
+    {
+        get
+        {
+            if (_Tasks == null)
+                _Tasks = new TasksRepository(_repoContext);
+
+            return _Tasks;
+        }
+    }
+    public IRoleUserRepository _RoleUsers;
+    public IRoleUserRepository RoleUsers
+    {
+        get
+        {
+            if (_RoleUsers == null)
+                _RoleUsers = new RoleUserRepository(_repoContext);
+
+            return _RoleUsers;
+        }
+    }
 
     public void Save()
     {

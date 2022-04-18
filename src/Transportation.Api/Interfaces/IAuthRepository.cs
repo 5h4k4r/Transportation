@@ -8,7 +8,6 @@ namespace Transportation.Api.Interfaces;
 public interface IAuthRepository
 {
     Task<User?> Check(string mobile);
-    public Task<User?> Login(LoginRequest model);
     public Task<AuthInfoResponse?> AuthInfo(UserAuthContext authContext);
     public string PreparePhoneNumber(string model);
 

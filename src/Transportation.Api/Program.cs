@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Tranportation.Api.Converters;
 using Transportation.Api.Extensions;
 using Transportation.Api.Helpers;
 using Transportation.Api.Swagger;
@@ -30,7 +31,7 @@ services
         x.DefaultChallengeScheme = "Basic";
         x.DefaultAuthenticateScheme = "Basic";
     })
-    .AddScheme<UserAuthOptions, GatewayAuthHandler>("Basic", null);
+    .AddScheme<UserAuthOptions, UserAuthHandler>("Basic", null);
 
 var app = builder.Build();
 

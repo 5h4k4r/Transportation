@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Transportation.Api.Helpers;
 using Transportation.Api.Interfaces;
@@ -15,13 +16,6 @@ public class AuthRepository : IAuthRepository
     public AuthRepository(transportationContext context)
     {
         _context = context;
-    }
-    public Task<User?> Login(LoginRequest model)
-    {
-
-        string phone = PreparePhoneNumber(model.Mobile);
-        return _context.Users.Where(x => x.Mobile == phone).FirstOrDefaultAsync();
-
     }
 
     public async Task<AuthInfoResponse?> AuthInfo(UserAuthContext authContext)
@@ -84,14 +78,11 @@ public class AuthRepository : IAuthRepository
 
         return authInfoResponse;
     }
-    public Task<User?> Check(string mobile)
-    {
-        string phone = PreparePhoneNumber(mobile);
-        return _context.Users.Where(x => x.Mobile == phone).Include(x => x.RoleUsers).FirstOrDefaultAsync();
+    public Task<User?> Check(string mobile) => _context.Users.Where(x => x.Mobile == mobile).Include(x => x.RoleUsers).FirstOrDefaultAsync();
 
-    }
 
-    public string PreparePhoneNumber(string model)
+
+    public string PreparePhoneNumber([Required] string model)
     {
         if (model[0] != '+')
             model = "+" + model;
