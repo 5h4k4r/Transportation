@@ -21,7 +21,7 @@ public static class UserExtensions
 
         roleId = lowercasedRoleName switch
         {
-            "superadmin" => 2,
+            "superadmin" => 1,
             "admin" => 2,
             "servant" => 2,
             _ => 4,
