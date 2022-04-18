@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +30,7 @@ public class ServantsPerformanceController : ControllerBase
     /// Gets a servant's performance
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<ServantPerformanceWithUserResponse?>> ServantPerformance([FromQuery] ServantPerformanceRequest model)
+    public async Task<ActionResult<ServantPerformanceWithUserResponse?>> ServantPerformance([FromQuery][Required] ServantPerformanceRequest model)
     {
 
         // The servant we get from database
