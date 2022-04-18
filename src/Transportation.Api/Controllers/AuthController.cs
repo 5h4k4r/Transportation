@@ -37,7 +37,7 @@ public class AuthController : ControllerBase
         var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
 
 
-        var user = await _unitOfWork.User.GetUserByPhone(phone);
+        var user = await _unitOfWork.User.GetUserByPhone(phone,true);
 
         if (user is null)
             return NotFound(BasicResponse.ResourceNotFound);
