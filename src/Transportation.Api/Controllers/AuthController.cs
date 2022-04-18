@@ -30,11 +30,11 @@ public class AuthController : ControllerBase
         _config = config;
     }
 
-    [HttpPost("check")]
+    [HttpGet("check")]
 
     [ProducesResponseType(typeof(AuthCheckResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Check([Required] AuthCheckRequest model)
+    public async Task<ActionResult> Check([Required][FromQuery] AuthCheckRequest model)
     {
 
         var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
