@@ -6,7 +6,7 @@ using Tranportation.Api.Responses;
 using Transportation.Api.Common;
 using Transportation.Api.Helpers;
 using Transportation.Api.Interfaces;
-
+using Transportation.Api.Models.Common;
 
 namespace Tranportation.Api.Controllers;
 
@@ -25,8 +25,14 @@ public class TasksController : ControllerBase
         _unitOfWork = unitOfWork;
     }
 
+    /// <summary>
+    /// Lists all the tasks.
+    /// </summary>
+
     [HttpGet]
-    public async Task<ActionResult> ListTasks([FromQuery] ListTasksRequest model, [FromServices] UserAuthContext authContext)
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(PaginatedResponse<ListTasksResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListTasks([FromQuery] ListTasksRequest model, [FromServices] UserAuthContext authContext)
     {
 
         var AuthId = authContext.GetAuthUser().Id;
