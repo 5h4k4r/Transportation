@@ -34,6 +34,9 @@ public class TasksController : ControllerBase
     [ProducesResponseType(typeof(PaginatedResponse<ListTasksResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListTasks([FromQuery] ListTasksRequest model, [FromServices] UserAuthContext authContext)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
 
         var AuthId = authContext.GetAuthUser().Id;
 
