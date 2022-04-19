@@ -30,11 +30,14 @@ public class ServantsPerformanceController : ControllerBase
     /// Gets a servant's performance
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<ServantPerformanceWithUserResponse?>> ServantPerformance([FromQuery][Required] ServantPerformanceRequest model)
+    [ProducesResponseType(typeof(ServantPerformanceWithUserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+
+    public async Task<ActionResult> ServantPerformance([FromQuery] ServantPerformanceRequest model)
     {
 
         // The servant we get from database
-        Model.Servant? databaseServant = await _unitOfWork.ServantPerformance.GetServantById(model.UserId);
+        Model.Servant? databaseServant = await _unitOfWork.ServantPerformance.GetServantById(model.UserId.GetValueOrDefault());
 
         if (databaseServant == null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), (int)model.UserId));
@@ -65,7 +68,7 @@ public class ServantsPerformanceController : ControllerBase
             Servant = responseServant
         };
 
-        return response;
+        return Ok(response);
 
     }
 }

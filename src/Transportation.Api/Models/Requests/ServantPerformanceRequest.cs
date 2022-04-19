@@ -1,11 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace Transportation.Api.Requests;
-public class ServantPerformanceRequest
+public class ServantPerformanceRequest : IValidatableObject
 {
     [Required]
-    public ulong UserId { get; set; }
+    public ulong? UserId { get; set; }
     public DateTime? EndAt { get; set; } = DateTime.Today;
     public DateTime? StartAt { get; set; } = DateTime.Today;
 
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (UserId is null)
+            yield return new ValidationResult($"The field {nameof(UserId)} is required", new[] { nameof(UserId) });
+    }
 }
