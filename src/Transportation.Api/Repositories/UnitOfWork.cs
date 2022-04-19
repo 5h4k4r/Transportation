@@ -8,10 +8,7 @@ namespace Transportation.Api.Repositories;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly transportationContext _repoContext;
-    public UnitOfWork(transportationContext repositoryContext)
-    {
-        _repoContext = repositoryContext;
-    }
+    public UnitOfWork(transportationContext repositoryContext) => _repoContext = repositoryContext;
     private IAuthRepository? _Auth;
     public IAuthRepository Auth
     {
@@ -47,7 +44,7 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public ITasksRepository _Tasks;
+    public ITasksRepository? _Tasks;
     public ITasksRepository Tasks
     {
         get
@@ -58,7 +55,7 @@ public class UnitOfWork : IUnitOfWork
             return _Tasks;
         }
     }
-    public IRoleUsersRepository _RoleUsers;
+    public IRoleUsersRepository? _RoleUsers;
     public IRoleUsersRepository RoleUsers
     {
         get
@@ -70,7 +67,7 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public IAreaInfosRepository _AreaInfos;
+    public IAreaInfosRepository? _AreaInfos;
     public IAreaInfosRepository AreaInfos
     {
         get
@@ -82,7 +79,7 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public IAreaDepartmentsRepository _AreaDepartments;
+    public IAreaDepartmentsRepository? _AreaDepartments;
     public IAreaDepartmentsRepository AreaDepartments
     {
         get
@@ -94,7 +91,7 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public IDepartmentsRepository _Departments;
+    public IDepartmentsRepository? _Departments;
     public IDepartmentsRepository Departments
     {
         get

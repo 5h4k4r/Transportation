@@ -50,7 +50,7 @@ public class AuthRepository : IAuthRepository
             BirthDate = user.BirthDate,
             Id = user?.Id,
             AreaId = AreaInfo?.Id,
-            AuthId = user.AuthId,
+            AuthId = user?.AuthId,
             MapCenter = new MapCenter(AreaInfo?.Center),
             Department = new Responses.Department
             {
