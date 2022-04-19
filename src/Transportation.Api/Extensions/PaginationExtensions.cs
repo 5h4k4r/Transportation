@@ -24,12 +24,31 @@ public static class PaginationExtensions
         {
             if (string.IsNullOrEmpty(columnName))
                 return source;
+            if (columnName.Contains('.'))
+            {
+                var prop = columnName.Split('.');
+                var parent = prop[0];
+                var child = prop[1];
+                ParameterExpression param1 = Expression.Parameter(source.ElementType, "x"); // x
+                MemberExpression prop1 = Expression.Property(param1, parent); // x.Task
+
+                ParameterExpression param2 = Expression.Parameter(Type.GetType("Transportation.Api.Model." + parent)!, ""); // Task
+                MemberExpression prop2 = Expression.Property(prop1, child); // x.Task.id
+
+                var lambdaaa = Expression.Lambda(prop2, param1); // param_0 => x.Task.id
+                string methodNamea = isDescending ? "OrderByDescending" : "OrderBy";
+
+                Expression methodCallExpressiona = Expression.Call(typeof(Queryable), methodNamea,
+                                      new Type[] { source.ElementType, prop2.Type },
+                                      source.Expression, Expression.Quote(lambdaaa));
+
+                return source.Provider.CreateQuery<T>(methodCallExpressiona);
+            }
 
 
-            ParameterExpression parameter = Expression.Parameter(source.ElementType, "");
-
-            MemberExpression property = Expression.Property(parameter, columnName);
-            LambdaExpression lambda = Expression.Lambda(property, parameter);
+            ParameterExpression parameter = Expression.Parameter(source.ElementType, ""); // x
+            MemberExpression property = Expression.Property(parameter, columnName); // x.id
+            LambdaExpression lambda = Expression.Lambda(property, parameter); // x => x.id
 
             string methodName = isDescending ? "OrderByDescending" : "OrderBy";
 
