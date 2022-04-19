@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Tranportation.Api.Interfaces;
 using Tranportation.Api.Requests;
 using Tranportation.Api.Responses;
 using Transportation.Api.Extensions;
@@ -47,8 +46,11 @@ public class TasksRepository : ITasksRepository
             Status = x.Task.Status,
             CreatedAt = x.Task.CreatedAt,
             UpdatedAt = x.Task.UpdatedAt,
-            Distance = x.Destination?.Distance,
-            Duration = x.Destination?.Duration,
+            Distance = new()
+            {
+                Distance = x.Destination?.Distance,
+                Duration = x.Destination?.Duration,
+            },
             Servant = new()
             {
                 City = x.Task.Servant?.Address,
@@ -67,7 +69,7 @@ public class TasksRepository : ITasksRepository
 
         });
 
-        return response.ToList<ListTasksResponse>();
+        return response.ToList();
     }
     public Task<int> CountTasks(ListTasksRequest model)
     {
@@ -79,18 +81,17 @@ public class TasksRepository : ITasksRepository
     #region Private Functions
     private IQueryable<Model.Task> GetListTasksQuery(ListTasksRequest model)
     {
-        var tasksQuery = _context.Tasks.Include(x => x.Request).ThenInclude(x => x.ServiceAreaType).ThenInclude(x => x.Area).Where(x => x.Request.ServiceAreaType.Area.Id == model.AreaId);
+        var start = model.StartAt.StartOfDay();
+        var end = model.EndAt.EndOfDay();
 
-        if (model.TaskState != null)
-            tasksQuery.Where(x => x.Status == (sbyte)model.TaskState);
+        return _context.Tasks
+   .Where(x => x.CreatedAt >= model.StartAt.EndOfDay())
+   .Where(x => x.CreatedAt <= model.EndAt.EndOfDay())
+   .Where(x => x.Request.ServiceAreaType.Area.Id == model.AreaId)
+   .Include(x => x.Request)
+   .ThenInclude(x => x.ServiceAreaType)
+   .ThenInclude(x => x.Area);
 
-        if (model.StartAt != null)
-            tasksQuery.Where(x => x.CreatedAt >= model.StartAt.Value.StartOfDay());
-
-        if (model.EndAt != null)
-            tasksQuery.Where(x => x.CreatedAt <= model.EndAt.Value.EndOfDay());
-
-        return tasksQuery;
     }
 
 

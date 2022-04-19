@@ -10,9 +10,10 @@ public class ListTasksRequest : IPagingOptions, ISortOptions
 {
     [Required]
     public ulong AreaId { get; set; }
-    public DateTime? EndAt { get; set; } = null;
-    public DateTime? StartAt { get; set; } = null;
-    public TaskState? TaskState { get; set; }
+    public DateTime StartAt { get; set; } = DateTime.Today;
+    public DateTime EndAt { get; set; } = DateTime.Today;
+    public TaskState? Status { get; set; } = null;
+
     public string? SortField { get; set; }
     public bool? SortDescending { get; set; } = false;
     public int? Page { get; set; } = 0;
