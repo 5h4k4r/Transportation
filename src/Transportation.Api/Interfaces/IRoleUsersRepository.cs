@@ -3,7 +3,7 @@ using Transportation.Api.Model;
 namespace Tranportation.Api.Repositories;
 
 
-public interface IRoleUserRepository
+public interface IRoleUsersRepository
 {
     Task<RoleUser?> GetRoleUserByUserId(ulong userId);
 

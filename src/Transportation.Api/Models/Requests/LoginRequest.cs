@@ -11,7 +11,7 @@ public class LoginRequest
     [Required]
     public string Mobile { get; set; } = string.Empty;
 
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    public IEnumerable<ValidationResult> Validate()
     {
         if (AuthId is null)
             yield return new ValidationResult($"The field {nameof(AuthId)} is required", new[] { nameof(AuthId) });

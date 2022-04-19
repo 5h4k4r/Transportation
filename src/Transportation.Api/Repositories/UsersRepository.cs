@@ -6,12 +6,12 @@ using Transportation.Api.Model;
 
 namespace Transportation.Api.Repositories;
 
-public class UserRepository : IUserRepository
+public class UsersRepository : IUsersRepository
 {
 
     private readonly transportationContext _context;
 
-    public UserRepository(transportationContext context)
+    public UsersRepository(transportationContext context)
     {
         _context = context;
 
@@ -26,8 +26,9 @@ public class UserRepository : IUserRepository
     .FirstOrDefaultAsync();
 
 
-    public Task<User?> GetUserByAuthId([Required] string AuthId) => _context.Users
+    public Task<User?> GetUserByAuthId([Required] string AuthId, bool withRoleUsers = false) => _context.Users
     .Where(x => x.AuthId == AuthId)
+    .WithRoleUser(withRoleUsers)
     .FirstOrDefaultAsync();
 
 

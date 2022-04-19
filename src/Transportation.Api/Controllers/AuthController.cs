@@ -86,7 +86,15 @@ public class AuthController : ControllerBase
     [HttpGet("info")]
     public async Task<ActionResult<AuthInfoResponse>> GetAuthInfo([FromServices] UserAuthContext authContext)
     {
-        AuthInfoResponse? authInfoResponse = await _unitOfWork.Auth.AuthInfo(authContext);
+        var user = authContext.GetAuthUser();
+        var MySqlUser = await _unitOfWork.User.GetUserByAuthId(user.Id, true);
+
+        if (MySqlUser is null)
+            return NotFound(BasicResponse.ResourceNotFound);
+
+
+
+        AuthInfoResponse? authInfoResponse = await _unitOfWork.Auth.AuthInfo(MySqlUser);
 
         if (authInfoResponse is null)
             return NotFound(ErrorCode.ResourceDoesNotExist);
