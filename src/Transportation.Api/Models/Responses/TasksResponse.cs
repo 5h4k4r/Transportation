@@ -10,8 +10,7 @@ public class ListTasksResponse
     public int Status { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public int Distance { get; set; }
-    public int Duration { get; set; }
+    public TaskDistance? Distance { get; set; }
     public Servant? Servant { get; set; }
     public Requester? Requester { get; set; }
 }
@@ -20,17 +19,22 @@ public class ListTasksResponse
 
 public class Servant
 {
-    public ulong UserId { get; set; }
-    public string FirstName { get; set; } = string.Empty;
-    public string LastName { get; set; } = string.Empty;
-    public string City { get; set; } = string.Empty;
+    public ulong? UserId { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? City { get; set; }
 }
 
 public class Requester
 {
-    public int Id { get; set; }
-    public int Price { get; set; }
-    public int Status { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string Mobile { get; set; } = string.Empty;
+    public ulong? Id { get; set; }
+    public int? Status { get; set; }
+    public string? Name { get; set; } = string.Empty;
+    public string? Mobile { get; set; } = string.Empty;
+}
+
+public class TaskDistance
+{
+    public int? Distance { get; set; }
+    public int? Duration { get; set; }
 }

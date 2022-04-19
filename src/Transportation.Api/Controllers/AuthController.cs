@@ -30,19 +30,22 @@ public class AuthController : ControllerBase
         _config = config;
     }
 
-    [HttpPost("check")]
-    public async Task<ActionResult<AuthCheckResponse?>> Check([Required] AuthCheckRequest model)
+    [HttpGet("check")]
+
+    [ProducesResponseType(typeof(AuthCheckResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> Check([Required][FromQuery] AuthCheckRequest model)
     {
 
         var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
 
 
-        var user = await _unitOfWork.User.GetUserByPhone(phone);
+        var user = await _unitOfWork.User.GetUserByPhone(phone, true);
 
         if (user is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
-        if (!(user.HasRole("superadmin") || user.HasRole("admin")))
+        if (!user.HasRole("superadmin") && !user.HasRole("admin"))
             return Forbid();
 
         var settings = _config.GetSection(VariableSettings.Config).Get<VariableSettings>();
