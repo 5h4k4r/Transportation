@@ -35,13 +35,13 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    private IUserRepository? _User;
-    public IUserRepository User
+    private IUsersRepository? _User;
+    public IUsersRepository User
     {
         get
         {
             if (_User == null)
-                _User = new UserRepository(_repoContext);
+                _User = new UsersRepository(_repoContext);
 
             return _User;
         }
@@ -58,8 +58,8 @@ public class UnitOfWork : IUnitOfWork
             return _Tasks;
         }
     }
-    public IRoleUserRepository _RoleUsers;
-    public IRoleUserRepository RoleUsers
+    public IRoleUsersRepository _RoleUsers;
+    public IRoleUsersRepository RoleUsers
     {
         get
         {
@@ -70,6 +70,41 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
+    public IAreaInfosRepository _AreaInfos;
+    public IAreaInfosRepository AreaInfos
+    {
+        get
+        {
+            if (_AreaInfos == null)
+                _AreaInfos = new AreaInfosRepository(_repoContext);
+
+            return _AreaInfos;
+        }
+    }
+
+    public IAreaDepartmentsRepository _AreaDepartments;
+    public IAreaDepartmentsRepository AreaDepartments
+    {
+        get
+        {
+            if (_AreaDepartments == null)
+                _AreaDepartments = new AreaDepartmentsRepository(_repoContext);
+
+            return _AreaDepartments;
+        }
+    }
+
+    public IDepartmentsRepository _Departments;
+    public IDepartmentsRepository Departments
+    {
+        get
+        {
+            if (_Departments == null)
+                _Departments = new DepartmentsRepository(_repoContext);
+
+            return _Departments;
+        }
+    }
     public void Save()
     {
         _repoContext.SaveChanges();

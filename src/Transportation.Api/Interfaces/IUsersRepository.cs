@@ -3,10 +3,10 @@ using Transportation.Api.Model;
 
 namespace Tranportation.Api.Interfaces;
 
-public interface IUserRepository
+public interface IUsersRepository
 {
 
     Task<User?> GetUserById(int Id);
     Task<User?> GetUserByPhone(string Phone, bool withRoleUsers = false);
-    Task<User?> GetUserByAuthId(string AuthId);
+    Task<User?> GetUserByAuthId(string AuthId, bool withRoleUsers = false);
 }

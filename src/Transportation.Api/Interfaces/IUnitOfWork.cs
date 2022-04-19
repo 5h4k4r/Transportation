@@ -6,9 +6,12 @@ namespace Transportation.Api.Interfaces;
 public interface IUnitOfWork : IDisposable
 {
     IAuthRepository Auth { get; }
-    IUserRepository User { get; }
+    IUsersRepository User { get; }
     IServantsPerformanceRepository ServantPerformance { get; }
     ITasksRepository Tasks { get; }
-    IRoleUserRepository RoleUsers { get; }
+    IRoleUsersRepository RoleUsers { get; }
+    IAreaInfosRepository AreaInfos { get; }
+    IAreaDepartmentsRepository AreaDepartments { get; }
+    IDepartmentsRepository Departments { get; }
     void Save();
 }

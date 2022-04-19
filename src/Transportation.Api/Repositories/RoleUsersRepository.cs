@@ -4,7 +4,7 @@ using Transportation.Api.Model;
 
 namespace Transportation.Api.Repositories;
 
-public class RoleUserRepository : IRoleUserRepository
+public class RoleUserRepository : IRoleUsersRepository
 {
 
     private readonly transportationContext _context;
