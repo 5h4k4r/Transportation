@@ -30,11 +30,11 @@ public class AuthController : ControllerBase
         _config = config;
     }
 
-    [HttpPost("check")]
+    [HttpGet("check")]
 
     [ProducesResponseType(typeof(AuthCheckResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Check([Required] AuthCheckRequest model)
+    public async Task<ActionResult> Check([Required][FromQuery] AuthCheckRequest model)
     {
 
         var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
@@ -86,7 +86,15 @@ public class AuthController : ControllerBase
     [HttpGet("info")]
     public async Task<ActionResult<AuthInfoResponse>> GetAuthInfo([FromServices] UserAuthContext authContext)
     {
-        AuthInfoResponse? authInfoResponse = await _unitOfWork.Auth.AuthInfo(authContext);
+        var user = authContext.GetAuthUser();
+        var MySqlUser = await _unitOfWork.User.GetUserByAuthId(user.Id, true);
+
+        if (MySqlUser is null)
+            return NotFound(BasicResponse.ResourceNotFound);
+
+
+
+        AuthInfoResponse? authInfoResponse = await _unitOfWork.Auth.AuthInfo(MySqlUser);
 
         if (authInfoResponse is null)
             return NotFound(ErrorCode.ResourceDoesNotExist);

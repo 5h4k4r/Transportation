@@ -18,20 +18,13 @@ public class AuthRepository : IAuthRepository
         _context = context;
     }
 
-    public async Task<AuthInfoResponse?> AuthInfo(UserAuthContext authContext)
+    public async Task<AuthInfoResponse?> AuthInfo(User user)
     {
-        var authUser = authContext.GetAuthUser();
-        var MySqlUser = await _context.Users.Where(x => x.AuthId == authUser.Id).FirstOrDefaultAsync();
 
-        if (MySqlUser is null)
-            return null;
-
-        var AreaInfo = await _context.AreaInfos.Where(x => x.Id == MySqlUser.AreaId).FirstOrDefaultAsync();
-        var Employee = await _context.Employees.Where(x => x.UserId == MySqlUser.Id).FirstOrDefaultAsync();
-        var RoleUsers = await _context.RoleUsers.Where(x => x.UserId == MySqlUser.Id).ToListAsync();
+        var AreaInfo = await _context.AreaInfos.Where(x => x.Id == user.AreaId).FirstOrDefaultAsync();
 
         RoleUser? RoleUserWithDepartment = new();
-        RoleUsers.OrderBy(x => x.RoleId).ToList().ForEach(RoleUser =>
+        user.RoleUsers.OrderBy(x => x.RoleId).ToList().ForEach(RoleUser =>
         {
 
             var AreaDepartment = _context.AreaDepartments.Where(x => x.RoleUserId == RoleUser.Id).Include(x => x.Department).FirstOrDefault();
@@ -54,10 +47,10 @@ public class AuthRepository : IAuthRepository
 
         AuthInfoResponse authInfoResponse = new()
         {
-            BirthDate = MySqlUser.BirthDate,
-            Id = MySqlUser?.Id,
+            BirthDate = user.BirthDate,
+            Id = user?.Id,
             AreaId = AreaInfo?.Id,
-            AuthId = authUser.Id,
+            AuthId = user?.AuthId,
             MapCenter = new MapCenter(AreaInfo?.Center),
             Department = new Responses.Department
             {
@@ -69,8 +62,8 @@ public class AuthRepository : IAuthRepository
                     Title = CurrentRole?.Title,
                 }
             },
-            Mobile = MySqlUser!.Mobile,
-            Name = MySqlUser?.Name,
+            Mobile = user!.Mobile,
+            Name = user?.Name,
             Version = "V3",
             IsAdmin = CurrentRole?.Id == 2 || CurrentRole?.Id == 6,
             IsSuperAdmin = CurrentRole?.Id == 1
@@ -78,8 +71,6 @@ public class AuthRepository : IAuthRepository
 
         return authInfoResponse;
     }
-    public Task<User?> Check(string mobile) => _context.Users.Where(x => x.Mobile == mobile).Include(x => x.RoleUsers).FirstOrDefaultAsync();
-
 
 
     public string PreparePhoneNumber([Required] string model)
