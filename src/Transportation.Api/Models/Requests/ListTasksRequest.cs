@@ -13,6 +13,9 @@ public class ListTasksRequest : IPagingOptions, ISortOptions, IValidatableObject
     public DateTime StartAt { get; set; } = DateTime.Today;
     public DateTime EndAt { get; set; } = DateTime.Today;
     public TaskState? Status { get; set; } = null;
+    /// <summary>
+    /// Allowed Values: Task.Id, Task.Price, Task.Tip, Task.Status, Task.CreatedAt, Task.UpdatedAt, Task.RequestId, Destination.Distance, Destination.Duration
+    /// </summary>
     [AllowedValues(
         "Task.Id", "Task.Price",
         "Task.Tip", "Task.Status",
