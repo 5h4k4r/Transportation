@@ -4,6 +4,7 @@ namespace Transportation.Api.Interfaces;
 
 public interface IAreaInfosRepository
 {
-    Task<AreaInfo?> GetAreaInfoById(ulong Id);
-    Task<AreaInfo?> GetAreaInfoByTitle(string Title);
+    Task<List<AreaInfo>> GetAreaInfoById(ulong Id);
+    Task<List<AreaInfo>> GetAreaInfoByTitle(string Title);
+    Task<List<AreaInfo>> ListAreaInfos();
 }
