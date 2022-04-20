@@ -32,7 +32,6 @@ public static partial class SwaggerExtensions
             AddSecurity(c);
             AddXmlComments(c);
             AddOperationFilters(c);
-            c.CustomSchemaIds(type => type.ToString());
             // Use method name as operationId
             c.CustomOperationIds(apiDesc =>
         {
