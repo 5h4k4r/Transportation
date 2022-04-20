@@ -102,6 +102,30 @@ public class UnitOfWork : IUnitOfWork
             return _Departments;
         }
     }
+
+    public IEmployeesRepository? _Employees;
+    public IEmployeesRepository Employees
+    {
+        get
+        {
+            if (_Employees == null)
+                _Employees = new EmployeesRepository(_repoContext);
+
+            return _Employees;
+        }
+    }
+
+    public ILanguagesRepository? _Languages;
+    public ILanguagesRepository Languages
+    {
+        get
+        {
+            if (_Languages == null)
+                _Languages = new LanguagesRepository(_repoContext);
+
+            return _Languages;
+        }
+    }
     public void Save()
     {
         _repoContext.SaveChanges();
@@ -111,4 +135,19 @@ public class UnitOfWork : IUnitOfWork
     {
         _repoContext.Dispose();
     }
+    public T? GetException<T>(Exception exception)
+    where T : Exception
+    {
+        Exception innerException = exception;
+        while (innerException != null)
+        {
+            if (innerException is T result)
+            {
+                return result;
+            }
+            innerException = innerException?.InnerException ?? null;
+        }
+        return null;
+    }
+
 }

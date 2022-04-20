@@ -11,13 +11,13 @@ public class ListTasksResponse
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public TaskDistance? Distance { get; set; }
-    public Servant? Servant { get; set; }
+    public ListTasksServant? Servant { get; set; }
     public Requester? Requester { get; set; }
 }
 
 
 
-public class Servant
+public class ListTasksServant
 {
     public ulong? UserId { get; set; }
     public string? FirstName { get; set; }

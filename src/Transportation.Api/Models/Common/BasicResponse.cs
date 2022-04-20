@@ -126,5 +126,14 @@ public sealed class BasicResponse
         return new(ErrorCode.ResourceDoesNotExist,
             $"Resource '{resourceName}' with id '{resourceId}' does not exist.");
     }
+    /// <summary>
+    /// Represents error when the requested resource already exists
+    /// </summary>
+    /// <param name="resourceName">name of the requested resource</param>
+    public static BasicResponse DuplicateEntry(in string resourceName)
+    {
+        return new(ErrorCode.ResourceAlreadyExists,
+            $"Resource '{resourceName}' already exists.");
+    }
 }
 

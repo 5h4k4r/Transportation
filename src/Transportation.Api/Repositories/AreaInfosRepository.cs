@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Transportation.Api.Helpers;
 using Transportation.Api.Interfaces;
 using Transportation.Api.Model;
 
@@ -12,10 +13,12 @@ public class AreaInfosRepository : IAreaInfosRepository
         _context = context;
     }
 
-    public Task<AreaInfo?> GetAreaInfoById(ulong Id) => _context.AreaInfos
+    public Task<List<AreaInfo>> GetAreaInfoById(ulong Id) => _context.AreaInfos
     .Where(x => x.Id == Id)
-    .FirstOrDefaultAsync();
-    public Task<AreaInfo?> GetAreaInfoByTitle(string Title) => _context.AreaInfos
+    .ToListAsync();
+    public Task<List<AreaInfo>> GetAreaInfoByTitle(string Title) => _context.AreaInfos
     .Where(x => x.Title == Title)
-    .FirstOrDefaultAsync();
+    .ToListAsync();
+
+    public Task<List<AreaInfo>> ListAreaInfos() => _context.AreaInfos.ToListAsync();
 }

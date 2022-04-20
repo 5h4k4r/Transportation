@@ -13,5 +13,8 @@ public interface IUnitOfWork : IDisposable
     IAreaInfosRepository AreaInfos { get; }
     IAreaDepartmentsRepository AreaDepartments { get; }
     IDepartmentsRepository Departments { get; }
+    IEmployeesRepository Employees { get; }
+    ILanguagesRepository Languages { get; }
     void Save();
+    T? GetException<T>(Exception e) where T : Exception;
 }
