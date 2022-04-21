@@ -7,6 +7,7 @@ using Transportation.Api.Common;
 using Transportation.Api.Helpers;
 using Transportation.Api.Interfaces;
 using Transportation.Api.Models.Common;
+using Transportation.Api.Responses;
 
 namespace Tranportation.Api.Controllers;
 
@@ -56,4 +57,25 @@ public class TasksController : ControllerBase
 
         return Ok(new PaginatedResponse<ListTasksResponse>(count, model, items));
     }
+    /// <summary>
+    /// Lists all tasks by a client.
+    /// </summary>
+
+    [HttpGet("client")]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(PaginatedResponse<ListTasksByClientResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListTasksByClient([FromQuery] ListTasksByClientRequest model, [FromServices] UserAuthContext authContext)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var items = await _unitOfWork.Tasks.ListTasksByClient(model);
+        var count = await _unitOfWork.Tasks.CountClientTasks(model);
+
+        if (items is null)
+            return NotFound();
+
+        return Ok(new PaginatedResponse<ListTasksByClientResponse>(count, model, items));
+    }
+    // SELECT * FROM members JOIN tasks WHERE tasks.status = 20 and members.user_id = 47734 and members.model_type like "%Task%" and members.model_id = tasks.id ORDER BY `tasks`.`created_at` ASC
 }

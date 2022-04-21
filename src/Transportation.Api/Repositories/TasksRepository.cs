@@ -4,6 +4,7 @@ using Tranportation.Api.Responses;
 using Transportation.Api.Extensions;
 using Transportation.Api.Interfaces;
 using Transportation.Api.Model;
+using Transportation.Api.Responses;
 
 namespace Transportation.Api.Repositories;
 
@@ -71,9 +72,25 @@ public class TasksRepository : ITasksRepository
 
         return response.ToList();
     }
+    public async Task<List<ListTasksByClientResponse>> ListTasksByClient(ListTasksByClientRequest model)
+    {
+        var tasks = await GetListTasksByClientRequestQuery(model)
+        .ApplySorting(model.SortField, model.SortDescending ?? false)
+        .ApplyPagination(model)
+        .AsNoTracking()
+        .ToListAsync();
+
+
+
+        return tasks.ToList();
+    }
     public Task<int> CountTasks(ListTasksRequest model)
     {
         return GetListTasksQuery(model).CountAsync();
+    }
+    public Task<int> CountClientTasks(ListTasksByClientRequest model)
+    {
+        return GetListTasksByClientRequestQuery(model).CountAsync();
     }
 
 
@@ -98,6 +115,52 @@ public class TasksRepository : ITasksRepository
         return query;
     }
 
+    private IQueryable<ListTasksByClientResponse> GetListTasksByClientRequestQuery(ListTasksByClientRequest model)
+    {
+        var tasksQuery = _context.Tasks;
+
+        bool isRequestObjectRequested = model.IncludeRequest.HasValue && model.IncludeRequest.Value;
+        bool iServantObjectRequested = model.IncludeServant.HasValue && model.IncludeServant.Value;
+
+        if (isRequestObjectRequested)
+            tasksQuery.Include(x => x.Request);
+
+        if (model.IncludeServant.HasValue && model.IncludeServant.Value)
+            tasksQuery.Include(x => x.Servant);
+
+        var query = tasksQuery.Join(
+            _context.Members,
+            Task => Task.Id,
+            Member => Member.ModelId,
+            (Task, Member) => new
+            {
+                Task,
+                Member
+            }
+        ).Where(x => x.Member.ModelType.Contains("Task") && x.Member.UserId == model.ClientId);
+
+        if (model.Status.HasValue)
+            query.Where(x => x.Task.Status == (sbyte)model.Status);
+
+        return query.Select(x => new ListTasksByClientResponse
+        {
+            Client = new MemberResponse(x.Member),
+            Task = new TaskResponse
+            {
+                Id = x.Task.Id,
+                Request = isRequestObjectRequested ? new RequestResponse(x.Task.Request) : null,
+                Servant = iServantObjectRequested ? new ServantResponse(x.Task.Servant) : null,
+                Price = x.Task.Price,
+                Tip = x.Task.Tip,
+                Status = x.Task.Status,
+                UpdatedAt = x.Task.UpdatedAt,
+                CreatedAt = x.Task.CreatedAt,
+            }
+        });
+
+    }
+
+    // SELECT * FROM members JOIN tasks WHERE tasks.status = 20 and members.user_id = 47734 and members.model_type like "%Task%" and members.model_id = tasks.id ORDER BY `tasks`.`created_at` ASC
 
     #endregion
 }
