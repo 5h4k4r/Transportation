@@ -4,7 +4,7 @@ namespace Transportation.Api.Repositories;
 public class ServantPerformance
 {
 
-    public Servant? Servant { get; set; }
+    public ServantPerformed? Servant { get; set; }
     public int DeliveredRequests { get; set; }
     public int RejectedRequests { get; set; }
     public int AcceptedRequests { get; set; }
@@ -18,7 +18,7 @@ public class ServantPerformance
 }
 
 
-public class Servant
+public class ServantPerformed
 {
     public int Id { get; set; }
     public ulong UserId { get; set; }
@@ -31,4 +31,6 @@ public class Servant
     public string Address { get; set; } = string.Empty;
     public string Avatar { get; set; } = string.Empty;
     public double? Rating { get; set; }
+
+
 }

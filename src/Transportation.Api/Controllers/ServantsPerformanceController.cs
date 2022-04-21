@@ -40,10 +40,10 @@ public class ServantsPerformanceController : ControllerBase
         Model.Servant? databaseServant = await _unitOfWork.ServantPerformance.GetServantById(model.UserId.GetValueOrDefault());
 
         if (databaseServant == null)
-            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), (int)model.UserId!));
+            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(ServantPerformed), (int)model.UserId!));
 
         // The servant we send back as a response
-        Servant? responseServant = new()
+        ServantPerformed? responseServant = new()
         {
             Id = databaseServant.Id,
             UserId = databaseServant.UserId,
