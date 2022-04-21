@@ -21,27 +21,31 @@ public class AuthController : ControllerBase
 {
 
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ILogger<AuthController> _logger;
     private readonly IConfiguration _config;
 
 
-    public AuthController(ILogger<AuthController> logger, IUnitOfWork unitOfWork, IConfiguration config)
+    public AuthController(IUnitOfWork unitOfWork, IConfiguration config)
     {
-        _logger = logger;
         _unitOfWork = unitOfWork;
         _config = config;
     }
 
-    [HttpPost("check")]
-    public async Task<ActionResult<AuthCheckResponse?>> Check([Required] AuthCheckRequest model)
+    [HttpGet("check")]
+
+    [ProducesResponseType(typeof(AuthCheckResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> Check([Required][FromQuery] AuthCheckRequest model)
     {
 
-        var user = await _unitOfWork.Auth.Check(model.Mobile);
+        var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
+
+
+        var user = await _unitOfWork.User.GetUserByPhone(phone, true);
 
         if (user is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
-        if (!(user.HasRole("superadmin") || user.HasRole("admin")))
+        if (!user.HasRole("superadmin") && !user.HasRole("admin"))
             return Forbid();
 
         var settings = _config.GetSection(VariableSettings.Config).Get<VariableSettings>();
@@ -60,7 +64,10 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<object?>> Login(LoginRequest model)
     {
-        var user = await _unitOfWork.Auth.Login(model);
+
+        var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
+
+        var user = await _unitOfWork.User.GetUserByPhone(phone);
 
         if (user is null)
             return NotFound(BasicResponse.ResourceNotFound);
@@ -79,7 +86,15 @@ public class AuthController : ControllerBase
     [HttpGet("info")]
     public async Task<ActionResult<AuthInfoResponse>> GetAuthInfo([FromServices] UserAuthContext authContext)
     {
-        AuthInfoResponse? authInfoResponse = await _unitOfWork.Auth.AuthInfo(authContext);
+        var user = authContext.GetAuthUser();
+        var MySqlUser = await _unitOfWork.User.GetUserByAuthId(user.Id, true);
+
+        if (MySqlUser is null)
+            return NotFound(BasicResponse.ResourceNotFound);
+
+
+
+        AuthInfoResponse? authInfoResponse = await _unitOfWork.Auth.AuthInfo(MySqlUser);
 
         if (authInfoResponse is null)
             return NotFound(ErrorCode.ResourceDoesNotExist);

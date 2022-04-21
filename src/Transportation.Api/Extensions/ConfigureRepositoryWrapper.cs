@@ -1,4 +1,3 @@
-using Repository;
 using Transportation.Api.Interfaces;
 using Transportation.Api.Repositories;
 

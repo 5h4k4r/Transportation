@@ -4,7 +4,7 @@ namespace Transportation.Api.Repositories;
 public class ServantPerformance
 {
 
-    public Servant? Servant { get; set; }
+    public ServantPerformed? Servant { get; set; }
     public int DeliveredRequests { get; set; }
     public int RejectedRequests { get; set; }
     public int AcceptedRequests { get; set; }
@@ -17,25 +17,8 @@ public class ServantPerformance
 
 }
 
-public class Task
-{
-    public DateTime? CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public int Distance { get; set; }
-    public int Duration { get; set; }
-}
 
-public class Document
-{
-    public int Id { get; set; }
-    public string Path { get; set; } = string.Empty;
-    public string Type { get; set; } = string.Empty;
-    public int IsVerified { get; set; }
-    public string ModelType { get; set; } = string.Empty;
-    public int ModelId { get; set; }
-}
-
-public class Servant
+public class ServantPerformed
 {
     public int Id { get; set; }
     public ulong UserId { get; set; }
@@ -48,4 +31,6 @@ public class Servant
     public string Address { get; set; } = string.Empty;
     public string Avatar { get; set; } = string.Empty;
     public double? Rating { get; set; }
+
+
 }

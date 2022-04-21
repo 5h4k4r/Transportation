@@ -7,13 +7,13 @@ using Transportation.Api.Auth;
 
 namespace Transportation.Api.Helpers;
 
-public class GatewayAuthHandler : AuthenticationHandler<UserAuthOptions>
+public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
 {
     private readonly IOptionsMonitor<UserAuthOptions> _Options;
     private readonly JsonSerializerOptions _JsonSerializerOptions;
     private readonly UserAuthContext _UserAuthContext;
 
-    public GatewayAuthHandler(
+    public UserAuthHandler(
         UrlEncoder encoder,
         UserAuthContext authContext,
         IOptionsMonitor<UserAuthOptions> options,
@@ -49,7 +49,7 @@ public class GatewayAuthHandler : AuthenticationHandler<UserAuthOptions>
 
             _UserAuthContext.SetAuthUser(resp);
 
-            var claimsIdentity = new ClaimsIdentity(GenerateClaims(user), nameof(GatewayAuthHandler));
+            var claimsIdentity = new ClaimsIdentity(GenerateClaims(user), nameof(UserAuthHandler));
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(claimsIdentity), Scheme.Name);
             return Task.FromResult(AuthenticateResult.Success(ticket));
         }
