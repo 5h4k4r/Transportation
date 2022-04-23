@@ -64,7 +64,7 @@ public class TasksController : ControllerBase
     [HttpGet("client")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PaginatedResponse<ListTasksByClientResponse>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListTasksByClient([FromQuery] ListTasksByClientRequest model, [FromServices] UserAuthContext authContext)
+    public async Task<IActionResult> ListTasksByClient([FromQuery] ListTasksByClientRequest model)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -77,5 +77,4 @@ public class TasksController : ControllerBase
 
         return Ok(new PaginatedResponse<ListTasksByClientResponse>(count, model, items));
     }
-    // SELECT * FROM members JOIN tasks WHERE tasks.status = 20 and members.user_id = 47734 and members.model_type like "%Task%" and members.model_id = tasks.id ORDER BY `tasks`.`created_at` ASC
 }
