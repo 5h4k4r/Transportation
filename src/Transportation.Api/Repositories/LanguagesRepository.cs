@@ -29,4 +29,8 @@ public class LanguagesRepository : ILanguagesRepository
 
     public Task<List<Language>> ListLanguages() => _context.Languages.ToListAsync();
 
+    public Task<List<string>> ListLanguagesLocales() => _context.Languages.Select(x => x.Locale).ToListAsync();
+
+
+
 }
