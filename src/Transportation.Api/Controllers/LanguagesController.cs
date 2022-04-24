@@ -67,7 +67,7 @@ public class LanguagesController : ControllerBase
             var language = (await _unitOfWork.Languages.CreateLanguage(Language)).Entity;
 
 
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
 
             return Ok(new LanguageResponse(language));
         }

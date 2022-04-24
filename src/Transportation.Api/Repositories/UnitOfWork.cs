@@ -126,10 +126,8 @@ public class UnitOfWork : IUnitOfWork
             return _Languages;
         }
     }
-    public void Save()
-    {
-        _repoContext.SaveChanges();
-    }
+    public Task<int> Save() => _repoContext.SaveChangesAsync();
+
 
     public void Dispose()
     {
