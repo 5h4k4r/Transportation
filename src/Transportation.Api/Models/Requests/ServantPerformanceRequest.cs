@@ -1,9 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Transportation.Api.Requests;
 public class ServantPerformanceRequest : IValidatableObject
 {
     [Required]
+    [JsonIgnore]
     public ulong? UserId { get; set; }
     public DateTime? EndAt { get; set; } = DateTime.Today;
     public DateTime? StartAt { get; set; } = DateTime.Today;

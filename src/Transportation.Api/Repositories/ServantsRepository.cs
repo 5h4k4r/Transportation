@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Tranportation.Api.Requests;
 using Transportation.Api.Extensions;
 using Transportation.Api.Interfaces;
 using Transportation.Api.Model;
@@ -6,15 +7,16 @@ using Transportation.Api.Requests;
 
 namespace Transportation.Api.Repositories;
 
-public class ServantPerformanceRepository : IServantsPerformanceRepository
+public class ServantsRepository : IServantsRepository
 {
     protected transportationContext _context;
-    public ServantPerformanceRepository(transportationContext context)
+    public ServantsRepository(transportationContext context)
     {
         _context = context;
     }
 
     public Task<Model.Servant?> GetServantById(ulong UserId) => _context.Servants.Where(x => x.UserId == (ulong)UserId).Include(x => x.ServantScores).FirstOrDefaultAsync();
+
 
     public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int ServantId)
     {

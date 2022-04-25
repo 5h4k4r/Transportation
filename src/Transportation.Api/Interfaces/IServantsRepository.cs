@@ -5,7 +5,7 @@ using Servant = Transportation.Api.Model.Servant;
 namespace Transportation.Api.Interfaces;
 
 
-public interface IServantsPerformanceRepository
+public interface IServantsRepository
 {
 
     Task<Servant?> GetServantById(ulong Id);

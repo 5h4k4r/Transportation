@@ -7,7 +7,7 @@ public interface IUnitOfWork : IDisposable
 {
     IAuthRepository Auth { get; }
     IUsersRepository User { get; }
-    IServantsPerformanceRepository ServantPerformance { get; }
+    IServantsRepository Servants { get; }
     ITasksRepository Tasks { get; }
     IRoleUsersRepository RoleUsers { get; }
     IAreaInfosRepository AreaInfos { get; }
@@ -15,6 +15,7 @@ public interface IUnitOfWork : IDisposable
     IDepartmentsRepository Departments { get; }
     IEmployeesRepository Employees { get; }
     ILanguagesRepository Languages { get; }
+    IServantWorkDaysRepository ServantWorkDays { get; }
     Task<int> Save();
     T? GetException<T>(Exception e) where T : Exception;
 }
