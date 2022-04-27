@@ -14,5 +14,7 @@ public class ServantPerformanceRequest : IValidatableObject
     {
         if (UserId is null)
             yield return new ValidationResult($"The field {nameof(UserId)} is required", new[] { nameof(UserId) });
+        if (EndAt > StartAt)
+            yield return new ValidationResult($"The field {nameof(EndAt)} must be greater than {nameof(StartAt)}", new[] { nameof(EndAt), nameof(StartAt) });
     }
 }
