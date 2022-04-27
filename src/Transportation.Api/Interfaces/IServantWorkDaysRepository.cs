@@ -4,6 +4,8 @@ namespace Transportation.Api.Interfaces;
 
 public interface IServantWorkDaysRepository
 {
-    Task<List<ListServantsOnlineHistoryResponse>> ListServantsOnlineHistory(ServantOnlinePeriodRequest model);
-    Task<ServantWorkDaysResponse> GetServantWorkDays(ulong ServantId, ServantOnlinePeriodRequest model);
+    Task<List<ListServantsOnlineHistoryResponse>?> ListServantsOnlineHistory(ListServantsOnlineHistoryRequest model);
+    Task<int> ListServantsOnlineHistoryCount(ListServantsOnlineHistoryRequest model);
+    Task<ServantWorkDaysResponse> GetServantWorkDays(ulong ServantId, ServantWorkDaysRequest model);
+    Task<int> GetServantWorkDaysCount(ulong ServantId, ServantWorkDaysRequest model);
 }

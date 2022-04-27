@@ -1,10 +1,13 @@
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tranportation.Api.Requests;
+using Tranportation.Api.Responses;
 using Transportation.Api.Common;
 using Transportation.Api.Interfaces;
+using Transportation.Api.Model;
 using Transportation.Api.Models.Common;
 using Transportation.Api.Repositories;
 using Transportation.Api.Requests;
@@ -33,6 +36,8 @@ public class ServantsController : ControllerBase
     [HttpGet("{id}/performance")]
     [ProducesResponseType(typeof(ServantPerformanceWithUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+
 
     public async Task<ActionResult> ServantPerformance(int Id, [FromQuery] ServantPerformanceRequest model)
     {
@@ -74,42 +79,47 @@ public class ServantsController : ControllerBase
     }
 
 
-    [HttpGet("{Id}/online")]
-    public async Task<IActionResult> GetServantOnlinePeriods(int Id, [FromQuery] ServantOnlinePeriodRequest model)
+    [HttpGet("{id}/online")]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(PaginatedResponse<ListTasksResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetServantOnlinePeriods(int id, [FromQuery] ServantWorkDaysRequest model)
     {
 
-
-        var servant = await _unitOfWork.Servants.GetServantById((ulong)Id);
+        var servant = await _unitOfWork.Servants.GetServantById((ulong)id);
 
         if (servant is null)
-            return NotFound();
+            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), (int)id));
 
 
-        var response = await _unitOfWork.ServantWorkDays.GetServantWorkDays((ulong)Id, model);
+        var servantWorkDays = await _unitOfWork.ServantWorkDays.GetServantWorkDays((ulong)id, model);
+        var servantWorkDaysCount = await _unitOfWork.ServantWorkDays.GetServantWorkDaysCount((ulong)id, model);
+
+        if (servantWorkDays is null)
+            return NotFound(BasicResponse.ResourceNotFound);
 
 
-
-        if (response is null)
-            return NotFound();
-
-
-        return Ok(response);
+        return Ok(new PaginatedResponse<ServantWorkDayResponse>(servantWorkDaysCount, model, servantWorkDays.Items));
     }
 
 
     [HttpGet("online-history")]
-    public async Task<IActionResult> ListServantsOnlineHistory([FromQuery] ServantOnlinePeriodRequest model)
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(PaginatedResponse<ListServantsOnlineHistoryResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListServantsOnlineHistory([FromQuery] ListServantsOnlineHistoryRequest model)
     {
 
 
-        var response = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistory(model);
+        var items = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistory(model);
+        // var count = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistoryCount(model);
 
-        if (response is null)
-            return NotFound();
+        if (items is null)
+            return NotFound(BasicResponse.ResourceNotFound);
 
 
 
-        return Ok(response);
+        return Ok(new PaginatedResponse<ListServantsOnlineHistoryResponse>(items.Count, model, items));
     }
 
 }
