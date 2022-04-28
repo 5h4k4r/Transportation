@@ -172,22 +172,6 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
 
         return response;
     }
-    // public ListServantsOnlineHistoryResponse ListOnlineServantHistoryItem(IGrouping<ulong, ServantDailyStatistic> x)
-    // {
-    //     var OnlineDurations = (x.Sum(y => y.OnlineDuration) - x.Sum(y => y.DurationOnTask)) / 3600;
-
-    //     TimeSpan OnlineHours = TimeSpan.FromSeconds((double)OnlineDurations);
-
-    //     //here backslash is must to tell that colon is
-    //     //not the part of format, it just a character that we want in output
-    //     string str = OnlineHours.ToString(@"hh\:mm\:ss\:fff");
-
-
-    //     return new ListServantsOnlineHistoryResponse(x.FirstOrDefault()?.Servant?.FirstName,
-    //            x.FirstOrDefault()?.Servant?.LastName,
-    //            x.FirstOrDefault().Servant.Id,
-    //            OnlineHours);
-    // }
     public async Task<int> ListServantsOnlineHistoryCount(ListServantsOnlineHistoryRequest model)
     {
 
