@@ -18,6 +18,12 @@ public class RoleUserRepository : IRoleUsersRepository
         _mapper = mapper;
     }
 
-    public Task<RoleUserDTO?> GetRoleUserByUserId(ulong userId) => Task.FromResult(_mapper.Map<RoleUserDTO?>(_context.RoleUsers.Where(x => x.UserId == userId).FirstOrDefaultAsync()));
+    public async Task<RoleUserDTO?> GetRoleUserByUserId(ulong userId)
+    {
+        var databaseModel = await _context.RoleUsers.Where(x => x.UserId == userId).SingleOrDefaultAsync();
+        return _mapper.Map<RoleUserDTO?>(databaseModel);
+        //  Task.FromResult(_mapper.Map<RoleUserDTO?>(_context.RoleUsers.Where(x => x.UserId == userId).SingleOrDefaultAsync()));
+
+    }
 
 }

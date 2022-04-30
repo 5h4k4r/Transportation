@@ -2,7 +2,7 @@ using Core.Interfaces;
 using Core.Models;
 using Infra.Requests;
 using Task = System.Threading.Tasks.Task;
-
+namespace Core.Interfaces;
 
 public interface IEmployeesRepository
 {

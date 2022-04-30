@@ -10,7 +10,7 @@ namespace Infra.Repositories;
 public class AreaInfosRepository : IAreaInfosRepository
 {
     protected transportationContext _context;
-    private IMapper _mapper;
+    private readonly IMapper _mapper;
     public AreaInfosRepository(transportationContext context, IMapper mapper)
     {
         _context = context;
