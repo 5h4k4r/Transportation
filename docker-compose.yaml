@@ -1,0 +1,28 @@
+---
+version: "3.8"
+services:
+  mariadb:
+    image: mariadb:10.5
+    restart: unless-stopped
+    ports:
+      - "3316:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=yes
+
+  # http://localhost:3816
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5
+    restart: unless-stopped
+    environment:
+      - PMA_HOST=mariadb
+      - UPLOAD_LIMIT=5G
+
+    depends_on:
+      - mariadb
+    ports:
+      - "3816:80"
+
+volumes:
+  mysql_data:

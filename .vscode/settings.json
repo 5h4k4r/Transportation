@@ -1,0 +1,7 @@
+{
+  "editor.tabSize": 4,
+  "editor.defaultFormatter": "ms-dotnettools.csharp",
+  "omnisharp.enableRoslynAnalyzers": true,
+  "omnisharp.organizeImportsOnFormat": true,
+  "omnisharp.useModernNet": true
+}
