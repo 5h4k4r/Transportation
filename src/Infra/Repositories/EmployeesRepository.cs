@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
 using Core.Models;
 using Infra.Entities;
@@ -25,11 +26,8 @@ public class EmployeesRepository : IEmployeesRepository
         return _mapper.Map<EmployeeDTO>(databaseModel);
     }
 
-    public Task<EmployeeDTO?> GetEmployeeByUserId(ulong Id)
-    {
+    public Task<EmployeeDTO?> GetEmployeeByUserId(ulong Id) =>
+         _context.Employees.Where(x => x.UserId == Id).ProjectTo<EmployeeDTO?>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
-        var databaseModel = _context.Employees.Where(x => x.UserId == Id).FirstOrDefaultAsync();
 
-        return Task.FromResult(_mapper.Map<EmployeeDTO?>(databaseModel));
-    }
 }
