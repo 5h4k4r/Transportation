@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
 using Core.Models;
 using Infra.Entities;
@@ -34,7 +35,7 @@ public class LanguagesRepository : ILanguagesRepository
 
     }
 
-    public Task<List<LanguageDTO>> ListLanguages() => Task.FromResult(_mapper.Map<List<LanguageDTO>>(_context.Languages.ToListAsync()));
+    public Task<List<LanguageDTO>> ListLanguages() => _context.Languages.ProjectTo<LanguageDTO>(_mapper.ConfigurationProvider).ToListAsync();
 
     public Task<List<string>> ListLanguagesLocales() => _context.Languages.Select(x => x.Locale).ToListAsync();
 
