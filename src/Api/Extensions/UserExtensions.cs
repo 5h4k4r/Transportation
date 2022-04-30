@@ -27,12 +27,4 @@ public static class UserExtensions
         return user.RoleUsers.Select(x => x.RoleId).Contains((byte)roleId);
     }
 
-    public static IQueryable<UserDTO> WithRoleUser(this IQueryable<UserDTO> query, bool withRoleUsers = false)
-    {
-
-        if (withRoleUsers)
-            return query.Include(x => x.RoleUsers);
-
-        return query;
-    }
 }

@@ -1,10 +1,13 @@
+using System.Reflection;
 using System.Text.Json.Serialization;
 using Api.Extensions;
 using Api.Swagger;
+using AutoMapper;
 using Core.Converters;
 using Core.Extensions;
 using Core.Helpers;
 using Infra.Extensions;
+using Infra.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -22,6 +25,8 @@ services
     });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 services
     .AddEndpointsApiExplorer()
     .ConfigureSwaggerGenerator(config)
@@ -34,7 +39,6 @@ services
         x.DefaultAuthenticateScheme = "Basic";
     })
     .AddScheme<UserAuthOptions, UserAuthHandler>("Basic", null);
-services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
