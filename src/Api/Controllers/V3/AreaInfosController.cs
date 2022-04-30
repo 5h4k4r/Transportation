@@ -29,6 +29,7 @@ public class AreaInfosController : ControllerBase
 
     [ProducesResponseType(typeof(List<ListAreaInfoResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status401Unauthorized)]
     [HttpGet]
     public async Task<ActionResult> ListAreaInfos([FromServices] UserAuthContext authContext)
     {
@@ -50,9 +51,12 @@ public class AreaInfosController : ControllerBase
 
 
         if (employee is null || !employee.AreaId.HasValue)
-            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(employee), (int)MySqlUser.Id));
+            return Forbid();
 
-        areaList = await _unitOfWork.AreaInfos.GetAreaInfoById(employee.AreaId.Value);
+        var areaInfo = await _unitOfWork.AreaInfos.GetAreaInfoById(employee.AreaId.Value);
+
+        if (areaInfo is not null)
+            areaList.Add(areaInfo);
 
         List<ListAreaInfoResponse> areasResponse = areaList.Select(x => new ListAreaInfoResponse
         {
