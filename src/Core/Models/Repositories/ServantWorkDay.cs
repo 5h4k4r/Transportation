@@ -13,7 +13,7 @@ public class ServantWorkDay
 public class ServantWorkDays
 {
     public string? TotalTime { get; set; }
-    public List<ServantWorkDayDTO> Items { get; set; } = new List<ServantWorkDayDTO>();
+    public IEnumerable<ServantWorkDay> Items { get; set; } = Array.Empty<ServantWorkDay>();
 
 }
 public class ServantWorkDayPeriodItem

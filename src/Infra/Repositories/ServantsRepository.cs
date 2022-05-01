@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Core.Extensions;
 using Core.Interfaces;
 using Core.Models;
@@ -19,7 +20,11 @@ public class ServantsRepository : IServantsRepository
         _mapper = mapper;
     }
 
-    public Task<ServantDTO?> GetServantById(ulong UserId) => Task.FromResult(_mapper.Map<ServantDTO?>(_context.Servants.Where(x => x.UserId == (ulong)UserId).Include(x => x.ServantScores).FirstOrDefaultAsync()));
+    public Task<ServantDTO?> GetServantById(ulong UserId) => _context.Servants
+    .Where(x => x.UserId == (ulong)UserId)
+    .Include(x => x.ServantScores)
+    .ProjectTo<ServantDTO>(_mapper.ConfigurationProvider)
+    .FirstOrDefaultAsync();
 
 
     public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int ServantId)

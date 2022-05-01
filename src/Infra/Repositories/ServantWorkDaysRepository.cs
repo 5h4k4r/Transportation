@@ -115,7 +115,7 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         return new ServantWorkDays
         {
             TotalTime = totalTimeInString,
-            Items = _mapper.Map<List<ServantWorkDayDTO>>(ServantWorkDayPeriods.ToList())
+            Items = ServantWorkDayPeriods
         };
 
 

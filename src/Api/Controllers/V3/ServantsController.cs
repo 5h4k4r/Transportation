@@ -98,7 +98,7 @@ public class ServantsController : ControllerBase
             return NotFound(BasicResponse.ResourceNotFound);
 
 
-        return Ok(new PaginatedResponse<ServantWorkDayDTO>(servantWorkDaysCount, model, servantWorkDays.Items));
+        return Ok(new PaginatedResponse<Infra.Repositories.ServantWorkDay>(servantWorkDaysCount, model, servantWorkDays.Items.ToList()));
     }
 
 
@@ -111,14 +111,14 @@ public class ServantsController : ControllerBase
 
 
         var items = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistory(model);
-        // var count = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistoryCount(model);
+        var count = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistoryCount(model);
 
         if (items is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
 
 
-        return Ok(new PaginatedResponse<ListServantsOnlineHistory>(items.Count, model, items));
+        return Ok(new PaginatedResponse<ListServantsOnlineHistory>(count, model, items));
     }
 
 }
