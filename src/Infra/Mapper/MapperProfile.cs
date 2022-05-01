@@ -20,6 +20,7 @@ public class MapperProfile : Profile
         CreateMap<Request, RequestDTO>().ReverseMap();
         CreateMap<Member, MemberDTO>().ReverseMap();
         CreateMap<AreaInfo, AreaInfoDTO>().ReverseMap();
+        CreateMap<ServantScoreDTO, ServantScore>().ReverseMap();
 
 
     }
