@@ -9,8 +9,10 @@ public class ServantWorkDaysRequest : IPagingOptions, IValidatableObject
 {
     public DateTime StartDate { get; set; } = DateTime.Today;
     public DateTime EndDate { get; set; } = DateTime.Today.AddDays(1);
-    public DateTime? ExcludeStartHour { get; set; }
-    public DateTime? ExcludeEndHour { get; set; }
+    [Range(0, 24)]
+    public int? ExcludeStartHour { get; set; }
+    [Range(0, 24)]
+    public int? ExcludeEndHour { get; set; }
     public int? Page { get; set; } = 0;
 
     [Range(0, Constants.MaxPaginationLimit)]
