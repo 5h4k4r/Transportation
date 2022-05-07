@@ -1,12 +1,12 @@
 namespace Core.Index;
 
-public class Setting
+public class AuthEndpoint
 {
     public string Address { get; set; } = string.Empty;
     public string Method { get; set; } = string.Empty;
 }
-public class GetSettings
+public class AuthEndpoints
 {
-    public List<Setting> Exclude { get; set; } = new List<Setting>();
-    public List<Setting> Block { get; set; } = new List<Setting>();
+    public List<AuthEndpoint> Exclude { get; set; } = new List<AuthEndpoint>();
+    public List<AuthEndpoint> Block { get; set; } = new List<AuthEndpoint>();
 }
