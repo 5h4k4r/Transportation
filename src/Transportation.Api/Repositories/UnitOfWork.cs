@@ -20,15 +20,15 @@ public class UnitOfWork : IUnitOfWork
             return _Auth;
         }
     }
-    private IServantsPerformanceRepository? _ServantPerformance;
-    public IServantsPerformanceRepository ServantPerformance
+    private IServantsRepository? _Servants;
+    public IServantsRepository Servants
     {
         get
         {
-            if (_ServantPerformance == null)
-                _ServantPerformance = new ServantPerformanceRepository(_repoContext);
+            if (_Servants == null)
+                _Servants = new ServantsRepository(_repoContext);
 
-            return _ServantPerformance;
+            return _Servants;
         }
     }
 
@@ -126,10 +126,21 @@ public class UnitOfWork : IUnitOfWork
             return _Languages;
         }
     }
-    public void Save()
+
+    public IServantWorkDaysRepository? _ServantWorkDays;
+    public IServantWorkDaysRepository ServantWorkDays
     {
-        _repoContext.SaveChanges();
+        get
+        {
+            if (_ServantWorkDays == null)
+                _ServantWorkDays = new ServantWorkDaysRepository(_repoContext);
+
+            return _ServantWorkDays;
+        }
     }
+
+    public Task<int> Save() => _repoContext.SaveChangesAsync();
+
 
     public void Dispose()
     {
@@ -145,7 +156,7 @@ public class UnitOfWork : IUnitOfWork
             {
                 return result;
             }
-            innerException = innerException?.InnerException ?? null;
+            innerException = innerException.InnerException ?? null;
         }
         return null;
     }

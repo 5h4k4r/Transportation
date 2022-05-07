@@ -29,7 +29,6 @@ public class AreaInfosController : ControllerBase
     [ProducesResponseType(typeof(List<ListAreaInfoResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet]
-    [Authorize]
     public async Task<ActionResult> ListAreaInfos([FromServices] UserAuthContext authContext)
     {
         var user = authContext.GetAuthUser();

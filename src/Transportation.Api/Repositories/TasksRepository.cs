@@ -82,7 +82,7 @@ public class TasksRepository : ITasksRepository
 
 
 
-        return tasks.ToList();
+        return tasks;
     }
     public Task<int> CountTasks(ListTasksRequest model)
     {
