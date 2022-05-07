@@ -36,6 +36,7 @@ public class TasksRepository : ITasksRepository
                 Destination
             }
         )
+        .Where(x => x.Destination.ModelType == "App\\Models\\Task")
         .ApplySorting(model.SortField, model.SortDescending ?? false)
         .ApplyPagination(model)
         .AsNoTracking()
