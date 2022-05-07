@@ -17,7 +17,7 @@ public class IndexController : ControllerBase
         List<Setting> Exclude = new()
         {
             new Setting { Address = "/swagger", Method = "get" },
-            new Setting { Address = "/swagger/index.html", Method = "get" }
+            new Setting { Address = "/swagger/index.html/", Method = "get" }
         };
 
 
