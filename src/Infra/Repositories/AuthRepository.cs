@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using Core.Auth;
+using Core.Interfaces;
 using Core.Models;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
