@@ -11,7 +11,11 @@ public class CreateLanguageRequest
     [Required]
     public string Locale { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Allowed values: "ltr" or "rtl"
+    /// </summary>
     [Required]
+    [AllowedValues("ltr", "rtl")]
     public string Direction { get; set; } = string.Empty;
     [JsonIgnore]
     public DateTime? CreatedAt { get; set; } = DateTime.Today;

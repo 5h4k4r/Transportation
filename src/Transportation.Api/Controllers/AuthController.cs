@@ -74,7 +74,7 @@ public class AuthController : ControllerBase
 
         user.AuthId = model.AuthId;
 
-        _unitOfWork.Save();
+        await _unitOfWork.Save();
 
         return NoContent();
     }
