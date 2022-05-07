@@ -1,10 +1,13 @@
+using Core.Index;
+
 namespace Api.Settings;
 
-public class VariableSettings
+public class SettingsConfig
 {
 
     public const string Config = "Settings";
     public AuthServer? AuthServer { get; set; }
+    public AuthEndpoints? AuthEndpoints { get; set; }
 
 }
 public class AuthServer

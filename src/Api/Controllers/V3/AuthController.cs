@@ -31,7 +31,6 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("check")]
-
     [ProducesResponseType(typeof(AuthCheckResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Check([Required][FromQuery] AuthCheckRequest model)
@@ -48,7 +47,7 @@ public class AuthController : ControllerBase
         if (!user.HasRole("superadmin") && !user.HasRole("admin"))
             return Forbid();
 
-        var settings = _config.GetSection(VariableSettings.Config).Get<VariableSettings>();
+        var settings = _config.GetSection(SettingsConfig.Config).Get<SettingsConfig>();
 
         AuthCheckResponse authCheckResponse = new()
         {
