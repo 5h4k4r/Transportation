@@ -109,10 +109,10 @@ public class TasksRepository : ITasksRepository
         var query = _context.Tasks
            .Where(x => x.CreatedAt >= model.StartAt.EndOfDay())
            .Where(x => x.CreatedAt <= model.EndAt.EndOfDay())
-           .Where(x => x.Request.ServiceAreaType.Area.Id == model.AreaId)
            .Include(x => x.Request)
            .ThenInclude(x => x.ServiceAreaType)
-           .ThenInclude(x => x.Area);
+           .ThenInclude(x => x.Area)
+           .Where(x => x.Request.ServiceAreaType.Area.Id == model.AreaId);
 
         if (model.Status.HasValue)
             return query.Where(x => x.Status == (sbyte)model.Status);
