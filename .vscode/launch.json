@@ -9,10 +9,11 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/src/Transportation.Api/bin/Debug/net6.0/Transportation.Api.dll",
+      "program": "${workspaceFolder}/src/Api/bin/Debug/net6.0/Api.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/src/Transportation.Api",
+      "cwd": "${workspaceFolder}/src/Api",
       "stopAtEntry": false,
+      "requireExactSource": false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
