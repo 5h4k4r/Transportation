@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
+
 namespace Core.Interfaces;
 
 public interface IPagingOptions

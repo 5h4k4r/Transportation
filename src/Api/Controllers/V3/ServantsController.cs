@@ -38,14 +38,13 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
 
 
-    public async Task<ActionResult> ServantPerformance(int Id, [FromQuery] ServantPerformanceRequest model)
+    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model)
     {
-        model.UserId = (ulong)Id;
         // The servant we get from database
-        var databaseServant = await _unitOfWork.Servants.GetServantById(model.UserId.GetValueOrDefault());
+        var databaseServant = await _unitOfWork.Servants.GetServantById((ulong)id);
 
         if (databaseServant == null)
-            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(ServantPerformed), (int)model.UserId!));
+            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(ServantPerformed), id));
 
         // The servant we send back as a response
         ServantPerformed? responseServant = new()

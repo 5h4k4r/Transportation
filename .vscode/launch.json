@@ -13,13 +13,17 @@
       "args": [],
       "cwd": "${workspaceFolder}/src/Api",
       "stopAtEntry": false,
+      "justMyCode": false,
       "requireExactSource":false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "sourceFileMap": {
         "/Views": "${workspaceFolder}/Views"
-      }
+      },
+      "logging": {
+        "moduleLoad": false
+    }
     },
     {
       "name": ".NET Core Attach",
