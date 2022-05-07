@@ -1,4 +1,3 @@
-
 version : '3'
 
 services:
@@ -12,6 +11,8 @@ services:
       - Database__ConnectionString
       - Settings__AuthServer__AuthUrl
       - Settings__AuthServer__ServiceId
+      - Settings__AuthEndpoints__Exclude
+      - Settings__AuthEndpoints__Block
       - DB_PASSWORD
       - DB_PORT
       - DB_USERNAME
