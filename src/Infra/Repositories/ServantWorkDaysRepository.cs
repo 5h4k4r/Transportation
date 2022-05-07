@@ -29,6 +29,9 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         var ExcludeStartHour = model.ExcludeStartHour ?? null;
         var ExcludeEndHour = model.ExcludeEndHour ?? null;
 
+        // ExcludeStartHour = ExcludeStartHour <= 3 ? 24 - 3 : ExcludeStartHour - 3;
+
+        // ExcludeEndHour = ExcludeEndHour <= 3 ? 24 - 3 : ExcludeEndHour - 3;
 
         var DailyStats = await _context.ServantDailyStatistics
         .Where(x => x.ServantId == ServantId)
@@ -47,8 +50,8 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         .Where(x => x.ServantDailyOnlinePeriod.EndAt <= model.EndDate)
         .Where(x => x.ServantDailyOnlinePeriod.EndAt >= model.StartDate)
         .Where(x => x.ServantDailyOnlinePeriod.EndAt != x.ServantDailyOnlinePeriod.StartAt)
-        .Where(x => (ExcludeStartHour == null && ExcludeEndHour == null) || !(x.ServantDailyOnlinePeriod.StartAt.Hour >= 0 && x.ServantDailyOnlinePeriod.StartAt.Hour <= 6) &&
-        !(x.ServantDailyOnlinePeriod.EndAt.Hour >= 0 && x.ServantDailyOnlinePeriod.EndAt.Hour <= 6)
+        .Where(x => !(x.ServantDailyOnlinePeriod.StartAt.Hour + 3 >= 0 && x.ServantDailyOnlinePeriod.StartAt.Hour + 3 <= 6) &&
+        !(x.ServantDailyOnlinePeriod.EndAt.Hour + 3 >= 0 && x.ServantDailyOnlinePeriod.EndAt.Hour + 3 <= 6)
         )
         .OrderByDescending(x => x.ServantDailyOnlinePeriod.StartAt)
         .GroupBy(x => x.ServantDailyStatistic.DayId)
@@ -66,13 +69,13 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
                 var StartAt = WorkingHours.ServantDailyOnlinePeriod.StartAt;
                 var EndAt = WorkingHours.ServantDailyOnlinePeriod.EndAt;
 
-                var morning = new DateTime(WorkingHours.ServantDailyOnlinePeriod.StartAt.Year, WorkingHours.ServantDailyOnlinePeriod.StartAt.Month, WorkingHours.ServantDailyOnlinePeriod.StartAt.Day, 6, 0, 0, 0);
-                var afternoon = new DateTime(WorkingHours.ServantDailyOnlinePeriod.StartAt.Year, WorkingHours.ServantDailyOnlinePeriod.StartAt.Month, WorkingHours.ServantDailyOnlinePeriod.StartAt.AddDays(1).Day, 0, 0, 0, 0);
+                var morning = new DateTime(WorkingHours.ServantDailyOnlinePeriod.StartAt.Year, WorkingHours.ServantDailyOnlinePeriod.StartAt.Month, WorkingHours.ServantDailyOnlinePeriod.StartAt.Day, ExcludeEndHour ?? 0, 0, 0, 0);
+                var afternoon = new DateTime(WorkingHours.ServantDailyOnlinePeriod.StartAt.Year, WorkingHours.ServantDailyOnlinePeriod.StartAt.Month, WorkingHours.ServantDailyOnlinePeriod.StartAt.AddDays(1).Day, ExcludeStartHour ?? 0, 0, 0, 0);
 
-                if (StartAt.Hour < 6)
+                if (StartAt.Hour + 3 < 6)
                     StartAt = morning;
 
-                if (EndAt.Hour > 0 && EndAt.Hour < 6)
+                if (EndAt.Hour + 3 > 0 && EndAt.Hour + 3 < 6)
                 {
                     EndAt = afternoon;
                 }
@@ -83,13 +86,13 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
 
                 return new ServantWorkDayPeriodItem
                 {
-                    StartAt = StartAt,
-                    EndAt = EndAt,
+                    StartAt = StartAt.AddHours(3),
+                    EndAt = EndAt.AddHours(3),
                     DiffInTime = DiffInTime,
                     TotalDiffInSeconds = TotalDiffInSeconds
                 };
 
-            });
+            }).OrderBy(x => x.StartAt);
 
             TimeSpan DiffInTime = TimeSpan.FromSeconds((double)Hours.Sum(x => x.TotalDiffInSeconds));
 
