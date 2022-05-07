@@ -61,7 +61,7 @@ public class ServantsController : ControllerBase
             Rating = databaseServant.ServantScores?.Select(x => x.Score).FirstOrDefault()
         };
 
-        ServantPerformance? servantPerformance = await _unitOfWork.Servants.GetServantPerformance(model, responseServant.Id);
+        ServantPerformance? servantPerformance = await _unitOfWork.Servants.GetServantPerformance(model, responseServant.Id, (ulong)id);
 
         if (servantPerformance == null)
             return NotFound();

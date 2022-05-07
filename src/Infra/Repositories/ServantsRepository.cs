@@ -27,10 +27,10 @@ public class ServantsRepository : IServantsRepository
     .FirstOrDefaultAsync();
 
 
-    public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int ServantId)
+    public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int ServantId, ulong ServantUserId)
     {
 
-        var (Tasks, DailyStatistics) = await FilterTasksAndStatistics(model);
+        var (Tasks, DailyStatistics) = await FilterTasksAndStatistics(ServantUserId, model);
         IEnumerable<double>? Rates = await _context.ServantScores.Where(x => x.ServantId == (ulong)ServantId).Select(x => x.Score).ToListAsync();
 
         ServantPerformance servantPerformance = new()
@@ -51,10 +51,10 @@ public class ServantsRepository : IServantsRepository
 
     }
 
-    private async Task<(List<Entities.Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(ServantPerformanceRequest model)
+    private async Task<(List<Entities.Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(ulong ServantUserId, ServantPerformanceRequest model)
     {
-        var tasksQuery = _context.Tasks.Where(x => x.ServantId == model.UserId);
-        var dailyTasksQuery = _context.ServantDailyStatistics.Where(x => x.ServantId == model.UserId);
+        var tasksQuery = _context.Tasks.Where(x => x.ServantId == ServantUserId);
+        var dailyTasksQuery = _context.ServantDailyStatistics.Where(x => x.ServantId == ServantUserId);
 
 
         List<Entities.Task> Tasks = new();
