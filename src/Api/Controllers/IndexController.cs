@@ -22,10 +22,13 @@ public class IndexController : ControllerBase
         };
 
 
-        return Ok(new AuthEndpoints
+        return Ok(new
         {
-            Exclude = Exclude,
-            Block = new List<AuthEndpoint>()
+            Data = new AuthEndpoints
+            {
+                Exclude = Exclude,
+                Block = new List<AuthEndpoint>()
+            }
         });
 
     }
