@@ -31,7 +31,6 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("check")]
-
     [ProducesResponseType(typeof(AuthCheckResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Check([Required][FromQuery] AuthCheckRequest model)
