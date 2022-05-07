@@ -28,10 +28,10 @@ services
 services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 services
+    .ConfigureDatabase(config)
     .AddEndpointsApiExplorer()
     .ConfigureSwaggerGenerator(config)
     .ConfigureRepositoryWrapper()
-    .ConfigureDatabase(config)
     .AddScoped<UserAuthContext>()
     .AddAuthentication(x =>
     {
