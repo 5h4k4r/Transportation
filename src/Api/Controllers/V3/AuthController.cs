@@ -38,7 +38,6 @@ public class AuthController : ControllerBase
 
         var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
 
-
         var user = await _unitOfWork.User.GetUserByPhone(phone, true);
 
         if (user is null)
@@ -56,7 +55,6 @@ public class AuthController : ControllerBase
         };
 
         return Ok(authCheckResponse);
-
 
     }
 
