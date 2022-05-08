@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
 using Core.Models;
 using Infra.Entities;
@@ -21,4 +22,7 @@ public class DepartmentsRepository : IDepartmentsRepository
 
         return Task.FromResult(_mapper.Map<DepartmentDTO?>(databaseModel));
     }
+
+    
+
 }

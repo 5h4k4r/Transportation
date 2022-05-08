@@ -15,6 +15,7 @@ public interface IUnitOfWork : IDisposable
     IEmployeesRepository Employees { get; }
     ILanguagesRepository Languages { get; }
     IServantWorkDaysRepository ServantWorkDays { get; }
+    IRolesRepository Roles { get; }
     Task<int> Save();
     T? GetException<T>(Exception e) where T : Exception;
 }

@@ -14,6 +14,7 @@ public class AuthRepository : IAuthRepository
 
     protected transportationContext _context;
     private readonly IMapper _mapper;
+
     public AuthRepository(transportationContext context, IMapper mapper)
     {
         _context = context;
@@ -25,26 +26,25 @@ public class AuthRepository : IAuthRepository
         var databaseUser = _mapper.Map<User>(user);
 
         var AreaInfo = await _context.AreaInfos.Where(x => x.Id == databaseUser.AreaId).FirstOrDefaultAsync();
+        // var AreaInfo = _unitOfWork.AreaInfos.GetAreaInfoByUser(user);
 
         RoleUser? RoleUserWithDepartment = new();
         databaseUser.RoleUsers.OrderBy(x => x.RoleId).ToList().ForEach(RoleUser =>
         {
 
             var AreaDepartment = _context.AreaDepartments.Where(x => x.RoleUserId == RoleUser.Id).Include(x => x.Department).FirstOrDefault();
-
+            Console.WriteLine("Area department" + AreaDepartment?.Department);
             if (AreaDepartment?.Department is not null)
                 RoleUserWithDepartment = RoleUser;
         });
         if (RoleUserWithDepartment is null)
             return null;
 
-        var AreaDepartments = await _context.AreaDepartments.Where(x => x.RoleUserId == RoleUserWithDepartment.Id).ToListAsync();
         var Department = await _context.Departments.Where(x => x.Id == 1).FirstOrDefaultAsync();
+        // var Department = await _unitOfWork.Departments.GetDepartmentById(1);
 
         if (Department is null)
             return null;
-
-        Department.AreaDepartments = AreaDepartments;
 
         var CurrentRole = await _context.Roles.Where(x => x.Id == RoleUserWithDepartment.RoleId).FirstOrDefaultAsync();
 
@@ -57,8 +57,8 @@ public class AuthRepository : IAuthRepository
             MapCenter = new MapCenter(AreaInfo?.Center),
             Department = new Core.Auth.Department
             {
-                Id = Department.Id,
-                Title = Department.Title,
+                Id = (ulong)Department.Id,
+                Title = Department.Title ?? "",
                 Role = new Core.Auth.Role
                 {
                     Id = CurrentRole?.Id,

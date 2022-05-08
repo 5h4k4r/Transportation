@@ -24,6 +24,10 @@ public class AreaInfosRepository : IAreaInfosRepository
              .FirstOrDefaultAsync();
 
 
+    public Task<AreaInfoDTO?> GetAreaInfoByUser(UserDTO user) =>
+         _context.AreaInfos.Where(x => x.Id == user.AreaId).ProjectTo<AreaInfoDTO>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+
+
     public Task<AreaInfoDTO?> GetAreaInfoByTitle(string Title) =>
     _context.AreaInfos
             .Where(x => x.Title == Title)
