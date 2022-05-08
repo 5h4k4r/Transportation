@@ -1,4 +1,5 @@
 using System.Net.Mime;
+using Api.Settings;
 using Core.Index;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,25 +12,21 @@ namespace Api.Controllers;
 [Route("")]
 public class IndexController : ControllerBase
 {
+    private readonly IConfiguration _config;
+
+    public IndexController(IConfiguration configuration)
+    {
+        _config = configuration;
+    }
+
+
     [HttpGet("get-settings")]
     public IActionResult GetSettings()
     {
-        List<AuthEndpoint> Exclude = new()
-        {
-            new AuthEndpoint { Address = "/get-settings", Method = "get" },
-            new AuthEndpoint { Address = "/swagger", Method = "get" },
-            new AuthEndpoint { Address = "/swagger/index.html/", Method = "get" }
-        };
+        var settings = _config.GetSection(SettingsConfig.Config).Get<AuthEndpoints>();
 
 
-        return Ok(new
-        {
-            Data = new AuthEndpoints
-            {
-                Exclude = Exclude,
-                Block = new List<AuthEndpoint>()
-            }
-        });
+        return Ok(new { Data = settings });
 
     }
 }
