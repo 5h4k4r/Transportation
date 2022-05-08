@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> Check([Required][FromQuery] AuthCheckRequest model)
     {
 
-        var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
+        var phone = PreparePhoneNumber(model.Mobile);
 
         var user = await _unitOfWork.User.GetUserByPhone(phone, true);
 
@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<object?>> Login(LoginRequest model)
     {
 
-        var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
+        var phone = PreparePhoneNumber(model.Mobile);
 
         var user = await _unitOfWork.User.GetUserByPhone(phone);
 
@@ -150,7 +150,7 @@ public class AuthController : ControllerBase
 
     }
 
-    public string PreparePhoneNumber([Required] string model)
+    private static string PreparePhoneNumber([Required] string model)
     {
         if (model[0] != '+')
             model = "+" + model;
