@@ -19,7 +19,6 @@ public class IndexController : ControllerBase
             new AuthEndpoint { Address = "/v3/auth/check", Method = "get" },
             new AuthEndpoint { Address = "/get-settings", Method = "get" },
             new AuthEndpoint { Address = "/swagger", Method = "get" },
-            new AuthEndpoint { Address = "/swagger/index.html/", Method = "get" },
             new AuthEndpoint { Address = "/v3", Method = "get" },
         };
 
