@@ -13,6 +13,7 @@ public class ListTasksByClientRequest : IPagingOptions, ISortOptions, IValidatab
 
     [Required]
     public ulong? ClientId { get; set; }
+    public ulong? ServantId { get; set; }
     public DateTime? TaskCreatedFrom { get; set; }
     public DateTime? TaskCreatedTo { get; set; }
     public TaskState? Status { get; set; } = null;

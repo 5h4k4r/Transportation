@@ -146,7 +146,10 @@ public class TasksRepository : ITasksRepository
         ).Where(x => x.Member.ModelType.Contains("Task") && x.Member.UserId == model.ClientId);
 
         if (model.Status.HasValue)
-            query.Where(x => x.Task.Status == (sbyte)model.Status);
+            query = query.Where(x => x.Task.Status == (sbyte)model.Status);
+
+        if (model.ServantId.HasValue)
+            query = query.Where(x => x.Task.ServantId == model.ServantId);
 
         return query.Select(x =>
              new ListTasksByClient
@@ -156,7 +159,7 @@ public class TasksRepository : ITasksRepository
                  {
                      Id = x.Task.Id,
                      Request = isRequestObjectRequested ? _mapper.Map<RequestDTO>(x.Task.Request) : null,
-                     Servant = iServantObjectRequested ? _mapper.Map<ServantDTO>(x.Task.Request) : null,
+                     Servant = iServantObjectRequested ? _mapper.Map<ServantDTO>(x.Task.Servant) : null,
                      Price = x.Task.Price,
                      Tip = x.Task.Tip,
                      Status = x.Task.Status,
