@@ -2,10 +2,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Api.Extensions;
 using Api.Settings;
-using Core.Auth;
+using AutoMapper;
+using Core.Auth.Models;
 using Core.Common;
 using Core.Helpers;
 using Core.Interfaces;
+using Infra.Entities;
 using Infra.Entities.Common;
 using Infra.Requests;
 using Infra.Responses;
@@ -23,11 +25,14 @@ public class AuthController : ControllerBase
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConfiguration _config;
 
+    private readonly IMapper _mapper;
 
-    public AuthController(IUnitOfWork unitOfWork, IConfiguration config)
+
+    public AuthController(IUnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _config = config;
+        _mapper = mapper;
     }
 
     [HttpGet("check")]
@@ -36,7 +41,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> Check([Required][FromQuery] AuthCheckRequest model)
     {
 
-        var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
+        var phone = PreparePhoneNumber(model.Mobile);
 
         var user = await _unitOfWork.User.GetUserByPhone(phone, true);
 
@@ -62,7 +67,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<object?>> Login(LoginRequest model)
     {
 
-        var phone = _unitOfWork.Auth.PreparePhoneNumber(model.Mobile);
+        var phone = PreparePhoneNumber(model.Mobile);
 
         var user = await _unitOfWork.User.GetUserByPhone(phone);
 
@@ -81,7 +86,7 @@ public class AuthController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet("info")]
-    public async Task<ActionResult<AuthInfo>> GetAuthInfo([FromServices] UserAuthContext authContext)
+    public async Task<ActionResult<AuthInfo>?> GetAuthInfo([FromServices] UserAuthContext authContext)
     {
         var user = authContext.GetAuthUser();
         var MySqlUser = await _unitOfWork.User.GetUserByAuthId(user.Id, true);
@@ -89,15 +94,68 @@ public class AuthController : ControllerBase
         if (MySqlUser is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
+        var databaseUser = _mapper.Map<User>(MySqlUser);
+        var AreaInfo = await _unitOfWork.AreaInfos.GetAreaInfoByUser(MySqlUser);
+
+        RoleUser? RoleUserWithDepartment = new();
+        databaseUser.RoleUsers.OrderBy(x => x.RoleId).ToList().ForEach(async RoleUser =>
+        {
+
+            var AreaDepartment = await _unitOfWork.AreaDepartments.GetAreaDepartmentByRoleUserId(RoleUser.Id);
+            Console.WriteLine("Area department" + AreaDepartment?.Department);
+            if (AreaDepartment?.Department is not null)
+                RoleUserWithDepartment = RoleUser;
+        });
+
+        if (RoleUserWithDepartment is null)
+            return null;
+
+        var Department = await _unitOfWork.Departments.GetDepartmentById(1);
+
+        if (Department is null)
+            return null;
+
+        var CurrentRole = await _unitOfWork.Roles.GetRoleById(1);
+
+        AuthInfo authInfoResponse = new()
+        {
+            BirthDate = MySqlUser?.BirthDate,
+            Id = MySqlUser?.Id,
+            AreaId = (ulong)AreaInfo?.Id,
+            AuthId = MySqlUser?.AuthId,
+            MapCenter = new MapCenter(AreaInfo?.Center),
+            Department = new Core.Auth.Models.Department
+            {
+                Id = (ulong)Department.Id,
+                Title = Department.Title ?? "",
+                Role = new Core.Auth.Models.Role
+                {
+                    Id = CurrentRole?.Id,
+                    Title = CurrentRole?.Title,
+                }
+            },
+            Mobile = user!.Mobile,
+            Name = MySqlUser?.Name,
+            Version = "V3",
+            IsAdmin = CurrentRole?.Id == 2 || CurrentRole?.Id == 6,
+            IsSuperAdmin = CurrentRole?.Id == 1
+        };
 
 
-        AuthInfo? AuthInfo = await _unitOfWork.Auth.AuthInfo(MySqlUser);
+        if (authInfoResponse is null)
+            return NotFound(BasicResponse.ResourceNotFound);
 
-        if (AuthInfo is null)
-            return NotFound(ErrorCode.ResourceDoesNotExist);
-
-        return Ok(AuthInfo);
+        return Ok(authInfoResponse);
 
 
+    }
+
+    private static string PreparePhoneNumber([Required] string model)
+    {
+        if (model[0] != '+')
+            model = "+" + model;
+
+
+        return model;
     }
 }

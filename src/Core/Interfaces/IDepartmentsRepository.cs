@@ -6,4 +6,5 @@ public interface IDepartmentsRepository
 {
 
     Task<DepartmentDTO?> GetDepartmentById(ulong Id);
+
 }

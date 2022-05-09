@@ -18,7 +18,7 @@ namespace Core.Models
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public ICollection<RoleUserDTO> RoleUsers { get; set; }
+        public ICollection<RoleUserDTO>? RoleUsers { get; set; }
 
     }
 }

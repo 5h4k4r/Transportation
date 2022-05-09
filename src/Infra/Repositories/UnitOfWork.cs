@@ -8,22 +8,14 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly transportationContext _repoContext;
     private readonly IMapper _mapper;
+
     public UnitOfWork(transportationContext repositoryContext, IMapper mapper)
     {
         _repoContext = repositoryContext;
         _mapper = mapper;
-    }
-    private IAuthRepository? _Auth;
-    public IAuthRepository Auth
-    {
-        get
-        {
-            if (_Auth == null)
-                _Auth = new AuthRepository(_repoContext, _mapper);
 
-            return _Auth;
-        }
     }
+
     private IServantsRepository? _Servants;
     public IServantsRepository Servants
     {
@@ -68,6 +60,18 @@ public class UnitOfWork : IUnitOfWork
                 _RoleUsers = new RoleUserRepository(_repoContext, _mapper);
 
             return _RoleUsers;
+        }
+    }
+
+    public IRolesRepository? _Roles;
+    public IRolesRepository Roles
+    {
+        get
+        {
+            if (_Roles == null)
+                _Roles = new RolesRepository(_repoContext, _mapper);
+
+            return _Roles;
         }
     }
 

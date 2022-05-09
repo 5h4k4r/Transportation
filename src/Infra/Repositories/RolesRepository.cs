@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
 using Core.Models;
 using Infra.Entities;
@@ -15,9 +16,7 @@ public class RolesRepository : IRolesRepository
         _context = context;
         _mapper = mapper;
     }
-    public Task<RoleDTO?> GetRoleById(ulong Id)
-    {
-        return Task.FromResult(_mapper.Map<RoleDTO?>(_context.Roles.Where(x => x.Id == Id).FirstOrDefaultAsync()));
-    }
+    public Task<RoleDTO?> GetRoleById(ulong Id) => _context.Roles.Where(x => x.Id == Id).ProjectTo<RoleDTO>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+
 
 }

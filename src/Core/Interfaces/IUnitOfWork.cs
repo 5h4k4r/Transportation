@@ -4,7 +4,6 @@ namespace Core.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
-    IAuthRepository Auth { get; }
     IUsersRepository User { get; }
     IServantsRepository Servants { get; }
     ITasksRepository Tasks { get; }
@@ -15,6 +14,7 @@ public interface IUnitOfWork : IDisposable
     IEmployeesRepository Employees { get; }
     ILanguagesRepository Languages { get; }
     IServantWorkDaysRepository ServantWorkDays { get; }
+    IRolesRepository Roles { get; }
     Task<int> Save();
     T? GetException<T>(Exception e) where T : Exception;
 }

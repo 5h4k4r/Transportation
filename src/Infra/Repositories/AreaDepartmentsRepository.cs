@@ -1,4 +1,5 @@
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
 using Core.Models;
 using Infra.Entities;
@@ -23,4 +24,5 @@ public class AreaDepartmentsRepository : IAreaDepartmentsRepository
         return Task.FromResult(_mapper.Map<List<AreaDepartmentDTO>>(database));
 
     }
+    public Task<AreaDepartmentDTO?> GetAreaDepartmentByRoleUserId(ulong id) => Task.FromResult(_context.AreaDepartments.Where(x => x.RoleUserId == id).Include(x => x.Department).ProjectTo<AreaDepartmentDTO>(_mapper.ConfigurationProvider).FirstOrDefault());
 }

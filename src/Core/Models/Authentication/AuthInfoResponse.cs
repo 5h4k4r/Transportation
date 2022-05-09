@@ -1,6 +1,6 @@
 using Core.Models;
 
-namespace Core.Auth;
+namespace Core.Auth.Models;
 
 public class AuthInfo
 {
