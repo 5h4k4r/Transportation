@@ -4,7 +4,6 @@ namespace Core.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
-    IAuthRepository Auth { get; }
     IUsersRepository User { get; }
     IServantsRepository Servants { get; }
     ITasksRepository Tasks { get; }

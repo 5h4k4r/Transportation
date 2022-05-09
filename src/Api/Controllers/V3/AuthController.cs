@@ -3,7 +3,7 @@ using System.Net.Mime;
 using Api.Extensions;
 using Api.Settings;
 using AutoMapper;
-using Core.Auth;
+using Core.Auth.Models;
 using Core.Common;
 using Core.Helpers;
 using Core.Interfaces;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Core.Auth;
+using Core.Auth.Models;
 
 namespace Core.Models;
 

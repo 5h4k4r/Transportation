@@ -15,16 +15,7 @@ public class UnitOfWork : IUnitOfWork
         _mapper = mapper;
 
     }
-    private IAuthRepository? _Auth;
-    public IAuthRepository Auth
-    {
-        get
-        {
-            if (_Auth == null)
-                _Auth = new AuthRepository(_repoContext, _mapper);
-            return _Auth;
-        }
-    }
+
     private IServantsRepository? _Servants;
     public IServantsRepository Servants
     {
