@@ -124,11 +124,11 @@ public class AuthController : ControllerBase
             AreaId = (ulong)AreaInfo?.Id,
             AuthId = MySqlUser?.AuthId,
             MapCenter = new MapCenter(AreaInfo?.Center),
-            Department = new Core.Auth.Department
+            Department = new Core.Auth.Models.Department
             {
                 Id = (ulong)Department.Id,
                 Title = Department.Title ?? "",
-                Role = new Core.Auth.Role
+                Role = new Core.Auth.Models.Role
                 {
                     Id = CurrentRole?.Id,
                     Title = CurrentRole?.Title,
