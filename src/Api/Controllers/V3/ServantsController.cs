@@ -98,12 +98,13 @@ public class ServantsController : ControllerBase
 
 
         return Ok(
-            new PaginatedResponse<Infra.Repositories.ServantOnlinePeriod>(
+            new PaginatedResponse<ServantOnlinePeriod>(
                 servantWorkDaysCount,
                 model,
                 servantWorkDays.Items.ToList(),
                 new
                 {
+                    TotalOnlineTimeInSecond = servantWorkDays.TotalTimeInSeconds,
                     TotalOnlineTime = servantWorkDays.TotalTime
                 }
         ));

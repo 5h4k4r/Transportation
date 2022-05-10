@@ -103,16 +103,18 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
                     StartAt = StartAt.AddHours(3),
                     EndAt = EndAt.AddHours(3),
                     DiffInTime = DiffInTime,
-                    TotalDiffInSeconds = TotalDiffInSeconds
+                    TotalPeriodInSeconds = TotalDiffInSeconds
                 };
 
             }).OrderBy(x => x.StartAt);
 
-            TimeSpan DiffInTime = TimeSpan.FromSeconds(Hours.Sum(x => x.TotalDiffInSeconds));
+            var TotalTimeInSeconds = Hours.Sum(x => x.TotalPeriodInSeconds);
+            TimeSpan DiffInTime = TimeSpan.FromSeconds(Hours.Sum(x => x.TotalPeriodInSeconds));
+
 
             return new ServantOnlinePeriod
             {
-                TotalOnlineTimeInDay = DiffInTime,
+                TotalOnlineTime = DiffInTime,
                 Date = WorkDay?.FirstOrDefault()?.ServantDailyOnlinePeriod.StartAt.Date,
                 Periods = Hours
             };
@@ -127,11 +129,15 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
 
         //here backslash is must to tell that colon is
         //not the part of format, it just a character that we want in output
-        string totalTimeInString = time.ToString(@"hh\:mm\:ss\:fff");
+        string answer = string.Format("{0:D2}:{1:D2}:{2:D2}",
+                time.Hours + (time.Days * 24),
+                time.Minutes,
+                time.Seconds);
 
         return new ServantOnlinePeriods
         {
-            TotalTime = time,
+            TotalTimeInSeconds = totalSeconds,
+            TotalTime = answer,
             Items = ServantWorkDayPeriods
         };
 
@@ -267,13 +273,14 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
 
             });
 
-
+            var totalTimeInSeconds = onlineSecondsOfDriver.Sum(x => x);
             return new ListServantsOnlineHistory
             (
                 day.FirstOrDefault()?.ServantDailyStatistic.Servant.FirstName,
                 day.FirstOrDefault()?.ServantDailyStatistic.Servant.LastName,
                 day.FirstOrDefault()?.ServantDailyStatistic.ServantId ?? (ulong)0,
-                TimeSpan.FromSeconds(onlineSecondsOfDriver.Sum(x => x))
+                TimeSpan.FromSeconds(totalTimeInSeconds),
+                totalTimeInSeconds
 
             );
 
