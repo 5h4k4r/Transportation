@@ -5,7 +5,7 @@ using Core.Interfaces;
 namespace Infra.Requests;
 
 
-public class ServantWorkDaysRequest : IPagingOptions, IValidatableObject
+public class GetServantOnlinePeriodsRequest : IPagingOptions, IValidatableObject
 {
     public DateTime StartDate { get; set; } = DateTime.Today;
     public DateTime EndDate { get; set; } = DateTime.Today.AddDays(1);
