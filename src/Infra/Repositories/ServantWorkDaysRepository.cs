@@ -234,8 +234,8 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         var onlineHistory = await query
             .OrderByDescending(x => x.ServantDailyOnlinePeriod.StartAt)
             .GroupBy(x => x.ServantDailyStatistic.ServantId)
-            .Select(x => x.ToList())
             .ApplyPagination(model)
+            .Select(x => x.ToList())
             .AsNoTracking()
             .ToListAsync();
 
