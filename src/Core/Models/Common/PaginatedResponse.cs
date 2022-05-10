@@ -29,9 +29,15 @@ public class PaginatedResponse<T>
     public int Limit { get; }
 
     /// <summary>
+    /// Gets the metadata.
+    /// </summary>
+    public object? Metadata { get; }
+
+    /// <summary>
     /// Gets the items in the current page.
     /// </summary>
     public ICollection<T> Items { get; }
+
 
     /// <summary>
     /// Creates a new instance of <see cref="PaginatedResponse<T>"/>.
@@ -53,6 +59,15 @@ public class PaginatedResponse<T>
         Count = count;
         Page = page;
         Limit = limit;
+        Items = items;
+        RemainingItems = Math.Max(0, Count - (Page * Limit) - Items.Count);
+    }
+    public PaginatedResponse(in int count, in IPagingOptions pagingOptions, in ICollection<T> items, object metadata)
+    {
+        Count = count;
+        Page = pagingOptions.Page ?? 0;
+        Limit = pagingOptions.Limit ?? 0;
+        Metadata = metadata;
         Items = items;
         RemainingItems = Math.Max(0, Count - (Page * Limit) - Items.Count);
     }

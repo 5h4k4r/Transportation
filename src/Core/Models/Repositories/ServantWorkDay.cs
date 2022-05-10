@@ -3,20 +3,20 @@ using Core.Models;
 namespace Infra.Repositories;
 
 
-public class ServantWorkDay
+public class ServantOnlinePeriod
 {
-    public DateTime? Date { get; set; }
-    public IEnumerable<ServantWorkDayPeriodItem> Periods { get; set; } = Array.Empty<ServantWorkDayPeriodItem>();
     public TimeSpan TotalOnlineTimeInDay { get; set; }
+    public DateTime? Date { get; set; }
+    public IEnumerable<ServantOnlinePeriodItem> Periods { get; set; } = Array.Empty<ServantOnlinePeriodItem>();
 
 }
-public class ServantWorkDays
+public class ServantOnlinePeriods
 {
     public TimeSpan? TotalTime { get; set; }
-    public IEnumerable<ServantWorkDay> Items { get; set; } = Array.Empty<ServantWorkDay>();
+    public IEnumerable<ServantOnlinePeriod> Items { get; set; } = Array.Empty<ServantOnlinePeriod>();
 
 }
-public class ServantWorkDayPeriodItem
+public class ServantOnlinePeriodItem
 {
 
     public DateTime StartAt { get; set; }

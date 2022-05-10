@@ -8,6 +8,6 @@ public interface IServantWorkDaysRepository
 {
     Task<List<ListServantsOnlineHistory>?> ListServantsOnlineHistory(ListServantsOnlineHistoryRequest model);
     Task<int> ListServantsOnlineHistoryCount(ListServantsOnlineHistoryRequest model);
-    Task<ServantWorkDays> GetServantWorkDays(ulong ServantId, ServantWorkDaysRequest model);
-    Task<int> GetServantWorkDaysCount(ulong ServantId, ServantWorkDaysRequest model);
+    Task<ServantOnlinePeriods> GetServantOnlinePeriods(ulong ServantId, GetServantOnlinePeriodsRequest model);
+    Task<int> GetServantOnlinePeriodsCount(ulong ServantId, GetServantOnlinePeriodsRequest model);
 }

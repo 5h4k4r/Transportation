@@ -81,7 +81,7 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(PaginatedResponse<ListTasks>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetServantOnlinePeriods(int id, [FromQuery] ServantWorkDaysRequest model)
+    public async Task<IActionResult> GetServantOnlinePeriods(int id, [FromQuery] GetServantOnlinePeriodsRequest model)
     {
 
         var servant = await _unitOfWork.Servants.GetServantById((ulong)id);
@@ -90,14 +90,23 @@ public class ServantsController : ControllerBase
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), (int)id));
 
 
-        var servantWorkDays = await _unitOfWork.ServantWorkDays.GetServantWorkDays((ulong)id, model);
-        var servantWorkDaysCount = await _unitOfWork.ServantWorkDays.GetServantWorkDaysCount((ulong)id, model);
+        var servantWorkDays = await _unitOfWork.ServantWorkDays.GetServantOnlinePeriods((ulong)id, model);
+        var servantWorkDaysCount = await _unitOfWork.ServantWorkDays.GetServantOnlinePeriodsCount((ulong)id, model);
 
         if (servantWorkDays is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
 
-        return Ok(new PaginatedResponse<Infra.Repositories.ServantWorkDay>(servantWorkDaysCount, model, servantWorkDays.Items.ToList()));
+        return Ok(
+            new PaginatedResponse<Infra.Repositories.ServantOnlinePeriod>(
+                servantWorkDaysCount,
+                model,
+                servantWorkDays.Items.ToList(),
+                new
+                {
+                    TotalOnlineTime = servantWorkDays.TotalTime
+                }
+        ));
     }
 
 
