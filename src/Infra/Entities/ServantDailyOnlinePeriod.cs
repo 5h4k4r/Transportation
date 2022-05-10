@@ -9,5 +9,6 @@ namespace Infra.Entities
         public ulong ServantDailyStatisticId { get; set; }
         public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }
+        public virtual ServantDailyStatistic ServantDailyStatistic { get; set; } = null!;
     }
 }
