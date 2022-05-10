@@ -196,27 +196,16 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         var startOfExcludedTime = new DateTime(today.Year, today.Month, today.Day, ExcludeStartHour, 0, 0, 0).ToUniversalTime();
         var endOfExcludedTime = new DateTime(today.Year, today.Month, today.Day, ExcludeEndHour, 0, 0, 0).ToUniversalTime();
 
-        var dailyStats = await _context.ServantDailyStatistics
-        .Include(x => x.Servant)
-        .Join(
-             _context.ServantDailyOnlinePeriods,
-             ServantDailyStatistics => ServantDailyStatistics.Id,
-             ServantDailyOnlinePeriods => ServantDailyOnlinePeriods.ServantDailyStatisticId,
-             (ServantDailyStatistic, ServantDailyOnlinePeriod) => new
-             {
-                 ServantDailyStatistic,
-                 ServantDailyOnlinePeriod
-             }
+        var dailyStats = await _context.ServantDailyOnlinePeriods.Include(x => x.ServantDailyStatistic).ThenInclude(x => x.Servant)
+        .Where(x => x.StartAt <= model.EndDate)
+        .Where(x => x.StartAt >= model.StartDate)
+        .Where(x => x.EndAt <= model.EndDate)
+        .Where(x => x.EndAt >= model.StartDate)
+        .Where(x => x.EndAt != x.StartAt)
+        .Where(x => !(x.StartAt.Hour >= startOfExcludedTime.Hour && x.StartAt.Hour <= endOfExcludedTime.Hour) &&
+        !(x.EndAt.Hour >= startOfExcludedTime.Hour && x.EndAt.Hour <= endOfExcludedTime.Hour)
         )
-        .Where(x => x.ServantDailyOnlinePeriod.StartAt <= model.EndDate)
-        .Where(x => x.ServantDailyOnlinePeriod.StartAt >= model.StartDate)
-        .Where(x => x.ServantDailyOnlinePeriod.EndAt <= model.EndDate)
-        .Where(x => x.ServantDailyOnlinePeriod.EndAt >= model.StartDate)
-        .Where(x => x.ServantDailyOnlinePeriod.EndAt != x.ServantDailyOnlinePeriod.StartAt)
-        .Where(x => !(x.ServantDailyOnlinePeriod.StartAt.Hour >= startOfExcludedTime.Hour && x.ServantDailyOnlinePeriod.StartAt.Hour <= endOfExcludedTime.Hour) &&
-        !(x.ServantDailyOnlinePeriod.EndAt.Hour >= startOfExcludedTime.Hour && x.ServantDailyOnlinePeriod.EndAt.Hour <= endOfExcludedTime.Hour)
-        )
-        .OrderByDescending(x => x.ServantDailyOnlinePeriod.StartAt)
+        .OrderByDescending(x => x.StartAt)
         .GroupBy(x => x.ServantDailyStatistic.ServantId)
         .Select(x => x.ToList())
         .AsNoTracking()
@@ -227,8 +216,8 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
 
             var onlineSecondsOfDriver = day.Select(x =>
             {
-                var StartAt = x.ServantDailyOnlinePeriod.StartAt.ToUniversalTime();
-                var EndAt = x.ServantDailyOnlinePeriod.EndAt.ToUniversalTime();
+                var StartAt = x.StartAt.ToUniversalTime();
+                var EndAt = x.EndAt.ToUniversalTime();
 
                 var startOfExcludedTime = new DateTime(StartAt.Year, StartAt.Month, StartAt.Day, ExcludeStartHour, 0, 0, 0).ToUniversalTime();
                 var endOfExcludedTime = new DateTime(StartAt.Year, StartAt.Month, StartAt.Day, ExcludeEndHour, 0, 0, 0).ToUniversalTime();
