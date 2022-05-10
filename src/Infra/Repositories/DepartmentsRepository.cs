@@ -16,13 +16,9 @@ public class DepartmentsRepository : IDepartmentsRepository
         _context = context;
         _mapper = mapper;
     }
-    public Task<DepartmentDTO?> GetDepartmentById(ulong Id)
-    {
-        var databaseModel = _context.Departments.Where(x => x.Id == Id).FirstOrDefaultAsync();
+    public Task<DepartmentDTO?> GetDepartmentById(ulong Id) => _context.Departments.Where(x => x.Id == Id).ProjectTo<DepartmentDTO>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
-        return Task.FromResult(_mapper.Map<DepartmentDTO?>(databaseModel));
-    }
 
-    
+
 
 }

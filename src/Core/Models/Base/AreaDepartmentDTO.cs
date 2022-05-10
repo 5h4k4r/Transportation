@@ -13,7 +13,7 @@ public partial class AreaDepartmentDTO
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
-    public Department? Department { get; set; }
+    public DepartmentDTO? Department { get; set; }
 
 }
 

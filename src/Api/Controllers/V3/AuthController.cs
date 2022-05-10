@@ -102,7 +102,6 @@ public class AuthController : ControllerBase
         {
 
             var AreaDepartment = await _unitOfWork.AreaDepartments.GetAreaDepartmentByRoleUserId(RoleUser.Id);
-            Console.WriteLine("Area department" + AreaDepartment?.Department);
             if (AreaDepartment?.Department is not null)
                 RoleUserWithDepartment = RoleUser;
         });
