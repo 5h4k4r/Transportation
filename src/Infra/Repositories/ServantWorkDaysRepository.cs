@@ -264,6 +264,7 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
                 var Difference = EndAt.Subtract(StartAt);
                 var TotalDiffInSeconds = Difference.TotalSeconds;
 
+
                 return
                     TotalDiffInSeconds;
 
@@ -274,12 +275,18 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
             });
 
             var totalTimeInSeconds = onlineSecondsOfDriver.Sum(x => x);
+            var time = TimeSpan.FromSeconds(totalTimeInSeconds);
+            string OnlineHours = string.Format("{0:D2}:{1:D2}:{2:D2}",
+            time.Hours + (time.Days * 24),
+            time.Minutes,
+            time.Seconds);
+
             return new ListServantsOnlineHistory
             (
                 day.FirstOrDefault()?.ServantDailyStatistic.Servant.FirstName,
                 day.FirstOrDefault()?.ServantDailyStatistic.Servant.LastName,
                 day.FirstOrDefault()?.ServantDailyStatistic.ServantId ?? (ulong)0,
-                TimeSpan.FromSeconds(totalTimeInSeconds),
+                OnlineHours,
                 totalTimeInSeconds
 
             );
