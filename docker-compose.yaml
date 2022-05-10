@@ -17,7 +17,8 @@ services:
     restart: unless-stopped
     environment:
       - PMA_HOST=mariadb
-      - UPLOAD_LIMIT=2G
+      - UPLOAD_LIMIT=5G
+      - MAX_EXECUTION_TIME=6000
 
     depends_on:
       - mariadb
