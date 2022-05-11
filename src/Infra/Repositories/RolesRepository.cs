@@ -18,5 +18,7 @@ public class RolesRepository : IRolesRepository
     }
     public Task<RoleDTO?> GetRoleById(ulong Id) => _context.Roles.Where(x => x.Id == Id).ProjectTo<RoleDTO>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
+    public Task<List<RoleDTO>> ListRoleByTtpe(sbyte TypeId) => _context.Roles.Where(x => x.Type == TypeId).ProjectTo<RoleDTO>(_mapper.ConfigurationProvider).AsNoTracking().ToListAsync();
+
 
 }
