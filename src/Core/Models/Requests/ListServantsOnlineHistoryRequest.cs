@@ -15,7 +15,6 @@ public class ListServantsOnlineHistoryRequest : IPagingOptions, IValidatableObje
     public int? ExcludeEndHour { get; set; }
 
     public int? Page { get; set; } = 0;
-    public bool WithDurationOnTask { get; set; } = false;
 
     [Range(0, Constants.MaxPaginationLimit)]
     public int? Limit { get; set; } = Constants.DefaultPaginationLimit;
