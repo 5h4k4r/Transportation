@@ -19,6 +19,7 @@ namespace Core.Models
         public DateTime? DeletedAt { get; set; }
 
         public ICollection<RoleUserDTO>? RoleUsers { get; set; }
+        public virtual LanguageDTO? Language { get; set; }
 
     }
 }
