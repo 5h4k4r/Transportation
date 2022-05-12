@@ -126,6 +126,20 @@ public sealed class BasicResponse
         return new(ErrorCode.ResourceDoesNotExist,
             $"Resource '{resourceName}' with id '{resourceId}' does not exist.");
     }
+
+    public static BasicResponse ResourceDoesNotExist(in string resourceName,
+                                                     in int resourceId,
+                                                     in string referenceName)
+    {
+        return new(ErrorCode.ResourceDoesNotExist,
+            $"Resource '{resourceName}' with '{referenceName}' '{resourceId}' does not exist.");
+    }
+
+    public static BasicResponse ResourceDoesNotExist(in string resourceName)
+    {
+        return new(ErrorCode.ResourceDoesNotExist,
+            $"Resource '{resourceName}' does not exist.");
+    }
     /// <summary>
     /// Represents error when the requested resource already exists
     /// </summary>
