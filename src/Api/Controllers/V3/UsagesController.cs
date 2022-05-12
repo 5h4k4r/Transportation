@@ -58,7 +58,7 @@ public class UsagesController : ControllerBase
     {
         try
         {
-            var usage = _unitOfWork.Usages.CreateUsage(model);
+            await _unitOfWork.Usages.CreateUsage(model);
 
             await _unitOfWork.Save();
 

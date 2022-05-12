@@ -4,6 +4,7 @@ using Core.Models;
 using Core.Repositories;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
+using Task = System.Threading.Tasks.Task;
 
 namespace Infra.Repositories;
 
@@ -20,7 +21,7 @@ public class UsagesRepository : IUsagesRepository
     public Task<List<UsageDTO>> ListUsages() => _context.Usages.ProjectTo<UsageDTO>(_mapper.ConfigurationProvider).ToListAsync();
     public Task<UsageDTO?> GetUsageById(ulong Id) => _context.Usages.ProjectTo<UsageDTO>(_mapper.ConfigurationProvider).Where(x => x.Id == Id).FirstOrDefaultAsync();
 
-    public async Task<UsageDTO> CreateUsage(CreateUsageRequest model)
+    public async Task CreateUsage(CreateUsageRequest model)
     {
         var databaseModel = new Usage
         {
@@ -30,7 +31,5 @@ public class UsagesRepository : IUsagesRepository
         };
 
         await _context.Usages.AddAsync(databaseModel);
-
-        return _mapper.Map<UsageDTO>(databaseModel);
     }
 }
