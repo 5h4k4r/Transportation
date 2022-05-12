@@ -5,10 +5,10 @@ using Core.Common;
 using Core.Interfaces;
 using Core.Models;
 using Core.Repositories;
+using Core.Requests;
 using Infra.Entities;
 using Infra.Entities.Common;
 using Infra.Repositories;
-using Infra.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

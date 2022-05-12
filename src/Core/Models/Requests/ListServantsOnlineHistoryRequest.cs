@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Core;
 using Core.Interfaces;
 
-namespace Infra.Requests;
+namespace Core.Requests;
 
 
 public class ListServantsOnlineHistoryRequest : IPagingOptions, IValidatableObject

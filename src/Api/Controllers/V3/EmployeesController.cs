@@ -1,9 +1,9 @@
 using System.Net.Mime;
 using Core.Helpers;
 using Core.Interfaces;
+using Core.Requests;
 using Infra.Entities;
 using Infra.Entities.Common;
-using Infra.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;

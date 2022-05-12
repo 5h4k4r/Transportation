@@ -1,5 +1,5 @@
 using Core.Models;
-using Infra.Requests;
+using Core.Requests;
 
 namespace Core.Interfaces;
 

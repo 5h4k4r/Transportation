@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Infra.Requests;
+namespace Core.Requests;
 
 public class ServantPerformanceRequest : IValidatableObject
 {

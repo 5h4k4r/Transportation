@@ -1,6 +1,6 @@
 
+using Core.Requests;
 using Infra.Repositories;
-using Infra.Requests;
 
 namespace Core.Interfaces;
 
