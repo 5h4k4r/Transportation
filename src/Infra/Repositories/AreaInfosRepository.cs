@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Core.Helpers;
 using Core.Interfaces;
 using Core.Models;
+using Core.Requests;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
 namespace Infra.Repositories;
@@ -36,7 +37,16 @@ public class AreaInfosRepository : IAreaInfosRepository
 
 
 
-    public Task<List<AreaInfoDTO>> ListAreaInfos() => _context.AreaInfos.ProjectTo<AreaInfoDTO>(_mapper.ConfigurationProvider).ToListAsync();
+    public Task<List<AreaInfoDTO>> ListAreaInfos(ListAreaInfosRequest? model)
+    {
+        var query = _context.AreaInfos.AsQueryable();
 
+        if (model.Type is not null)
+            query = query.Where(x => x.Type == model.Type);
 
+        if (model.Title is not null)
+            query = query.Where(x => x.Title.Equals(model.Title));
+
+        return query.ProjectTo<AreaInfoDTO>(_mapper.ConfigurationProvider).ToListAsync();
+    }
 }
