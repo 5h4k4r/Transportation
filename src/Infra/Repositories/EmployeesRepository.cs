@@ -2,8 +2,8 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
 using Core.Models;
+using Core.Requests;
 using Infra.Entities;
-using Infra.Requests;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
 namespace Infra.Repositories;
@@ -27,7 +27,7 @@ public class EmployeesRepository : IEmployeesRepository
     }
 
     public Task<EmployeeDTO?> GetEmployeeByUserId(ulong Id) =>
-         _context.Employees.Where(x => x.UserId == Id).ProjectTo<EmployeeDTO?>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+         _context.Employees.Where(x => x.UserId == Id).Include(x => x.AreaInfo).ProjectTo<EmployeeDTO?>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
 
 }

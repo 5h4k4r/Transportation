@@ -3,6 +3,7 @@ using Api.Extensions;
 using Core.Helpers;
 using Core.Interfaces;
 using Core.Models;
+using Core.Requests;
 using Infra.Entities;
 using Infra.Entities.Common;
 using Infra.Responses;
@@ -31,7 +32,7 @@ public class AreaInfosController : ControllerBase
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status401Unauthorized)]
     [HttpGet]
-    public async Task<ActionResult> ListAreaInfos([FromServices] UserAuthContext authContext)
+    public async Task<ActionResult> ListAreaInfos([FromQuery] ListAreaInfosRequest model, [FromServices] UserAuthContext authContext)
     {
         var user = authContext.GetAuthUser();
         var MySqlUser = await _unitOfWork.User.GetUserByAuthId(user.Id, true);
@@ -42,21 +43,26 @@ public class AreaInfosController : ControllerBase
         var areaList = new List<AreaInfoDTO>();
 
         if (MySqlUser.HasRole("superadmin"))
-            areaList = await _unitOfWork.AreaInfos.ListAreaInfos();
+            areaList = await _unitOfWork.AreaInfos.ListAreaInfos(model);
+
+        else
+        {
 
 
-        // TODO: this can be done with a join with area_infos table if area_id in employee table was foreign key
+            // TODO: this can be done with a join with area_infos table if area_id in employee table was foreign key
+            // Done!
 
-        var employee = await _unitOfWork.Employees.GetEmployeeByUserId(MySqlUser.Id);
+            var employee = await _unitOfWork.Employees.GetEmployeeByUserId(MySqlUser.Id);
 
 
-        if (employee is null || !employee.AreaId.HasValue)
-            return Forbid();
+            if (employee is null || !employee.AreaId.HasValue)
+                return Forbid();
 
-        var areaInfo = await _unitOfWork.AreaInfos.GetAreaInfoById(employee.AreaId.Value);
+            var areaInfo = employee.AreaInfo;
 
-        if (areaInfo is not null)
-            areaList.Add(areaInfo);
+            if (areaInfo is not null)
+                areaList = new List<AreaInfoDTO> { areaInfo };
+        }
 
         List<ListAreaInfoResponse> areasResponse = areaList.Select(x => new ListAreaInfoResponse
         {

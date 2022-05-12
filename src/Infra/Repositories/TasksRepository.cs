@@ -3,9 +3,9 @@ using Core.Extensions;
 using Core.Interfaces;
 using Core.Models;
 using Core.Repositories;
+using Core.Requests;
 using Infra.Entities;
 using Infra.Extensions;
-using Infra.Requests;
 using Infra.Responses;
 using Microsoft.EntityFrameworkCore;
 

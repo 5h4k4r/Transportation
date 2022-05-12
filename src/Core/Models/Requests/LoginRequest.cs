@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Infra.Requests;
+namespace Core.Requests;
 
 
 public class LoginRequest

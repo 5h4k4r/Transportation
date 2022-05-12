@@ -3,6 +3,7 @@ using System;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infra.Migrations
 {
     [DbContext(typeof(transportationContext))]
-    partial class transportationContextModelSnapshot : ModelSnapshot
+    [Migration("20220512113356_CreateRelationBetweenLangugagesAndUsers")]
+    partial class CreateRelationBetweenLangugagesAndUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1348,9 +1350,6 @@ namespace Infra.Migrations
                         .HasColumnType("bigint(20) unsigned")
                         .HasColumnName("area_id");
 
-                    b.Property<ulong>("AreaInfoId")
-                        .HasColumnType("bigint(20) unsigned");
-
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp")
                         .HasColumnName("created_at");
@@ -1382,8 +1381,6 @@ namespace Infra.Migrations
                     b.Property<ulong>("UserId")
                         .HasColumnType("bigint(20) unsigned")
                         .HasColumnName("user_id");
-
-                    b.HasIndex("AreaInfoId");
 
                     b.HasIndex(new[] { "UserId" }, "user_id")
                         .IsUnique();
@@ -5181,20 +5178,12 @@ namespace Infra.Migrations
 
             modelBuilder.Entity("Infra.Entities.Employee", b =>
                 {
-                    b.HasOne("Infra.Entities.AreaInfo", "AreaInfo")
-                        .WithMany()
-                        .HasForeignKey("AreaInfoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Infra.Entities.User", "User")
                         .WithOne()
                         .HasForeignKey("Infra.Entities.Employee", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("employees_user_id_foreign");
-
-                    b.Navigation("AreaInfo");
 
                     b.Navigation("User");
                 });

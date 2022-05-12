@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Core;
 using Core.Interfaces;
 
-namespace Infra.Requests;
+namespace Core.Requests;
 
 
 public class ListServantsOnlineHistoryRequest : IPagingOptions, IValidatableObject
@@ -15,7 +15,6 @@ public class ListServantsOnlineHistoryRequest : IPagingOptions, IValidatableObje
     public int? ExcludeEndHour { get; set; }
 
     public int? Page { get; set; } = 0;
-    public bool WithDurationOnTask { get; set; } = false;
 
     [Range(0, Constants.MaxPaginationLimit)]
     public int? Limit { get; set; } = Constants.DefaultPaginationLimit;

@@ -1,4 +1,5 @@
 using Core.Interfaces;
+using Core.Repositories;
 
 namespace Core.Interfaces;
 
@@ -15,6 +16,7 @@ public interface IUnitOfWork : IDisposable
     ILanguagesRepository Languages { get; }
     IServantWorkDaysRepository ServantWorkDays { get; }
     IRolesRepository Roles { get; }
+    IUsagesRepository Usages { get; }
     Task<int> Save();
     T? GetException<T>(Exception e) where T : Exception;
 }

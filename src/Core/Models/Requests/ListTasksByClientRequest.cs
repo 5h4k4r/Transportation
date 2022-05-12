@@ -3,7 +3,7 @@ using Core;
 using Core.Common;
 using Core.Interfaces;
 
-namespace Infra.Requests;
+namespace Core.Requests;
 
 
 

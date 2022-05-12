@@ -35,6 +35,7 @@ namespace Infra.Entities
         public DateTime? DeletedAt { get; set; }
 
         public virtual Gender? Gender { get; set; }
+        public virtual Language? Language { get; set; }
         public virtual Servant Servant { get; set; } = null!;
         public virtual ICollection<Account> Accounts { get; set; }
         public virtual ICollection<CanceledTask> CanceledTasks { get; set; }

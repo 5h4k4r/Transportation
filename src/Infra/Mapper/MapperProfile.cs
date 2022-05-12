@@ -21,6 +21,7 @@ public class MapperProfile : Profile
         CreateMap<Member, MemberDTO>().ReverseMap();
         CreateMap<AreaInfo, AreaInfoDTO>().ReverseMap();
         CreateMap<ServantScoreDTO, ServantScore>().ReverseMap();
+        CreateMap<UsageDTO, Usage>().ReverseMap();
 
 
     }

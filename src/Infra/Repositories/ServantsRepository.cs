@@ -3,8 +3,8 @@ using AutoMapper.QueryableExtensions;
 using Core.Extensions;
 using Core.Interfaces;
 using Core.Models;
+using Core.Requests;
 using Infra.Entities;
-using Infra.Requests;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
 

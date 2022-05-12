@@ -1,4 +1,4 @@
-namespace Infra.Requests;
+namespace Core.Requests;
 
 
 public class ListLanguagesRequest

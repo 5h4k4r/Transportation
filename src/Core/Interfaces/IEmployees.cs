@@ -1,6 +1,6 @@
 using Core.Interfaces;
 using Core.Models;
-using Infra.Requests;
+using Core.Requests;
 using Task = System.Threading.Tasks.Task;
 namespace Core.Interfaces;
 

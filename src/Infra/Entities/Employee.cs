@@ -15,5 +15,6 @@ namespace Infra.Entities
         public DateTime? DeletedAt { get; set; }
 
         public virtual User User { get; set; } = null!;
+        public virtual AreaInfo AreaInfo { get; set; } = null!;
     }
 }

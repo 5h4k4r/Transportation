@@ -1,5 +1,5 @@
 using Core.Repositories;
-using Infra.Requests;
+using Core.Requests;
 using Infra.Responses;
 
 namespace Core.Interfaces;
