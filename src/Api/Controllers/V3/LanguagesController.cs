@@ -1,11 +1,11 @@
 namespace Api.Controllers;
 
 using System.Net.Mime;
+using AutoMapper;
 using Core.Interfaces;
 using Core.Models;
 using Infra.Entities.Common;
 using Infra.Requests;
-using Infra.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,13 +22,16 @@ public class LanguagesController : ControllerBase
 
     private readonly IUnitOfWork _unitOfWork;
 
-    public LanguagesController(IUnitOfWork unitOfWork)
+    private readonly IMapper _mapper;
+
+    public LanguagesController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
 
-    [ProducesResponseType(typeof(List<Language>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<LanguageDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet]
     public async Task<ActionResult> ListLanguages([FromQuery] ListLanguagesRequest model)
@@ -58,19 +61,20 @@ public class LanguagesController : ControllerBase
     }
 
 
-    [ProducesResponseType(typeof(LanguageDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<ActionResult> CreateLanguage([FromBody] CreateLanguageRequest Language)
     {
         try
         {
-            var language = _unitOfWork.Languages.CreateLanguage(Language);
 
+            _unitOfWork.Languages.CreateLanguage(Language);
 
             await _unitOfWork.Save();
 
-            return Ok(language);
+
+            return Ok(BasicResponse.Successful);
         }
         catch (DbUpdateException ex)
         {
