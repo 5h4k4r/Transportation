@@ -1,5 +1,6 @@
 using AutoMapper;
 using Core.Interfaces;
+using Core.Repositories;
 using Infra.Entities;
 
 namespace Infra.Repositories;
@@ -144,6 +145,17 @@ public class UnitOfWork : IUnitOfWork
                 _ServantWorkDays = new ServantWorkDaysRepository(_repoContext, _mapper);
 
             return _ServantWorkDays;
+        }
+    }
+    public IUsagesRepository? _Usages;
+    public IUsagesRepository Usages
+    {
+        get
+        {
+            if (_Usages == null)
+                _Usages = new UsagesRepository(_repoContext, _mapper);
+
+            return _Usages;
         }
     }
 
