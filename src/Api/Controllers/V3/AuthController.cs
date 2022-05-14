@@ -97,6 +97,9 @@ public class AuthController : ControllerBase
 
         var AreaInfo = await _unitOfWork.AreaInfos.GetAreaInfoByUser(MySqlUser);
 
+        if (AreaInfo is null)
+            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(AreaInfo)));
+
         RoleUserDTO? RoleUserWithDepartment = new();
         MySqlUser.RoleUsers.OrderBy(x => x.RoleId).ToList().ForEach(async RoleUser =>
         {
@@ -120,7 +123,7 @@ public class AuthController : ControllerBase
         {
             BirthDate = MySqlUser?.BirthDate,
             Id = MySqlUser?.Id,
-            AreaId = (ulong)AreaInfo?.Id,
+            AreaId = (ulong)AreaInfo.Id,
             AuthId = MySqlUser?.AuthId,
             MapCenter = new MapCenter(AreaInfo?.Center),
             Department = new Core.Auth.Models.Department
