@@ -20,6 +20,7 @@ namespace Core.Models
 
         public ICollection<RoleUserDTO>? RoleUsers { get; set; }
         public virtual LanguageDTO? Language { get; set; }
+        public virtual AreaInfoDTO? AreaInfo { get; set; }
 
     }
 }

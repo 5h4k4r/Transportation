@@ -7,6 +7,7 @@ using Core.Auth.Models;
 using Core.Common;
 using Core.Helpers;
 using Core.Interfaces;
+using Core.Models;
 using Core.Requests;
 using Infra.Entities;
 using Infra.Entities.Common;
@@ -94,11 +95,10 @@ public class AuthController : ControllerBase
         if (MySqlUser is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
-        var databaseUser = _mapper.Map<User>(MySqlUser);
         var AreaInfo = await _unitOfWork.AreaInfos.GetAreaInfoByUser(MySqlUser);
 
-        RoleUser? RoleUserWithDepartment = new();
-        databaseUser.RoleUsers.OrderBy(x => x.RoleId).ToList().ForEach(async RoleUser =>
+        RoleUserDTO? RoleUserWithDepartment = new();
+        MySqlUser.RoleUsers.OrderBy(x => x.RoleId).ToList().ForEach(async RoleUser =>
         {
 
             var AreaDepartment = await _unitOfWork.AreaDepartments.GetAreaDepartmentByRoleUserId(RoleUser.Id);
