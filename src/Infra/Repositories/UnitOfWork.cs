@@ -41,6 +41,18 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
+    private IGendersRepository? _Gender;
+    public IGendersRepository Genders
+    {
+        get
+        {
+            if (_Gender == null)
+                _Gender = new GendersRepository(_repoContext, _mapper);
+
+            return _Gender;
+        }
+    }
+
     public ITasksRepository? _Tasks;
     public ITasksRepository Tasks
     {
@@ -158,6 +170,8 @@ public class UnitOfWork : IUnitOfWork
             return _Usages;
         }
     }
+
+
 
     public Task<int> Save() => _repoContext.SaveChangesAsync();
 
