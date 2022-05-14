@@ -22,6 +22,7 @@ public class MapperProfile : Profile
         CreateMap<AreaInfo, AreaInfoDTO>().ReverseMap();
         CreateMap<ServantScoreDTO, ServantScore>().ReverseMap();
         CreateMap<UsageDTO, Usage>().ReverseMap();
+        CreateMap<GenderTranslation, GenderTranslationDTO>().ReverseMap();
 
 
     }

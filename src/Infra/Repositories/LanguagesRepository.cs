@@ -21,17 +21,17 @@ public class LanguagesRepository : ILanguagesRepository
         _mapper = mapper;
     }
 
-    public LanguageDTO CreateLanguage(CreateLanguageRequest request)
+    public async void CreateLanguage(CreateLanguageRequest request)
     {
 
-        var databaseModel = _context.Languages.AddAsync(new Language
+        var databaseModel = await _context.Languages.AddAsync(new Language
         {
             Title = request.Title,
             Locale = request.Locale,
             Direction = request.Direction,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         });
-
-        return _mapper.Map<LanguageDTO>(databaseModel);
 
     }
 
