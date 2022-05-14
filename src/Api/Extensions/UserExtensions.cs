@@ -8,10 +8,16 @@ public static class UserExtensions
 {
     public static bool HasRole(this UserDTO user, int roleId)
     {
+        if (user.RoleUsers is null)
+            return false;
+
         return user.RoleUsers.Select(x => x.RoleId).Contains((byte)roleId);
     }
     public static bool HasRole(this UserDTO user, string roleName)
     {
+        if (user.RoleUsers is null)
+            return false;
+
         var lowercasedRoleName = roleName.ToLower();
 
 
