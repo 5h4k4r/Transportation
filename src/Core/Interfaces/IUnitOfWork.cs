@@ -7,6 +7,8 @@ public interface IUnitOfWork : IDisposable
 {
     IUsersRepository User { get; }
     IServantsRepository Servants { get; }
+
+    IVehiclesRepository Vehicles { get; }
     ITasksRepository Tasks { get; }
     IRoleUsersRepository RoleUsers { get; }
     IAreaInfosRepository AreaInfos { get; }

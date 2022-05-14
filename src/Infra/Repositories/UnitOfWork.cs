@@ -29,6 +29,18 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
+    private IVehiclesRepository? _Vehicles;
+    public IVehiclesRepository Vehicles
+    {
+        get
+        {
+            if (_Vehicles == null)
+                _Vehicles = new VehiclesRepository(_repoContext, _mapper);
+
+            return _Vehicles;
+        }
+    }
+
     private IUsersRepository? _User;
     public IUsersRepository User
     {
