@@ -30,8 +30,8 @@ public class VehiclesController : ControllerBase
     public async Task<IActionResult> ListVehicles([FromQuery] PaginatedRequest model)
     {
         var Vehicle = await _unitOfWork.Vehicles.ListVehicle(model);
-        // var conunt = await _unitOfWork.Vehicles.ListVehicleCount(model);
-        return Ok(new PaginatedResponse<VehicleDTO>(Vehicle.Count, model, Vehicle));
+        var vehicelsCount = await _unitOfWork.Vehicles.ListVehicleCount(model);
+        return Ok(new PaginatedResponse<VehicleDTO>(vehicelsCount, model, Vehicle));
     }
 
 

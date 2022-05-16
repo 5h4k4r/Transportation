@@ -22,8 +22,13 @@ public class VehiclesRepository : IVehiclesRepository
 
     }
 
-    public async Task<List<VehicleDTO>> ListVehicle(PaginatedRequest model)
+    public Task<List<VehicleDTO>> ListVehicle(PaginatedRequest model)
     {
-        return await _context.Vehicles.AsQueryable().ProjectTo<VehicleDTO>(_mapper.ConfigurationProvider).ApplyPagination(model).ToListAsync();
+        return _context.Vehicles.AsQueryable().ProjectTo<VehicleDTO>(_mapper.ConfigurationProvider).ApplyPagination(model).ToListAsync();
+    }
+
+    public Task<int> ListVehicleCount(PaginatedRequest model)
+    {
+        return _context.Vehicles.AsQueryable().ProjectTo<VehicleDTO>(_mapper.ConfigurationProvider).CountAsync();
     }
 }

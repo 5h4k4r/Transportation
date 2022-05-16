@@ -7,4 +7,5 @@ public interface IVehiclesRepository
 {
 
     Task<List<VehicleDTO>> ListVehicle(PaginatedRequest model);
+    Task<int> ListVehicleCount(PaginatedRequest model);
 }
