@@ -18,5 +18,7 @@ namespace Core.Models
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        public VehicleDTO? Vehicle { get; set; }
+
     }
 }

@@ -19,6 +19,7 @@ services
     {
         x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         x.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+        x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 
         x.JsonSerializerOptions.PropertyNamingPolicy = SnakeCaseNamingPolicy.Default;
         x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;

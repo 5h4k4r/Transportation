@@ -3,6 +3,7 @@ using System.Net.Mime;
 using Core.Common;
 using Core.Interfaces;
 using Core.Models;
+using Core.Requests;
 using Infra.Entities.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,7 @@ public class VehiclesController : ControllerBase
     [ProducesResponseType(typeof(PaginatedResponse<VehicleDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet]
-    public async Task<IActionResult> ListVehicles([FromQuery] PaginatedRequest model)
+    public async Task<IActionResult> ListVehicles([FromQuery] ListVehiclesRequest model)
     {
         var Vehicle = await _unitOfWork.Vehicles.ListVehicle(model);
         var vehicelsCount = await _unitOfWork.Vehicles.ListVehicleCount(model);

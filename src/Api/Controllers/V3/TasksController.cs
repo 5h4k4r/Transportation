@@ -35,10 +35,6 @@ public class TasksController : ControllerBase
     [ProducesResponseType(typeof(PaginatedResponse<ListTasks>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListTasks([FromQuery] ListTasksRequest model, [FromServices] UserAuthContext authContext)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-
         var AuthId = authContext.GetAuthUser().Id;
 
         var user = await _unitOfWork.User.GetUserByAuthId(AuthId);
@@ -66,9 +62,6 @@ public class TasksController : ControllerBase
     [ProducesResponseType(typeof(PaginatedResponse<ListTasksByClient>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListTasksByClient([FromQuery] ListTasksByClientRequest model)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
         var items = await _unitOfWork.Tasks.ListTasksByClient(model);
         var count = await _unitOfWork.Tasks.CountClientTasks(model);
 
