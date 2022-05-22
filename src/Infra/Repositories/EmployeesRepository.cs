@@ -27,7 +27,7 @@ public class EmployeesRepository : IEmployeesRepository
     }
 
     public Task<EmployeeDTO?> GetEmployeeByUserId(ulong Id) =>
-         _context.Employees.Where(x => x.UserId == Id).Include(x => x.AreaInfo).ProjectTo<EmployeeDTO?>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+         _context.Employees.Where(x => x.UserId == Id).ProjectTo<EmployeeDTO?>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
 
 }
