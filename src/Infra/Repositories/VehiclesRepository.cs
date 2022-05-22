@@ -42,7 +42,7 @@ public class VehiclesRepository : IVehiclesRepository
                     query = query.Where(v => v.Title.Contains(model.FilterValue));
                     break;
 
-                case ListVehicleRequestFilterField.Vim:
+                case ListVehicleRequestFilterField.Vin:
                     query = query.Where(v => v.VehicleDetails.Any(vd => vd.Vin.Contains(model.FilterValue)));
                     break;
 
@@ -72,7 +72,7 @@ public class VehiclesRepository : IVehiclesRepository
                     query = query.Where(v => v.Title.Contains(model.FilterValue));
                     break;
 
-                case ListVehicleRequestFilterField.Vim:
+                case ListVehicleRequestFilterField.Vin:
                     query = query.Where(v => v.VehicleDetails.Any(vd => vd.Vin.Contains(model.FilterValue)));
                     break;
 
