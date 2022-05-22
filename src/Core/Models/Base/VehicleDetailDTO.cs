@@ -5,7 +5,7 @@ namespace Core.Models
 {
     public partial class VehicleDetailDTO
     {
-        public ulong Id { get; set; }
+        public ulong? Id { get; set; }
         public ulong VehicleId { get; set; }
         public string? Plaque { get; set; }
         public string? Color { get; set; }

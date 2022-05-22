@@ -12,5 +12,6 @@ namespace Core.Models
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        public virtual UserDTO User { get; set; } = null!;
     }
 }

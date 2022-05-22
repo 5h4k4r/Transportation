@@ -35,5 +35,35 @@ public class VehiclesController : ControllerBase
         return Ok(new PaginatedResponse<VehicleDTO>(vehicelsCount, model, Vehicle));
     }
 
+    [ProducesResponseType(typeof(PaginatedResponse<VehicleDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [HttpGet("/creus/{id}")]
+    public async Task<IActionResult> GetVehicleCrew(ulong id, [FromQuery] GetVehicleCrewRequest request)
+
+    {
+        List<UserDTO> Crew;
+        if (request.VehicleCrew.Equals("Owner"))
+            Crew = await _unitOfWork.Vehicles.GetVehicleOwners(id);
+        else
+            Crew = await _unitOfWork.Vehicles.GetVehicleUsers(id);
+
+
+        if (Crew is null)
+            return NotFound(BasicResponse.ResourceNotFound);
+
+
+        return Ok(Crew);
+    }
+
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public async Task<IActionResult> CreateVehicle([FromBody] CreateVehicleRequest request)
+    {
+        var vehicle = _unitOfWork.Vehicles.AddVehicle(request);
+        var vehicleDetail = _unitOfWork.Vehicles.AddVehicleDetail(request);
+        return Ok(BasicResponse.Successful);
+    }
+
 
 }
