@@ -41,10 +41,10 @@ public class AreaInfosRepository : IAreaInfosRepository
     {
         var query = _context.AreaInfos.AsQueryable();
 
-        if (model.Type is not null)
+        if (model?.Type is not null)
             query = query.Where(x => x.Type == model.Type);
 
-        if (model.Title is not null)
+        if (model?.Title is not null)
             query = query.Where(x => x.Title.Equals(model.Title));
 
         return query.ProjectTo<AreaInfoDTO>(_mapper.ConfigurationProvider).ToListAsync();

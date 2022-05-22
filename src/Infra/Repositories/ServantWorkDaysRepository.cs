@@ -194,8 +194,8 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
 
             return new ListServantsOnlineHistory
             (
-                day.FirstOrDefault()?.ServantDailyStatistic.Servant.FirstName,
-                day.FirstOrDefault()?.ServantDailyStatistic.Servant.LastName,
+                day.FirstOrDefault()?.ServantDailyStatistic?.Servant?.FirstName,
+                day.FirstOrDefault()?.ServantDailyStatistic?.Servant?.LastName,
                 day.FirstOrDefault()?.ServantDailyStatistic.ServantId ?? (ulong)0,
                 OnlineHours,
                 totalTimeInSeconds

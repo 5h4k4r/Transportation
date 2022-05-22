@@ -14,7 +14,7 @@ namespace Core.Models
         public DateTime? DeletedAt { get; set; }
 
         // public VehicleDetailDTO? VehicleDetail { get; set; }
-        public ICollection<VehicleDetailDTO> VehicleDetails { get; set; }
+        public virtual ICollection<VehicleDetailDTO>? VehicleDetails { get; set; }
 
     }
 }

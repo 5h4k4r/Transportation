@@ -5,6 +5,7 @@ using Core.Interfaces;
 using Core.Models;
 using Core.Requests;
 using Infra.Entities;
+using Infra.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
 
@@ -20,7 +21,8 @@ public class ServantsRepository : IServantsRepository
         _mapper = mapper;
     }
 
-    public Task<ServantDTO?> GetServantById(ulong UserId) => _context.Servants
+    public Task<ServantDTO?> GetServantById(ulong UserId, ulong AreaId) => _context.Servants
+    .Where(x => x.AreaId == AreaId)
     .Where(x => x.UserId == (ulong)UserId)
     .Include(x => x.ServantScores)
     .ProjectTo<ServantDTO>(_mapper.ConfigurationProvider)
@@ -109,6 +111,34 @@ public class ServantsRepository : IServantsRepository
 
         return (Tasks, DailyStatistics);
 
+
+    }
+
+    public Task<ServantDTO?> GetServantById(int Id, ulong UserAreaId)
+    {
+        return _context.Servants.Include(x => x.AreaId == UserAreaId).Where(x => x.Id == Id).ProjectTo<ServantDTO?>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
+    }
+
+    public Task<List<ServantDTO>> ListServants(ListServantRequest model, ulong UserAreaId)
+    {
+        var query = _context.Servants.Where(x => x.AreaId == UserAreaId);
+
+        if (model.SearchField is null || model.SearchValue is null)
+            return query.ProjectTo<ServantDTO>(_mapper.ConfigurationProvider).ToListAsync();
+
+
+        if (model.SearchField == "Name")
+            query = query.Where(x => x.FirstName.Contains(model.SearchValue) || x.LastName.Contains(model.SearchValue));
+
+        else if (model.SearchField == "NationalId")
+            query = query.Where(x => x.NationalId.Contains(model.SearchValue));
+
+
+        else if (model.SearchField == "PhoneNumber")
+            query = query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue));
+
+
+        return query.ProjectTo<ServantDTO>(_mapper.ConfigurationProvider).ApplyPagination(model).ToListAsync(); ;
 
     }
 

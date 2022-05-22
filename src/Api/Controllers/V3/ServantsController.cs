@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Core.Common;
+using Core.Helpers;
 using Core.Interfaces;
 using Core.Models;
 using Core.Repositories;
@@ -28,6 +29,59 @@ public class ServantsController : ControllerBase
         _unitOfWork = unitOfWork;
     }
 
+    /// <summary>
+    /// List Servants
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(PaginatedResponse<ServantDTO>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListServants(int id, [FromQuery] ListServantRequest model, [FromServices] UserAuthContext authContext)
+    {
+        var authId = authContext.GetAuthUser().Id;
+        var user = await _unitOfWork.User.GetUserByAuthId(authId);
+
+        if (user is null || !user.AreaId.HasValue)
+            return Unauthorized(BasicResponse.AuthenticationFailed);
+
+
+        // The servant we get from database
+        var servants = await _unitOfWork.Servants.ListServants(model, user.AreaId.Value);
+
+        if (servants is null)
+            return NotFound(BasicResponse.ResourceNotFound);
+
+
+        return Ok(servants);
+
+
+    }
+
+    /// <summary>
+    /// List Servants
+    /// </summary>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(PaginatedResponse<ServantDTO>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetServantById(int id, [FromServices] UserAuthContext authContext)
+    {
+        var authId = authContext.GetAuthUser().Id;
+        var user = await _unitOfWork.User.GetUserByAuthId(authId);
+
+        if (user is null || !user.AreaId.HasValue)
+            return Unauthorized(BasicResponse.AuthenticationFailed);
+
+
+        // The servant we get from database
+        var servant = await _unitOfWork.Servants.GetServantById((ulong)id, user.AreaId.Value);
+
+        if (servant is null)
+            return NotFound(BasicResponse.ResourceNotFound);
+
+        return Ok(servant);
+
+
+    }
+
 
     /// <summary>
     /// Gets a servant's performance
@@ -38,10 +92,18 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
 
 
-    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model)
+    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model, [FromServices] UserAuthContext authContext)
     {
+
+        var authId = authContext.GetAuthUser().Id;
+        var user = await _unitOfWork.User.GetUserByAuthId(authId);
+
+        if (user is null || !user.AreaId.HasValue)
+            return Unauthorized(BasicResponse.AuthenticationFailed);
+
+
         // The servant we get from database
-        var databaseServant = await _unitOfWork.Servants.GetServantById((ulong)id);
+        var databaseServant = await _unitOfWork.Servants.GetServantById((ulong)id, user.AreaId.Value);
 
         if (databaseServant == null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(ServantPerformed), id));
@@ -81,10 +143,17 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(PaginatedResponse<ListTasks>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetServantOnlinePeriods(int id, [FromQuery] GetServantOnlinePeriodsRequest model)
+    public async Task<IActionResult> GetServantOnlinePeriods(int id, [FromQuery] GetServantOnlinePeriodsRequest model, [FromServices] UserAuthContext authContext)
     {
+        var authId = authContext.GetAuthUser().Id;
+        var user = await _unitOfWork.User.GetUserByAuthId(authId);
 
-        var servant = await _unitOfWork.Servants.GetServantById((ulong)id);
+        if (user is null || !user.AreaId.HasValue)
+            return Unauthorized(BasicResponse.AuthenticationFailed);
+
+
+        // The servant we get from database
+        var servant = await _unitOfWork.Servants.GetServantById((ulong)id, user.AreaId.Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), (int)id));
