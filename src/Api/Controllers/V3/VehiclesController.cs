@@ -35,9 +35,9 @@ public class VehiclesController : ControllerBase
         return Ok(new PaginatedResponse<VehicleDTO>(vehicelsCount, model, Vehicle));
     }
 
-    [ProducesResponseType(typeof(PaginatedResponse<VehicleDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedResponse<UserDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    [HttpGet("/creus/{id}")]
+    [HttpGet("crews/{id}")]
     public async Task<IActionResult> GetVehicleCrew(ulong id, [FromQuery] GetVehicleCrewRequest request)
 
     {
