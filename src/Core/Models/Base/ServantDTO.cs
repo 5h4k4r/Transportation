@@ -20,4 +20,6 @@ public partial class ServantDTO
     public DateTime? DeletedAt { get; set; }
     public IEnumerable<ServantScoreDTO>? ServantScores { get; set; }
 
+    public virtual UserDTO User { get; set; } = null!;
+
 }

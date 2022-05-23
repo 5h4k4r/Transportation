@@ -35,7 +35,7 @@ public class ServantsController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PaginatedResponse<ServantDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListServants(int id, [FromQuery] ListServantRequest model, [FromServices] UserAuthContext authContext)
+    public async Task<IActionResult> ListServants([FromQuery] ListServantRequest model, [FromServices] UserAuthContext authContext)
     {
         var authId = authContext.GetAuthUser().Id;
         var user = await _unitOfWork.User.GetUserByAuthId(authId);
@@ -45,13 +45,14 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var servants = await _unitOfWork.Servants.ListServants(model, user.AreaId.Value);
+        var items = await _unitOfWork.Servants.ListServants(model, user.AreaId.Value);
+        var count = await _unitOfWork.Servants.ListServantsCount(model, user.AreaId.Value);
 
-        if (servants is null)
+        if (items is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
 
-        return Ok(servants);
+        return Ok(new PaginatedResponse<ServantDTO>(count, model, items));
 
 
     }
@@ -72,7 +73,7 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantById((ulong)id, user.AreaId.Value);
+        var servant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceNotFound);
@@ -103,7 +104,7 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var databaseServant = await _unitOfWork.Servants.GetServantById((ulong)id, user.AreaId.Value);
+        var databaseServant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
 
         if (databaseServant == null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(ServantPerformed), id));
@@ -153,7 +154,7 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantById((ulong)id, user.AreaId.Value);
+        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), (int)id));
