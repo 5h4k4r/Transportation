@@ -1,5 +1,6 @@
 
 using System.Net.Mime;
+using AutoMapper;
 using Core.Common;
 using Core.Interfaces;
 using Core.Models;
@@ -19,10 +20,12 @@ namespace Api.Controllers;
 public class VehiclesController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public VehiclesController(IUnitOfWork unitOfWork)
+    public VehiclesController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     [ProducesResponseType(typeof(PaginatedResponse<VehicleDTO>), StatusCodes.Status200OK)]
@@ -35,7 +38,20 @@ public class VehiclesController : ControllerBase
         return Ok(new PaginatedResponse<VehicleDTO>(vehicelsCount, model, Vehicle));
     }
 
-    [ProducesResponseType(typeof(PaginatedResponse<UserDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VehicleDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetVehicle(ulong id)
+    {
+        var Vehicle = _unitOfWork.Vehicles.GetVehicleById(id);
+        if (Vehicle is null)
+            return NotFound(BasicResponse.ResourceNotFound);
+
+        return Ok(Vehicle);
+
+    }
+
+    [ProducesResponseType(typeof(UserDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet("crews/{id}")]
     public async Task<IActionResult> GetVehicleCrew(ulong id, [FromQuery] GetVehicleCrewRequest request)
@@ -55,14 +71,22 @@ public class VehiclesController : ControllerBase
         return Ok(Crew);
     }
 
-    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VehicleDetailDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<IActionResult> CreateVehicle([FromBody] CreateVehicleRequest request)
     {
-        var vehicle = _unitOfWork.Vehicles.AddVehicle(request);
-        var vehicleDetail = _unitOfWork.Vehicles.AddVehicleDetail(request);
-        return Ok(BasicResponse.Successful);
+
+        var newVehicle = _mapper.Map<VehicleDTO>(request);
+
+        var newVehicleDetail = _mapper.Map<VehicleDetailDTO>(request);
+        newVehicleDetail.Vehicle = newVehicle;
+
+        _unitOfWork.Vehicles.AddVehicleDetail(newVehicleDetail);
+
+        await _unitOfWork.Save();
+
+        return Ok(newVehicleDetail);
     }
 
 
