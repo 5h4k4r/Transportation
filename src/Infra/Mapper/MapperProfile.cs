@@ -1,5 +1,6 @@
 using AutoMapper;
 using Core.Models;
+using Core.Requests;
 using Infra.Entities;
 namespace Infra.Mapper;
 public class MapperProfile : Profile
@@ -10,6 +11,8 @@ public class MapperProfile : Profile
         CreateMap<Request, RequestDTO>().ReverseMap();
         CreateMap<Servant, ServantDTO>().ReverseMap();
         CreateMap<Vehicle, VehicleDTO>().ReverseMap();
+        CreateMap<Vehicle, CreateVehicleRequest>().ReverseMap();
+        CreateMap<VehicleDetail, CreateVehicleRequest>().ReverseMap();
         CreateMap<VehicleDetail, VehicleDetailDTO>().ReverseMap();
         CreateMap<Member, MemberDTO>().ReverseMap();
         CreateMap<AreaDepartmentDTO, AreaDepartment>().ReverseMap();
@@ -25,6 +28,7 @@ public class MapperProfile : Profile
         CreateMap<ServantScoreDTO, ServantScore>().ReverseMap();
         CreateMap<UsageDTO, Usage>().ReverseMap();
         CreateMap<GenderTranslation, GenderTranslationDTO>().ReverseMap();
+        CreateMap<VehicleOwner, VehicleOwnerDTO>().ReverseMap();
 
 
     }
