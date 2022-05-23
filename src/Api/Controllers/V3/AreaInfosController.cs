@@ -50,7 +50,6 @@ public class AreaInfosController : ControllerBase
 
 
             // TODO: this can be done with a join with area_infos table if area_id in employee table was foreign key
-            // Done!
 
             var employee = await _unitOfWork.Employees.GetEmployeeByUserId(MySqlUser.Id);
 
