@@ -1,5 +1,3 @@
-using Core.Models;
-
 namespace Core.Auth.Models;
 
 public class AuthInfo
@@ -23,12 +21,12 @@ public class AuthInfo
 public class Department
 {
     public ulong Id { get; set; }
-    public Role? Role { get; set; }
+    public DepartmentRole? Role { get; set; }
     public string Title { get; set; } = string.Empty;
 
 }
 
-public class Role
+public class DepartmentRole
 {
     public ulong? Id { get; set; }
     public IEnumerable<Permission> Permissions { get; set; } = Array.Empty<Permission>();

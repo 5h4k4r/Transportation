@@ -130,7 +130,7 @@ public class AuthController : ControllerBase
             {
                 Id = (ulong)Department.Id,
                 Title = Department.Title ?? "",
-                Role = new Core.Auth.Models.Role
+                Role = new DepartmentRole
                 {
                     Id = CurrentRole?.Id,
                     Title = CurrentRole?.Title,

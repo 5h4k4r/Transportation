@@ -20,6 +20,7 @@ public class ListServantRequest : IPagingOptions, ISortOptions, IValidatableObje
     [AllowedValues("Address", "AreaId", "CreatedAt", "Id", "UserId", "BankId", "Certificate", "NationalId", "FirstName", "LastName", "GenderId")]
     public string? SortField { get; set; }
     public bool? SortDescending { get; set; } = false;
+    public bool IncompleteOnly { get; set; } = false;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

@@ -120,30 +120,27 @@ public class ServantsRepository : IServantsRepository
     }
     public Task<List<ServantDTO>> ListServants(ListServantRequest model, ulong UserAreaId)
     {
-        var query = _context.Servants.Where(x => x.AreaId == UserAreaId).ProjectTo<ServantDTO>(_mapper.ConfigurationProvider).AsNoTracking();
+        var query = _context.Servants.Where(x => x.AreaId == UserAreaId);
+        if (model.IncompleteOnly)
+        {
+            return query
+            .Where(x =>
+            x.Certificate == null ||
+            x.BankId == null ||
+            x.GenderId == null ||
+            x.Address == null
+            )
+            .Join(
+                _context.Documents.Where(x => x.ModelType == "App\\Models\\Servant"),
+                Servants => (ulong)Servants.Id,
+                Documents => Documents.ModelId,
+                (Servants, Documents) => new { Servants, Documents }
+            )
+            .Select(x => x.Servants)
+            .ProjectTo<ServantDTO>(_mapper.ConfigurationProvider)
+            .ToListAsync();
 
-        query = CheckForSearchField(query, model);
-
-
-        return query
-                    .Select(x => new ServantDTO
-                    {
-                        Address = x.Address,
-                        AreaId = x.AreaId,
-                        CreatedAt = x.CreatedAt,
-                        Id = x.Id,
-                        UserId = x.UserId,
-                        BankId = x.BankId,
-                        Certificate = x.Certificate,
-                        NationalId = x.NationalId,
-                        FirstName = x.FirstName,
-                        LastName = x.LastName,
-                        GenderId = x.GenderId,
-                        UpdatedAt = x.UpdatedAt,
-                    })
-                    .ApplySorting(model)
-                    .ApplyPagination(model)
-                    .ToListAsync();
+        }
 
     }
     public Task<int> ListServantsCount(ListServantRequest model, ulong UserAreaId)
@@ -175,6 +172,12 @@ public class ServantsRepository : IServantsRepository
 
         return query;
 
+    }
+
+    public async void CreateServant(ServantDTO servant)
+    {
+        var newServant = _mapper.Map<Servant>(servant);
+        await _context.Servants.AddAsync(newServant);
     }
 
 }
