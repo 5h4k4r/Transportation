@@ -122,6 +122,25 @@ public class ServantsRepository : IServantsRepository
     public Task<List<ServantDTO>> ListServants(ListServantRequest model, ulong UserAreaId)
     {
         var query = _context.Servants.Where(x => x.AreaId == UserAreaId);
+        if (model.IncompleteOnly)
+        {
+            return query
+            .Where(x =>
+            x.Certificate == null ||
+            x.BankId == null ||
+            x.GenderId == null ||
+            x.Address == null
+            )
+            .Join(
+                _context.Documents.Where(x => x.ModelType == "App\\Models\\Servant"),
+                Servants => (ulong)Servants.Id,
+                Documents => Documents.ModelId,
+                (Servants, Documents) => new { Servants, Documents }
+            )
+            .Select(x => x.Servants)
+            .ProjectTo<ServantDTO>(_mapper.ConfigurationProvider)
+            .ToListAsync();
+        }
 
         if (model.SearchField is null || model.SearchValue is null)
             return query.ProjectTo<ServantDTO>(_mapper.ConfigurationProvider).ToListAsync();
@@ -141,5 +160,6 @@ public class ServantsRepository : IServantsRepository
         return query.ProjectTo<ServantDTO>(_mapper.ConfigurationProvider).ApplyPagination(model).ToListAsync(); ;
 
     }
+
 
 }
