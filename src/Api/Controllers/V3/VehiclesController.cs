@@ -76,6 +76,10 @@ public class VehiclesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateVehicle([FromBody] CreateVehicleRequest request)
     {
+        if (request is null)
+        {
+            return BadRequest();
+        }
 
         var newVehicle = _mapper.Map<VehicleDTO>(request);
 

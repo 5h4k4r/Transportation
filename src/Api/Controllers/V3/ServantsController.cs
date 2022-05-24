@@ -1,4 +1,5 @@
 using System.Net.Mime;
+using AutoMapper;
 using Core.Common;
 using Core.Helpers;
 using Core.Interfaces;
@@ -21,10 +22,12 @@ namespace Api.Controllers;
 public class ServantsController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public ServantsController(IUnitOfWork unitOfWork)
+    public ServantsController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     /// <summary>
@@ -195,6 +198,18 @@ public class ServantsController : ControllerBase
 
 
         return Ok(new PaginatedResponse<ListServantsOnlineHistory>(count, model, items));
+    }
+
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [HttpPost]
+    public IActionResult CreateServant([FromBody] CreateServantRequest request)
+    {
+        var servant = _mapper.Map<ServantDTO>(request);
+        _unitOfWork.Servants.CreateServant(servant);
+
+        return Ok(BasicResponse.Successful);
+
     }
 
 }
