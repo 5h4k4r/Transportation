@@ -16,6 +16,7 @@ public class ListServantRequest : IPagingOptions, IValidatableObject
 
     [Range(0, Constants.MaxPaginationLimit)]
     public int? Limit { get; set; } = Constants.DefaultPaginationLimit;
+    public bool IncompleteOnly { get; set; } = false;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

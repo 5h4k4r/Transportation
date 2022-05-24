@@ -1,5 +1,3 @@
-using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Core.Common;
 using Core.Helpers;
