@@ -13,14 +13,14 @@ namespace Infra.Repositories;
 
 public class ServantsRepository : IServantsRepository
 {
-    private readonly TransportationContext _context;
+    private readonly TransportationContext _Context;
     private readonly IMapper _mapper;
     public ServantsRepository(TransportationContext context, IMapper mapper)
     {
-        _context = context;
+        _Context = context;
         _mapper = mapper;
     }
-    public Task<ServantDto?> GetServantByUserId(ulong userId, ulong areaId) => _context.Servants
+    public Task<ServantDto?> GetServantByUserId(ulong userId, ulong areaId) => _Context.Servants
     .Where(x => x.AreaId == areaId)
     .Where(x => x.UserId == userId)
     .Include(x => x.ServantScores)
@@ -31,8 +31,8 @@ public class ServantsRepository : IServantsRepository
     public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int servantId, ulong servantUserId)
     {
 
-        var (tasks, dailyStatistics) = await FilterTasksAndStatistics(servantUserId, model);
-        await _context.ServantScores.Where(x => x.ServantId == (ulong)servantId).Select(x => x.Score).ToListAsync();
+        var (_, dailyStatistics) = await FilterTasksAndStatistics(servantUserId, model);
+        await _Context.ServantScores.Where(x => x.ServantId == (ulong)servantId).Select(x => x.Score).ToListAsync();
 
         ServantPerformance servantPerformance = new()
         {
@@ -54,8 +54,8 @@ public class ServantsRepository : IServantsRepository
 
     private async Task<(List<Entities.Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(ulong servantUserId, ServantPerformanceRequest model)
     {
-        var tasksQuery = _context.Tasks.Where(x => x.ServantId == servantUserId);
-        var dailyTasksQuery = _context.ServantDailyStatistics.Where(x => x.ServantId == servantUserId);
+        var tasksQuery = _Context.Tasks.Where(x => x.ServantId == servantUserId);
+        var dailyTasksQuery = _Context.ServantDailyStatistics.Where(x => x.ServantId == servantUserId);
 
 
         List<Entities.Task> tasks = new();
@@ -72,7 +72,7 @@ public class ServantsRepository : IServantsRepository
 
             dailyStatistics = await dailyTasksQuery
             .Where(x => x.Day != null)
-            .Where(x => x.Day != null && x.Day.Date == DateOnly.FromDateTime(today))
+            .Where(x => x.Day!.Date == DateOnly.FromDateTime(today))
             .ToListAsync();
 
         }
@@ -86,8 +86,8 @@ public class ServantsRepository : IServantsRepository
             dailyStatistics =
                 await dailyTasksQuery
                 .Where(x => x.Day != null)
-                .Where(x => x.Day != null && x.Day.Date >= DateOnly.FromDateTime(model.StartAt ?? today.StartOfDay()))
-                .Where(x => x.Day != null && x.Day.Date <= DateOnly.FromDateTime(today.EndOfDay()))
+                .Where(x => x.Day!.Date >= DateOnly.FromDateTime(model.StartAt ?? today.StartOfDay()))
+                .Where(x => x.Day!.Date <= DateOnly.FromDateTime(today.EndOfDay()))
                 .ToListAsync()
                 ;
 
@@ -114,11 +114,11 @@ public class ServantsRepository : IServantsRepository
     }
     public Task<ServantDto?> GetServantById(int id, ulong areaId)
     {
-        return _context.Servants.Where(x => x.AreaId == areaId).Where(x => x.Id == id).ProjectTo<ServantDto?>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
+        return _Context.Servants.Where(x => x.AreaId == areaId).Where(x => x.Id == id).ProjectTo<ServantDto?>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
     }
     public Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId)
     {
-        var query = _context.Servants.Where(x => x.AreaId == userAreaId).ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
+        var query = _Context.Servants.Where(x => x.AreaId == userAreaId).ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
 
         query = CheckForSearchField(query, model);
 
@@ -146,7 +146,7 @@ public class ServantsRepository : IServantsRepository
     }
     public Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId)
     {
-        var query = _context.Servants.Where(x => x.AreaId == userAreaId).ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
+        var query = _Context.Servants.Where(x => x.AreaId == userAreaId).ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
 
         query = CheckForSearchField(query, model);
 
@@ -161,23 +161,19 @@ public class ServantsRepository : IServantsRepository
         if (model.SearchField is null || model.SearchValue is null)
             return query;
 
-        if (model.SearchField == "Name")
-            return query.Where(x => x.FirstName.Contains(model.SearchValue) || x.LastName.Contains(model.SearchValue));
-
-        else if (model.SearchField == "NationalId")
-            return query.Where(x => x.NationalId.Contains(model.SearchValue));
-
-
-        else if (model.SearchField == "PhoneNumber")
-            return query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue));
-
-        return query.ProjectTo<ServantDto>(_mapper.ConfigurationProvider);
-
+        return model.SearchField switch
+        {
+            "Name" => query.Where(
+                x => x.FirstName.Contains(model.SearchValue) || x.LastName.Contains(model.SearchValue)),
+            "NationalId" => query.Where(x => x.NationalId.Contains(model.SearchValue)),
+            "PhoneNumber" => query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue)),
+            _ => query.ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
+        };
     }
 
     public async void CreateServant(ServantDto servant)
     {
         var newServant = _mapper.Map<Servant>(servant);
-        await _context.Servants.AddAsync(newServant);
+        await _Context.Servants.AddAsync(newServant);
     }
 }
