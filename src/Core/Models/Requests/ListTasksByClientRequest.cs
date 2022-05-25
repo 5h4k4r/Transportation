@@ -31,10 +31,7 @@ public class ListTasksByClientRequest : IPagingOptions, ISortOptions, IValidatab
     )]
     public string? SortField
     {
-        get
-        {
-            return _SortField;
-        }
+        get => _SortField;
         set
         {
             // if value contains 'Client' then change it to Member to match the database
