@@ -57,7 +57,10 @@ public class AreaInfosController : ControllerBase
             if (employee is null || !employee.AreaId.HasValue)
                 return Forbid();
 
-            var areaInfo = employee.AreaInfo;
+            var areaInfo = await _unitOfWork.AreaInfos.GetAreaInfoById(employee.AreaId.Value);
+
+            if (areaInfo is not null)
+                areaList.Add(areaInfo);
 
             if (areaInfo is not null)
                 areaList = new List<AreaInfoDTO> { areaInfo };
