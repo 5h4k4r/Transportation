@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class MigrationDTO
+    public class MigrationDto
     {
         public uint Id { get; set; }
         public string Migration1 { get; set; } = null!;

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Language
+    public sealed class Language
     {
         public Language()
         {
@@ -30,18 +27,18 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<BaseTypeTranslation> BaseTypeTranslations { get; set; }
-        public virtual ICollection<CategoryTranslation> CategoryTranslations { get; set; }
-        public virtual ICollection<ClientFile> ClientFiles { get; set; }
-        public virtual ICollection<DefaultValue> DefaultValues { get; set; }
-        public virtual ICollection<GenderTranslation> GenderTranslations { get; set; }
-        public virtual ICollection<PersonTypeTranslation> PersonTypeTranslations { get; set; }
-        public virtual ICollection<Segment> Segments { get; set; }
-        public virtual ICollection<ServiceAreaTypeTranslation> ServiceAreaTypeTranslations { get; set; }
-        public virtual ICollection<ServiceTranslation> ServiceTranslations { get; set; }
-        public virtual ICollection<ShippingTranslation> ShippingTranslations { get; set; }
-        public virtual ICollection<SpecificTranslation> SpecificTranslations { get; set; }
-        public virtual ICollection<UnitTranslation> UnitTranslations { get; set; }
-        public virtual ICollection<UsageTranslation> UsageTranslations { get; set; }
+        public ICollection<BaseTypeTranslation> BaseTypeTranslations { get; set; }
+        public ICollection<CategoryTranslation> CategoryTranslations { get; set; }
+        public ICollection<ClientFile> ClientFiles { get; set; }
+        public ICollection<DefaultValue> DefaultValues { get; set; }
+        public ICollection<GenderTranslation> GenderTranslations { get; set; }
+        public ICollection<PersonTypeTranslation> PersonTypeTranslations { get; set; }
+        public ICollection<Segment> Segments { get; set; }
+        public ICollection<ServiceAreaTypeTranslation> ServiceAreaTypeTranslations { get; set; }
+        public ICollection<ServiceTranslation> ServiceTranslations { get; set; }
+        public ICollection<ShippingTranslation> ShippingTranslations { get; set; }
+        public ICollection<SpecificTranslation> SpecificTranslations { get; set; }
+        public ICollection<UnitTranslation> UnitTranslations { get; set; }
+        public ICollection<UsageTranslation> UsageTranslations { get; set; }
     }
 }

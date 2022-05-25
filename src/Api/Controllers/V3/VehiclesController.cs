@@ -1,15 +1,13 @@
-
 using System.Net.Mime;
 using AutoMapper;
-using Core.Common;
 using Core.Interfaces;
-using Core.Models;
-using Core.Requests;
-using Infra.Entities.Common;
+using Core.Models.Base;
+using Core.Models.Common;
+using Core.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers;
+namespace Api.Controllers.V3;
 
 [ApiController]
 [Produces(MediaTypeNames.Application.Json)]
@@ -28,62 +26,57 @@ public class VehiclesController : ControllerBase
         _mapper = mapper;
     }
 
-    [ProducesResponseType(typeof(PaginatedResponse<VehicleDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedResponse<VehicleDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet]
     public async Task<IActionResult> ListVehicles([FromQuery] ListVehiclesRequest model)
     {
-        var Vehicle = await _unitOfWork.Vehicles.ListVehicle(model);
+        var vehicle = await _unitOfWork.Vehicles.ListVehicle(model);
         var vehicelsCount = await _unitOfWork.Vehicles.ListVehicleCount(model);
-        return Ok(new PaginatedResponse<VehicleDTO>(vehicelsCount, model, Vehicle));
+        return Ok(new PaginatedResponse<VehicleDto>(vehicelsCount, model, vehicle));
     }
 
-    [ProducesResponseType(typeof(VehicleDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VehicleDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetVehicle(ulong id)
     {
-        var Vehicle = _unitOfWork.Vehicles.GetVehicleById(id);
-        if (Vehicle is null)
+        var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
+        if (vehicle is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
-        return Ok(Vehicle);
+        return Ok(vehicle);
 
     }
 
-    [ProducesResponseType(typeof(UserDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet("crews/{id}")]
     public async Task<IActionResult> GetVehicleCrew(ulong id, [FromQuery] GetVehicleCrewRequest request)
 
     {
-        List<UserDTO> Crew;
-        if (request.VehicleCrew.Equals("Owner"))
-            Crew = await _unitOfWork.Vehicles.GetVehicleOwners(id);
+        List<UserDto> crew;
+        if (request.VehicleCrew.Equals(VehicleCrew.Owner))
+            crew = await _unitOfWork.Vehicles.GetVehicleOwners(id);
         else
-            Crew = await _unitOfWork.Vehicles.GetVehicleUsers(id);
+            crew = await _unitOfWork.Vehicles.GetVehicleUsers(id);
 
 
-        if (Crew is null)
+        if (crew.Count == 0)
             return NotFound(BasicResponse.ResourceNotFound);
 
 
-        return Ok(Crew);
+        return Ok(crew);
     }
 
-    [ProducesResponseType(typeof(VehicleDetailDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VehicleDetailDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
     public async Task<IActionResult> CreateVehicle([FromBody] CreateVehicleRequest request)
     {
-        if (request is null)
-        {
-            return BadRequest();
-        }
+        var newVehicle = _mapper.Map<VehicleDto>(request);
 
-        var newVehicle = _mapper.Map<VehicleDTO>(request);
-
-        var newVehicleDetail = _mapper.Map<VehicleDetailDTO>(request);
+        var newVehicleDetail = _mapper.Map<VehicleDetailDto>(request);
         newVehicleDetail.Vehicle = newVehicle;
 
         _unitOfWork.Vehicles.AddVehicleDetail(newVehicleDetail);

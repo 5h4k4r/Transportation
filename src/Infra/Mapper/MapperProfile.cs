@@ -1,35 +1,35 @@
 using AutoMapper;
-using Core.Models;
-using Core.Requests;
+using Core.Models.Base;
+using Core.Models.Requests;
 using Infra.Entities;
 namespace Infra.Mapper;
 public class MapperProfile : Profile
 {
     public MapperProfile()
     {
-        CreateMap<UserDTO, User>().ReverseMap();
-        CreateMap<Request, RequestDTO>().ReverseMap();
-        CreateMap<Servant, ServantDTO>().ReverseMap();
-        CreateMap<Vehicle, VehicleDTO>().ReverseMap();
-        CreateMap<VehicleDetailDTO, CreateVehicleRequest>().ReverseMap();
-        CreateMap<VehicleDTO, CreateVehicleRequest>().ReverseMap();
-        CreateMap<ServantDTO, CreateServantRequest>().ReverseMap();
-        CreateMap<VehicleDetail, VehicleDetailDTO>().ReverseMap();
-        CreateMap<Member, MemberDTO>().ReverseMap();
-        CreateMap<AreaDepartmentDTO, AreaDepartment>().ReverseMap();
-        CreateMap<Department, DepartmentDTO>().ReverseMap();
-        CreateMap<Employee, EmployeeDTO>().ReverseMap();
-        CreateMap<Language, LanguageDTO>().ReverseMap();
-        CreateMap<Role, RoleDTO>().ReverseMap();
-        CreateMap<RoleUserDTO, RoleUser>().ReverseMap();
-        CreateMap<ServantWorkDay, ServantWorkDayDTO>().ReverseMap();
-        CreateMap<Request, RequestDTO>().ReverseMap();
-        CreateMap<Member, MemberDTO>().ReverseMap();
-        CreateMap<AreaInfo, AreaInfoDTO>().ReverseMap();
-        CreateMap<ServantScoreDTO, ServantScore>().ReverseMap();
-        CreateMap<UsageDTO, Usage>().ReverseMap();
-        CreateMap<GenderTranslation, GenderTranslationDTO>().ReverseMap();
-        CreateMap<VehicleOwner, VehicleOwnerDTO>().ReverseMap();
+        CreateMap<UserDto, User>().ReverseMap();
+        CreateMap<Request, RequestDto>().ReverseMap();
+        CreateMap<Servant, ServantDto>().ReverseMap();
+        CreateMap<Vehicle, VehicleDto>().ReverseMap();
+        CreateMap<VehicleDetailDto, CreateVehicleRequest>().ReverseMap();
+        CreateMap<VehicleDto, CreateVehicleRequest>().ReverseMap();
+        CreateMap<ServantDto, CreateServantRequest>().ReverseMap();
+        CreateMap<VehicleDetail, VehicleDetailDto>().ReverseMap();
+        CreateMap<Member, MemberDto>().ReverseMap();
+        CreateMap<AreaDepartmentDto, AreaDepartment>().ReverseMap();
+        CreateMap<Department, DepartmentDto>().ReverseMap();
+        CreateMap<Employee, EmployeeDto>().ReverseMap();
+        CreateMap<Language, LanguageDto>().ReverseMap();
+        CreateMap<Role, RoleDto>().ReverseMap();
+        CreateMap<RoleUserDto, RoleUser>().ReverseMap();
+        CreateMap<ServantWorkDay, ServantWorkDayDto>().ReverseMap();
+        CreateMap<Request, RequestDto>().ReverseMap();
+        CreateMap<Member, MemberDto>().ReverseMap();
+        CreateMap<AreaInfo, AreaInfoDto>().ReverseMap();
+        CreateMap<ServantScoreDto, ServantScore>().ReverseMap();
+        CreateMap<UsageDto, Usage>().ReverseMap();
+        CreateMap<GenderTranslation, GenderTranslationDto>().ReverseMap();
+        CreateMap<VehicleOwner, VehicleOwnerDto>().ReverseMap();
 
 
     }

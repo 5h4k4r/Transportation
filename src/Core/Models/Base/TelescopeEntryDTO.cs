@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class TelescopeEntryDTO
+    public class TelescopeEntryDto
     {
         public ulong Sequence { get; set; }
         public Guid Uuid { get; set; }

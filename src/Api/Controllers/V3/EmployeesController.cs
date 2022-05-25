@@ -1,14 +1,13 @@
 using System.Net.Mime;
-using Core.Helpers;
 using Core.Interfaces;
-using Core.Requests;
-using Infra.Entities;
-using Infra.Entities.Common;
+using Core.Models.Common;
+using Core.Models.Requests;
+using Infra.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 
-namespace Api.Controllers;
+namespace Api.Controllers.V3;
 
 [ApiController]
 [Authorize]
@@ -38,10 +37,10 @@ public class EmployeesController : ControllerBase
 
         model.UserId = user.Id;
 
-        var Employee = await _unitOfWork.Employees.GetEmployeeByUserId(model.UserId);
+        var employee = await _unitOfWork.Employees.GetEmployeeByUserId(model.UserId);
 
-        if (Employee is null)
-            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Employee), (int)model.UserId));
+        if (employee is null)
+            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(employee), (int)model.UserId));
 
 
         try

@@ -1,4 +1,4 @@
-namespace Core.Repositories;
+namespace Core.Models.Repositories;
 
 
 public class ListTasks

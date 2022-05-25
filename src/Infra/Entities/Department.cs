@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Department
+    public sealed class Department
     {
         public Department()
         {
@@ -17,7 +14,7 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<AreaDepartment> AreaDepartments { get; set; }
-        public virtual ICollection<DepartmentRoleUser> DepartmentRoleUsers { get; set; }
+        public ICollection<AreaDepartment> AreaDepartments { get; set; }
+        public ICollection<DepartmentRoleUser> DepartmentRoleUsers { get; set; }
     }
 }

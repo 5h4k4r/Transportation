@@ -1,4 +1,4 @@
-namespace Core.Common;
+namespace Core.Models.Common;
 
 public enum ErrorCode
 {

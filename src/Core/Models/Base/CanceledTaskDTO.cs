@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Core.Models.Base;
 
-namespace Core.Models;
-
-    public partial class CanceledTaskDTO
+    public class CanceledTaskDto
     {
         public ulong Id { get; set; }
         public ulong TaskId { get; set; }

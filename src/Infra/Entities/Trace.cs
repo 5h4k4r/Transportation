@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Trace
+    public sealed class Trace
     {
         public Trace()
         {
@@ -20,6 +17,6 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual ICollection<Location> Locations { get; set; }
+        public ICollection<Location> Locations { get; set; }
     }
 }

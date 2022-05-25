@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 using Core.Interfaces;
 
-namespace Core.Requests;
+namespace Core.Models.Requests;
 
 public class ListVehiclesRequest : IPagingOptions, IValidatableObject
 {

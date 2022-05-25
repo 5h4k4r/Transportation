@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Servant
+    public sealed class Servant
     {
         public Servant()
         {
@@ -22,16 +19,16 @@ namespace Infra.Entities
         public string? BankId { get; set; }
         public uint AreaId { get; set; }
         public byte? GenderId { get; set; }
-        public string Address { get; set; } = null!;
+        public string? Address { get; set; } 
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual Gender? Gender { get; set; }
-        public virtual User User { get; set; } = null!;
-        public virtual ICollection<ServantDailyStatistic> ServantDailyStatistics { get; set; }
-        public virtual ICollection<ServantScore> ServantScores { get; set; }
-        public virtual ICollection<ServantStatus> ServantStatuses { get; set; }
-        public virtual ICollection<Task> Tasks { get; set; }
+        public Gender? Gender { get; set; }
+        public User User { get; set; } = null!;
+        public ICollection<ServantDailyStatistic> ServantDailyStatistics { get; set; }
+        public ICollection<ServantScore> ServantScores { get; set; }
+        public ICollection<ServantStatus> ServantStatuses { get; set; }
+        public ICollection<Task> Tasks { get; set; }
     }
 }

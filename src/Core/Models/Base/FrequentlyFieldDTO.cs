@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class FrequentlyFieldDTO
+﻿namespace Core.Models.Base;
+    public class FrequentlyFieldDto
     {
         public ulong Id { get; set; }
         public string Type { get; set; } = null!;

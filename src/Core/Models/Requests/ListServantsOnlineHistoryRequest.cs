@@ -1,8 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Core;
 using Core.Interfaces;
 
-namespace Core.Requests;
+namespace Core.Models.Requests;
 
 
 public class ListServantsOnlineHistoryRequest : IPagingOptions, IValidatableObject

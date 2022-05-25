@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class GenderTranslationDTO
+﻿namespace Core.Models.Base;
+    public class GenderTranslationDto
     {
         public ulong Id { get; set; }
         public byte GenderId { get; set; }

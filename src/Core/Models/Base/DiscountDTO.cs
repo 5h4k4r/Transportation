@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class DiscountDTO
+﻿namespace Core.Models.Base;
+    public class DiscountDto
     {
         public ulong Id { get; set; }
         public ulong ServiceAreaTypeId { get; set; }

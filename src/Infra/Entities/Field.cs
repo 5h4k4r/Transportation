@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Field
+    public sealed class Field
     {
         public Field()
         {
@@ -16,8 +13,8 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual Label Label { get; set; } = null!;
-        public virtual Segment Segment { get; set; } = null!;
-        public virtual ICollection<RequestRequirement> RequestRequirements { get; set; }
+        public Label Label { get; set; } = null!;
+        public Segment Segment { get; set; } = null!;
+        public ICollection<RequestRequirement> RequestRequirements { get; set; }
     }
 }

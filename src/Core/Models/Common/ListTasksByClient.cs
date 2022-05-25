@@ -1,12 +1,11 @@
-using Core.Models;
-using Core.Repositories;
-using Infra.Responses;
+using Core.Models.Base;
+using Core.Models.Repositories;
 
-namespace Infra.Responses;
+namespace Core.Models.Common;
 
 public class ListTasksByClient
 {
     public TaskResponse? Task { get; set; }
-    public MemberDTO? Client { get; set; }
+    public MemberDto? Client { get; set; }
 
 }

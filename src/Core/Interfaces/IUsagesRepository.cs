@@ -1,10 +1,11 @@
-using Core.Models;
+using Core.Models.Base;
+using Core.Models.Requests;
 
-namespace Core.Repositories;
+namespace Core.Interfaces;
 
 public interface IUsagesRepository
 {
-    Task<List<UsageDTO>> ListUsages();
+    Task<List<UsageDto>> ListUsages();
     Task CreateUsage(CreateUsageRequest model);
-    Task<UsageDTO?> GetUsageById(ulong Id);
+    Task<UsageDto?> GetUsageById(ulong id);
 }

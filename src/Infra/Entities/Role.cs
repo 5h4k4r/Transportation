@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Role
+    public sealed class Role
     {
         public Role()
         {
@@ -25,11 +22,11 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<Account> Accounts { get; set; }
-        public virtual ICollection<CanceledTask> CanceledTasks { get; set; }
-        public virtual ICollection<Gift> Gifts { get; set; }
-        public virtual ICollection<Offer> Offers { get; set; }
-        public virtual ICollection<RoleUser> RoleUsers { get; set; }
-        public virtual ICollection<UserArea> UserAreas { get; set; }
+        public ICollection<Account> Accounts { get; set; }
+        public ICollection<CanceledTask> CanceledTasks { get; set; }
+        public ICollection<Gift> Gifts { get; set; }
+        public ICollection<Offer> Offers { get; set; }
+        public ICollection<RoleUser> RoleUsers { get; set; }
+        public ICollection<UserArea> UserAreas { get; set; }
     }
 }

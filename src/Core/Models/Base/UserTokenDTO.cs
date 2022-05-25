@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class UserTokenDTO
+    public class UserTokenDto
     {
         public ulong UserId { get; set; }
         public string? Environment { get; set; }

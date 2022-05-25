@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class AttributeServiceAreaTypeDTO
+﻿namespace Core.Models.Base;
+    public class AttributeServiceAreaTypeDto
     {
         public ulong Id { get; set; }
         public ulong AttributeId { get; set; }

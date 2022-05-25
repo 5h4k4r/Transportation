@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Migration
+    public class Migration
     {
         public uint Id { get; set; }
         public string Migration1 { get; set; } = null!;

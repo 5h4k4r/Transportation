@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class RoleDTO
+    public class RoleDto
     {
 
         public byte Id { get; set; }

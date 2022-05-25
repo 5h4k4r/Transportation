@@ -1,4 +1,4 @@
-namespace Core.Index;
+namespace Core.Models.Index;
 
 public class AuthEndpoint
 {

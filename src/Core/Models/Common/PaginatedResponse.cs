@@ -1,6 +1,6 @@
 using Core.Interfaces;
 
-namespace Core.Common;
+namespace Core.Models.Common;
 
 /// <summary>
 /// Represents any paginated data/
@@ -40,7 +40,7 @@ public class PaginatedResponse<T>
 
 
     /// <summary>
-    /// Creates a new instance of <see cref="PaginatedResponse<T>"/>.
+    /// Creates a new instance of PaginatedResponse.
     /// </summary>
     public PaginatedResponse(in int count, in IPagingOptions pagingOptions, in ICollection<T> items)
     {
@@ -52,7 +52,7 @@ public class PaginatedResponse<T>
     }
 
     /// <summary>
-    /// Creates a new instance of <see cref="PaginatedResponse<T>"/>.
+    /// Creates a new instance of PaginatedResponse.
     /// </summary>
     public PaginatedResponse(in int count, in int page, in int limit, in ICollection<T> items)
     {

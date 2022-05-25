@@ -1,6 +1,3 @@
-using Core.Interfaces;
-using Core.Repositories;
-
 namespace Core.Interfaces;
 
 public interface IUnitOfWork : IDisposable

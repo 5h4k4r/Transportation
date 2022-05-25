@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class KubakAccount
+    public class KubakAccount
     {
         public ulong Id { get; set; }
         public ulong? CityId { get; set; }

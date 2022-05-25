@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Member
+    public sealed class Member
     {
         public Member()
         {
@@ -25,7 +22,7 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual User User { get; set; } = null!;
-        public virtual ICollection<MemberPaymentType> MemberPaymentTypes { get; set; }
+        public User User { get; set; } = null!;
+        public ICollection<MemberPaymentType> MemberPaymentTypes { get; set; }
     }
 }
