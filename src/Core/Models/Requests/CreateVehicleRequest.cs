@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Core.Requests;
 
 
@@ -7,7 +9,7 @@ public class CreateVehicleRequest
     public ulong UsageId { get; set; }
     public string Color { get; set; } = string.Empty;
 
-    public DateTime Model { get; set; }
+    public string Model { get; set; }
 
     public string Tip { get; set; } = string.Empty;
 
@@ -31,6 +33,10 @@ public class CreateVehicleRequest
     public string TechInsuransis { get; set; } = string.Empty;
 
     public string Incurance { get; set; } = string.Empty;
+    [JsonIgnore]
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    [JsonIgnore]
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
 
 //     {

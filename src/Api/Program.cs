@@ -23,6 +23,7 @@ services
 
         x.JsonSerializerOptions.PropertyNamingPolicy = SnakeCaseNamingPolicy.Default;
         x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+
     });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

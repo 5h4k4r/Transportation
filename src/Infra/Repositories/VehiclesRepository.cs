@@ -85,26 +85,25 @@ public class VehiclesRepository : IVehiclesRepository
         return query.ProjectTo<VehicleDTO>(_mapper.ConfigurationProvider).CountAsync();
     }
 
-    public VehicleDTO AddVehicle(CreateVehicleRequest request)
+    public async void AddVehicle(VehicleDTO vehicle)
     {
-        var vehicle = _mapper.Map<Vehicle>(request);
-        _context.Vehicles.AddAsync(vehicle);
-        var vehicleDTO = _mapper.Map<VehicleDTO>(vehicle);
+        var newVehicle = _mapper.Map<Vehicle>(vehicle);
+        await _context.Vehicles.AddAsync(newVehicle);
 
-        return vehicleDTO;
 
     }
 
-    public VehicleDetailDTO AddVehicleDetail(CreateVehicleRequest request)
+    public async void AddVehicleDetail(VehicleDetailDTO vehicleDetail)
     {
 
-        var vehicleDetail = _mapper.Map<VehicleDetail>(request);
-        _context.VehicleDetails.AddAsync(vehicleDetail);
-        var vehicleDetailDTO = _mapper.Map<VehicleDetailDTO>(vehicleDetail);
-
-        return vehicleDetailDTO;
+        var newVehicleDetail = _mapper.Map<VehicleDetail>(vehicleDetail);
+        await _context.VehicleDetails.AddAsync(newVehicleDetail);
 
     }
+
+    public VehicleDTO GetVehicleById(ulong Id) =>
+        _context.Vehicles.Where(v => v.Id == Id).ProjectTo<VehicleDTO>(_mapper.ConfigurationProvider).FirstOrDefault();
+
 
     public Task<List<UserDTO>> GetVehicleOwners(ulong id) =>
      _context.VehicleOwners

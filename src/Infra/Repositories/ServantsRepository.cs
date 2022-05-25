@@ -140,6 +140,7 @@ public class ServantsRepository : IServantsRepository
             .Select(x => x.Servants)
             .ProjectTo<ServantDTO>(_mapper.ConfigurationProvider)
             .ToListAsync();
+
         }
 
         if (model.SearchField is null || model.SearchValue is null)
@@ -161,5 +162,10 @@ public class ServantsRepository : IServantsRepository
 
     }
 
+    public async void CreateServant(ServantDTO servant)
+    {
+        var newServant = _mapper.Map<Servant>(servant);
+        await _context.Servants.AddAsync(newServant);
+    }
 
 }
