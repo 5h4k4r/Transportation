@@ -10,7 +10,17 @@ namespace Api.Authentication;
 //You can consider using AuthorizeAttribute if you want to use the predefined properties and functions from Authorize Attribute.
 public class AuthorizeByRole : AuthorizeAttribute, IAuthorizationFilter
 {
-    public string Roles { get; set; } //Permission string to get from controller
+    public AuthorizeByRole(string roles)
+    {
+        Roles = roles;
+    }
+
+    public AuthorizeByRole(string policy, string roles) : base(policy)
+    {
+        Roles = roles;
+    }
+
+    public new string Roles { get; set; } //Permission string to get from controller
 
     public void OnAuthorization(AuthorizationFilterContext context)
     {

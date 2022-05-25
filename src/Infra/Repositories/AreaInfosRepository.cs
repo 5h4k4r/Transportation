@@ -9,27 +9,27 @@ namespace Infra.Repositories;
 
 public class AreaInfosRepository : IAreaInfosRepository
 {
-    protected TransportationContext _Context;
+    private readonly TransportationContext _context;
     private readonly IMapper _mapper;
     public AreaInfosRepository(TransportationContext context, IMapper mapper)
     {
-        _Context = context;
+        _context = context;
         _mapper = mapper;
     }
 
     public Task<AreaInfoDto?> GetAreaInfoById(ulong id) =>
-     _Context.AreaInfos
+     _context.AreaInfos
              .ProjectTo<AreaInfoDto>(_mapper.ConfigurationProvider)
              .Where(x => x.Id == id)
              .FirstOrDefaultAsync();
 
 
     public Task<AreaInfoDto?> GetAreaInfoByUser(UserDto user) =>
-         _Context.AreaInfos.Where(x => x.Id == user.AreaId).ProjectTo<AreaInfoDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+         _context.AreaInfos.Where(x => x.Id == user.AreaId).ProjectTo<AreaInfoDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
 
     public Task<AreaInfoDto?> GetAreaInfoByTitle(string title) =>
-    _Context.AreaInfos
+    _context.AreaInfos
             .Where(x => x.Title == title)
             .ProjectTo<AreaInfoDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
@@ -38,7 +38,7 @@ public class AreaInfosRepository : IAreaInfosRepository
 
     public Task<List<AreaInfoDto>> ListAreaInfos(ListAreaInfosRequest? model)
     {
-        var query = _Context.AreaInfos.AsQueryable();
+        var query = _context.AreaInfos.AsQueryable();
 
         if (model?.Type is not null)
             query = query.Where(x => x.Type == model.Type);

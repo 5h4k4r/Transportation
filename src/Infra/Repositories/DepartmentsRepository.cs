@@ -9,14 +9,14 @@ namespace Infra.Repositories;
 
 public class DepartmentsRepository : IDepartmentsRepository
 {
-    protected TransportationContext _Context;
+    protected readonly TransportationContext Context;
     private readonly IMapper _mapper;
     public DepartmentsRepository(TransportationContext context, IMapper mapper)
     {
-        _Context = context;
+        Context = context;
         _mapper = mapper;
     }
-    public Task<DepartmentDto?> GetDepartmentById(ulong id) => _Context.Departments.Where(x => x.Id == id).ProjectTo<DepartmentDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+    public Task<DepartmentDto?> GetDepartmentById(ulong id) => Context.Departments.Where(x => x.Id == id).ProjectTo<DepartmentDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
 
 

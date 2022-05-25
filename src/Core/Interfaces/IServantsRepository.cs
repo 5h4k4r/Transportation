@@ -11,6 +11,6 @@ public interface IServantsRepository
     Task<ServantDto?> GetServantById(int id, ulong areaId);
     Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int servantId, ulong servantUserId);
     Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId);
-    Task<int> ListServantsCount(ListServantRequest model, ulong UserAreaId);
+    Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId);
     void CreateServant(ServantDto servant);
 }

@@ -10,19 +10,19 @@ namespace Infra.Repositories;
 
 public class AreaDepartmentsRepository : IAreaDepartmentsRepository
 {
-    protected TransportationContext _Context;
+    private readonly TransportationContext _context;
     private readonly IMapper _mapper;
     public AreaDepartmentsRepository(TransportationContext context, IMapper mapper)
     {
-        _Context = context;
+        _context = context;
         _mapper = mapper;
     }
     public Task<List<AreaDepartmentDto>> GetAreaDepartmentsByRoleUserId(ulong id)
     {
-        var database = _Context.AreaDepartments.Where(x => x.RoleUserId == id).ToListAsync();
+        var database = _context.AreaDepartments.Where(x => x.RoleUserId == id).ToListAsync();
 
         return Task.FromResult(_mapper.Map<List<AreaDepartmentDto>>(database));
 
     }
-    public Task<AreaDepartmentDto?> GetAreaDepartmentByRoleUserId(ulong id) => Task.FromResult(_Context.AreaDepartments.Where(x => x.RoleUserId == id).Include(x => x.Department).ProjectTo<AreaDepartmentDto?>(_mapper.ConfigurationProvider).FirstOrDefault());
+    public Task<AreaDepartmentDto?> GetAreaDepartmentByRoleUserId(ulong id) => Task.FromResult(_context.AreaDepartments.Where(x => x.RoleUserId == id).Include(x => x.Department).ProjectTo<AreaDepartmentDto?>(_mapper.ConfigurationProvider).FirstOrDefault());
 }

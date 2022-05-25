@@ -63,14 +63,17 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<object?>> Login(LoginRequest model)
     {
         // TODO: mobile is nullable
-        var phone = PreparePhoneNumber(model.Mobile);
+        if (model.Mobile != null)
+        {
+            var phone = PreparePhoneNumber(model.Mobile);
 
-        var user = await _unitOfWork.User.GetUserByPhone(phone);
+            var user = await _unitOfWork.User.GetUserByPhone(phone);
 
-        if (user is null)
-            return NotFound(BasicResponse.ResourceNotFound);
+            if (user is null)
+                return NotFound(BasicResponse.ResourceNotFound);
 
-        user.AuthId = model.AuthId;
+            user.AuthId = model.AuthId;
+        }
 
         await _unitOfWork.Save();
 

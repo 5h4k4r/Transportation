@@ -104,12 +104,12 @@ public class TasksRepository : ITasksRepository
     private IQueryable<Entities.Task> GetListTasksQuery(ListTasksRequest model)
     {
         // TODO: unused fields
-        var start = model.StartAt.StartOfDay();
+        var start = model.StartAt.EndOfDay();
         var end = model.EndAt.EndOfDay();
 
         var query = _context.Tasks
-           .Where(x => x.CreatedAt >= model.StartAt.EndOfDay())
-           .Where(x => x.CreatedAt <= model.EndAt.EndOfDay())
+           .Where(x => x.CreatedAt >= start)
+           .Where(x => x.CreatedAt <= end)
            .Include(x => x.Request)
            .ThenInclude(x => x.ServiceAreaType)
            .ThenInclude(x => x.Area)
