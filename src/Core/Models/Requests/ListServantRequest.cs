@@ -9,7 +9,7 @@ public class ListServantRequest : IPagingOptions, ISortOptions, IValidatableObje
     /// <summary>
     /// Allowed Values: "Name", "NationalId", "PhoneNumber"
     /// </summary>
-    [AllowedValues("Name", "NationalId", "PhoneNumber")]
+    [AllowedValues("Name", "NationalId", "PhoneNumber", "Id")]
     public string? SearchField { get; set; }
     public string? SearchValue { get; set; }
     public int? Page { get; set; } = 0;
