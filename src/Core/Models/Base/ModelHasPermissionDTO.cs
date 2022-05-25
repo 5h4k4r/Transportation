@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class ModelHasPermissionDTO
+    public class ModelHasPermissionDto
     {
         public ulong Id { get; set; }
         public uint PermissionId { get; set; }

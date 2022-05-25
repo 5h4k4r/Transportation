@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class CommissionDTO
+﻿namespace Core.Models.Base;
+    public class CommissionDto
     {
         public ulong Id { get; set; }
         public ulong ServiceAreaTypeId { get; set; }

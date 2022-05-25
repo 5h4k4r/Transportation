@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class File
+    public sealed class File
     {
         public File()
         {
@@ -17,7 +14,7 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<ClientFile> ClientFiles { get; set; }
-        public virtual ICollection<FileModel> FileModels { get; set; }
+        public ICollection<ClientFile> ClientFiles { get; set; }
+        public ICollection<FileModel> FileModels { get; set; }
     }
 }

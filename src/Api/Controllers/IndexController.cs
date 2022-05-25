@@ -1,5 +1,5 @@
 using System.Net.Mime;
-using Core.Index;
+using Core.Models.Index;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -14,7 +14,7 @@ public class IndexController : ControllerBase
     [HttpGet("get-settings")]
     public IActionResult GetSettings()
     {
-        List<AuthEndpoint> Exclude = new()
+        List<AuthEndpoint> exclude = new()
         {
             new AuthEndpoint { Address = "/v3/auth/check", Method = "get" },
             new AuthEndpoint { Address = "/get-settings", Method = "get" },
@@ -27,7 +27,7 @@ public class IndexController : ControllerBase
         {
             Data = new AuthEndpoints
             {
-                Exclude = Exclude,
+                Exclude = exclude,
                 Block = new List<AuthEndpoint>()
             }
         });

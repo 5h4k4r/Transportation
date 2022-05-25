@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class BaseTypeTranslation
+    public class BaseTypeTranslation
     {
         public ulong Id { get; set; }
         public ulong BaseTypeId { get; set; }

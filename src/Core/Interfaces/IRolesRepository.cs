@@ -1,11 +1,10 @@
-using System.Reflection.Metadata;
-using Core.Models;
+using Core.Models.Base;
 
 namespace Core.Interfaces;
 
 public interface IRolesRepository
 {
-    Task<RoleDTO?> GetRoleById(ulong Id);
+    Task<RoleDto?> GetRoleById(ulong id);
 
-    Task<List<RoleDTO>> ListRoleByTtpe(sbyte TypeId);
+    Task<List<RoleDto>> ListRoleByTtpe(sbyte typeId);
 }

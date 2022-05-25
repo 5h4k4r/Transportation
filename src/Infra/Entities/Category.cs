@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Category
+    public sealed class Category
     {
         public Category()
         {
@@ -16,7 +13,7 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<CategoryTranslation> CategoryTranslations { get; set; }
-        public virtual ICollection<ServiceAreaType> ServiceAreaTypes { get; set; }
+        public ICollection<CategoryTranslation> CategoryTranslations { get; set; }
+        public ICollection<ServiceAreaType> ServiceAreaTypes { get; set; }
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class PasswordResetDTO
+    public class PasswordResetDto
     {
         public string Email { get; set; } = null!;
         public string Token { get; set; } = null!;

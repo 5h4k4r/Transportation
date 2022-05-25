@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Gender
+    public sealed class Gender
     {
         public Gender()
         {
@@ -18,8 +15,8 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<GenderTranslation> GenderTranslations { get; set; }
-        public virtual ICollection<Servant> Servants { get; set; }
-        public virtual ICollection<User> Users { get; set; }
+        public ICollection<GenderTranslation> GenderTranslations { get; set; }
+        public ICollection<Servant> Servants { get; set; }
+        public ICollection<User> Users { get; set; }
     }
 }

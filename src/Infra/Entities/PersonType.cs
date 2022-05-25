@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class PersonType
+    public sealed class PersonType
     {
         public PersonType()
         {
@@ -15,6 +12,6 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<PersonTypeTranslation> PersonTypeTranslations { get; set; }
+        public ICollection<PersonTypeTranslation> PersonTypeTranslations { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Api.Swagger;
 
-public static partial class SwaggerExtensions
+public static class SwaggerExtensions
 {
     public static IServiceCollection ConfigureSwaggerGenerator(this IServiceCollection services, IConfiguration configuration)
     {
@@ -16,7 +16,7 @@ public static partial class SwaggerExtensions
                                 Title = "Transportation Api",
                                 Version = "v3"
                             });
-            if (configuration.GetValue<string?>("BasePath", null) is string serverUrl && !string.IsNullOrEmpty(serverUrl))
+            if (configuration.GetValue<string?>("BasePath", null) is { } serverUrl && !string.IsNullOrEmpty(serverUrl))
             {
                 c.AddServer(new OpenApiServer()
                 {
@@ -31,10 +31,7 @@ public static partial class SwaggerExtensions
             AddXmlComments(c);
             AddOperationFilters(c);
             // Use method name as operationId
-            c.CustomOperationIds(apiDesc =>
-        {
-            return apiDesc.TryGetMethodInfo(out System.Reflection.MethodInfo methodInfo) ? methodInfo.Name : null;
-        });
+            c.CustomOperationIds(apiDesc => apiDesc.TryGetMethodInfo(out var methodInfo) ? methodInfo.Name : null);
 
 
         });
@@ -57,8 +54,8 @@ public static partial class SwaggerExtensions
         {
             // Set the comments path for the Swagger JSON and UI.
             var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = System.IO.Path.Combine(AppContext.BaseDirectory, xmlFile);
-            if (System.IO.File.Exists(xmlPath))
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            if (File.Exists(xmlPath))
                 c.IncludeXmlComments(xmlPath);
         }
 

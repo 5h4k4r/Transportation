@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class OfferServiceAreaTypeDTO
+﻿namespace Core.Models.Base;
+    public class OfferServiceAreaTypeDto
     {
         public ulong OfferId { get; set; }
         public ulong ServiceAreaTypeId { get; set; }

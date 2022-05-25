@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Infra.Extensions;
 
-public static partial class RepositoryWrapperExtension
+public static class RepositoryWrapperExtension
 {
     public static IServiceCollection ConfigureRepositoryWrapper(this IServiceCollection services)
     {

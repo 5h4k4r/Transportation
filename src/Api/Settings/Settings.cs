@@ -1,4 +1,4 @@
-using Core.Index;
+using Core.Models.Index;
 
 namespace Api.Settings;
 

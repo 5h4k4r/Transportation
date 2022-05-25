@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class RoleUser
+    public sealed class RoleUser
     {
         public RoleUser()
         {
@@ -16,8 +13,8 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual Role Role { get; set; } = null!;
-        public virtual User User { get; set; } = null!;
-        public virtual ICollection<DepartmentRoleUser> DepartmentRoleUsers { get; set; }
+        public Role Role { get; set; } = null!;
+        public User User { get; set; } = null!;
+        public ICollection<DepartmentRoleUser> DepartmentRoleUsers { get; set; }
     }
 }

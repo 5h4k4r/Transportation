@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Core.Validations;
 
-namespace Core.Requests;
+namespace Core.Models.Requests;
 
 
 public class CreateLanguageRequest

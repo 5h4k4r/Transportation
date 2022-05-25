@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class FailedJobDTO
+﻿namespace Core.Models.Base;
+    public class FailedJobDto
     {
         public ulong Id { get; set; }
         public string Connection { get; set; } = null!;

@@ -1,7 +1,7 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
-using Core.Models;
+using Core.Models.Base;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,18 +9,18 @@ namespace Infra.Repositories;
 
 public class GendersRepository : IGendersRepository
 {
-    private readonly transportationContext _context;
+    private readonly TransportationContext _context;
     private readonly IMapper _mapper;
 
-    public GendersRepository(transportationContext context, IMapper mapper)
+    public GendersRepository(TransportationContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
     }
 
-    public Task<List<GenderTranslationDTO>> ListGenders(uint LanguageId)
+    public Task<List<GenderTranslationDto>> ListGenders(uint languageId)
     {
-        var gender = _context.GenderTranslations.Where(x => x.LanguageId == LanguageId).ProjectTo<GenderTranslationDTO>(_mapper.ConfigurationProvider).ToListAsync();
+        var gender = _context.GenderTranslations.Where(x => x.LanguageId == languageId).ProjectTo<GenderTranslationDto>(_mapper.ConfigurationProvider).ToListAsync();
         return gender;
     }
 

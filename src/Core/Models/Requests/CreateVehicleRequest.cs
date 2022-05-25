@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Core.Requests;
+namespace Core.Models.Requests;
 
 
 public class CreateVehicleRequest
@@ -9,7 +9,7 @@ public class CreateVehicleRequest
     public ulong UsageId { get; set; }
     public string Color { get; set; } = string.Empty;
 
-    public string Model { get; set; }
+    public string Model { get; set; } = string.Empty;
 
     public string Tip { get; set; } = string.Empty;
 
@@ -22,9 +22,9 @@ public class CreateVehicleRequest
 
     public string Plaque { get; set; } = string.Empty;
 
-    public ICollection<ulong> ServiceAreaTypes { get; set; }
+    public ICollection<ulong>? ServiceAreaTypes { get; set; }
 
-    public ICollection<ulong> Options { get; set; }
+    public ICollection<ulong>? Options { get; set; }
 
     public string CarCard { get; set; } = string.Empty;
 

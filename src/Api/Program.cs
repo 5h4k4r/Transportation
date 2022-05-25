@@ -1,13 +1,10 @@
-using System.Reflection;
 using System.Text.Json.Serialization;
 using Api.Extensions;
 using Api.Swagger;
-using AutoMapper;
 using Core.Converters;
-using Core.Extensions;
 using Core.Helpers;
+using Infra.Authentication;
 using Infra.Extensions;
-using Infra.Mapper;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using System.Text.Json;
-using Core.Models;
 
 namespace Api.Extensions;
 

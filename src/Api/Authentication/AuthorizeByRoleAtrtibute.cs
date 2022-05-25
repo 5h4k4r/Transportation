@@ -1,11 +1,11 @@
-using System.Security.Claims;
 using Api.Extensions;
-using Core.Auth.Models;
+using Core.Models.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Api.Auth;
+namespace Api.Authentication;
+
 //Extenting from AuthorizeAttribute or Attribute is upto user choice.
 //You can consider using AuthorizeAttribute if you want to use the predefined properties and functions from Authorize Attribute.
 public class AuthorizeByRole : AuthorizeAttribute, IAuthorizationFilter
@@ -30,18 +30,17 @@ public class AuthorizeByRole : AuthorizeAttribute, IAuthorizationFilter
         //Indentity.Name will have user name passed from token, in case of JWT Authenntication and having claim type "ClaimTypes.Name"
         // var assignedPermissionsForUser = MockData.UserPermissions.Where(x => x.Key == userName).Select(x => x.Value).ToList();
         var roles = context.HttpContext.User.GetRoles();
-        var requiredRoles = Roles.Split(",").ToList(); //Multiple permissiosn can be received from controller, delimiter "," is used to get individual values
-        foreach (var requiredRole in requiredRoles)
+        var requiredRoles =
+            Roles.Split(",")
+                .ToList(); //Multiple permission can be received from controller, delimiter "," is used to get individual values
+        if ((from requiredRole in requiredRoles
+                from y in roles
+                where y == (byte)(Role)Enum.Parse(typeof(Role), requiredRole)
+                select requiredRole).Any())
         {
-            foreach (var y in roles)
-            {
-                if (y == (byte)(Role)Enum.Parse(typeof(Role), requiredRole))
-                    return; //User Authorized. Wihtout setting any result value and just returning is sufficent for authorizing user
-
-            }
+            return; //User Authorized. Without setting any result value and just returning is sufficent for authorizing user
         }
 
         context.Result = new UnauthorizedResult();
-        return;
     }
 }

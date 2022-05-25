@@ -1,7 +1,8 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core.Models;
-using Core.Repositories;
+using Core.Interfaces;
+using Core.Models.Base;
+using Core.Models.Requests;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
@@ -10,16 +11,16 @@ namespace Infra.Repositories;
 
 public class UsagesRepository : IUsagesRepository
 {
-    protected transportationContext _context;
+    protected TransportationContext _Context;
     private readonly IMapper _mapper;
-    public UsagesRepository(transportationContext context, IMapper mapper)
+    public UsagesRepository(TransportationContext context, IMapper mapper)
     {
-        _context = context;
+        _Context = context;
         _mapper = mapper;
     }
 
-    public Task<List<UsageDTO>> ListUsages() => _context.Usages.ProjectTo<UsageDTO>(_mapper.ConfigurationProvider).ToListAsync();
-    public Task<UsageDTO?> GetUsageById(ulong Id) => _context.Usages.ProjectTo<UsageDTO>(_mapper.ConfigurationProvider).Where(x => x.Id == Id).FirstOrDefaultAsync();
+    public Task<List<UsageDto>> ListUsages() => _Context.Usages.ProjectTo<UsageDto>(_mapper.ConfigurationProvider).ToListAsync();
+    public Task<UsageDto?> GetUsageById(ulong id) => _Context.Usages.ProjectTo<UsageDto>(_mapper.ConfigurationProvider).Where(x => x.Id == id).FirstOrDefaultAsync();
 
     public async Task CreateUsage(CreateUsageRequest model)
     {
@@ -30,6 +31,6 @@ public class UsagesRepository : IUsagesRepository
             UpdatedAt = DateTime.UtcNow,
         };
 
-        await _context.Usages.AddAsync(databaseModel);
+        await _Context.Usages.AddAsync(databaseModel);
     }
 }

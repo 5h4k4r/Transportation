@@ -1,27 +1,19 @@
+using Core.Models.Base;
 
-using Core.Models;
-using Infra.Entities;
-using Microsoft.EntityFrameworkCore;
 namespace Api.Extensions;
 
 public static class UserExtensions
 {
-    public static bool HasRole(this UserDTO user, int roleId)
+    public static bool HasRole(this UserDto user, int roleId)
     {
-        if (user.RoleUsers is null)
-            return false;
-
         return user.RoleUsers.Select(x => x.RoleId).Contains((byte)roleId);
     }
-    public static bool HasRole(this UserDTO user, string roleName)
+    public static bool HasRole(this UserDto user, string roleName)
     {
-        if (user.RoleUsers is null)
-            return false;
-
         var lowercasedRoleName = roleName.ToLower();
 
 
-        int roleId = 4;
+        var roleId = 4;
 
         roleId = lowercasedRoleName switch
         {

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class OfferServiceAreaType
+    public class OfferServiceAreaType
     {
         public ulong OfferId { get; set; }
         public ulong ServiceAreaTypeId { get; set; }

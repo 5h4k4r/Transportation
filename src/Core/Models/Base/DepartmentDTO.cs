@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class DepartmentDTO
+﻿namespace Core.Models.Base;
+    public class DepartmentDto
     {
 
         public uint Id { get; set; }

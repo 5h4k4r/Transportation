@@ -2,19 +2,18 @@ using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Api.Extensions;
 using Api.Settings;
-using AutoMapper;
-using Core.Auth.Models;
-using Core.Common;
-using Core.Helpers;
 using Core.Interfaces;
-using Core.Models;
-using Core.Requests;
-using Infra.Entities;
-using Infra.Entities.Common;
-using Infra.Responses;
+using Core.Models.Authentication;
+using Core.Models.Base;
+using Core.Models.Common;
+using Core.Models.Requests;
+using Infra.Authentication;
+using Infra.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-namespace Api.Controllers;
+using Department = Core.Models.Authentication.Department;
+
+namespace Api.Controllers.V3;
 
 [ApiController]
 [Produces(MediaTypeNames.Application.Json)]
@@ -22,27 +21,24 @@ namespace Api.Controllers;
 [Route("v3/auth")]
 public class AuthController : ControllerBase
 {
-
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConfiguration _config;
+    
 
-    private readonly IMapper _mapper;
 
-
-    public AuthController(IUnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
+    public AuthController(IUnitOfWork unitOfWork, IConfiguration config)
     {
         _unitOfWork = unitOfWork;
         _config = config;
-        _mapper = mapper;
+  
     }
 
     [HttpGet("check")]
     [ProducesResponseType(typeof(AuthCheckResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> Check([Required][FromQuery] AuthCheckRequest model)
+    public async Task<ActionResult> Check([Required] [FromQuery] AuthCheckRequest model)
     {
-
-        var phone = PreparePhoneNumber(model.Mobile);
+        var phone = PreparePhoneNumber(model.Mobile!);
 
         var user = await _unitOfWork.User.GetUserByPhone(phone, true);
 
@@ -61,13 +57,12 @@ public class AuthController : ControllerBase
         };
 
         return Ok(authCheckResponse);
-
     }
 
     [HttpPost("login")]
     public async Task<ActionResult<object?>> Login(LoginRequest model)
     {
-
+        // TODO: mobile is nullable
         var phone = PreparePhoneNumber(model.Mobile);
 
         var user = await _unitOfWork.User.GetUserByPhone(phone);
@@ -90,66 +85,61 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<AuthInfo>?> GetAuthInfo([FromServices] UserAuthContext authContext)
     {
         var user = authContext.GetAuthUser();
-        var MySqlUser = await _unitOfWork.User.GetUserByAuthId(user.Id, true);
+        var mySqlUser = await _unitOfWork.User.GetUserByAuthId(user.Id, true);
 
-        if (MySqlUser is null)
+        if (mySqlUser is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
-        var AreaInfo = await _unitOfWork.AreaInfos.GetAreaInfoByUser(MySqlUser);
+        var areaInfo = await _unitOfWork.AreaInfos.GetAreaInfoByUser(mySqlUser);
 
-        if (AreaInfo is null)
-            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(AreaInfo)));
+        if (areaInfo is null)
+            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(areaInfo)));
 
-        RoleUserDTO? RoleUserWithDepartment = new();
-        MySqlUser.RoleUsers.OrderBy(x => x.RoleId).ToList().ForEach(async RoleUser =>
+        RoleUserDto? roleUserWithDepartment = null;
+        var k = mySqlUser.RoleUsers.OrderBy(x => x.RoleId).ToList();
+        foreach (var roleUser in k)
         {
+            var areaDepartment = await _unitOfWork.AreaDepartments.GetAreaDepartmentByRoleUserId(roleUser.Id);
+            if (areaDepartment?.Department is not null)
+                roleUserWithDepartment = roleUser;
+        }
 
-            var AreaDepartment = await _unitOfWork.AreaDepartments.GetAreaDepartmentByRoleUserId(RoleUser.Id);
-            if (AreaDepartment?.Department is not null)
-                RoleUserWithDepartment = RoleUser;
-        });
-
-        if (RoleUserWithDepartment is null)
+        if (roleUserWithDepartment is null)
             return null;
 
-        var Department = await _unitOfWork.Departments.GetDepartmentById(1);
+        var department = await _unitOfWork.Departments.GetDepartmentById(1);
 
-        if (Department is null)
+        if (department is null)
             return null;
 
-        var CurrentRole = await _unitOfWork.Roles.GetRoleById(1);
+        var currentRole = await _unitOfWork.Roles.GetRoleById(1);
 
         AuthInfo authInfoResponse = new()
         {
-            BirthDate = MySqlUser?.BirthDate,
-            Id = MySqlUser?.Id,
-            AreaId = (ulong)AreaInfo.Id,
-            AuthId = MySqlUser?.AuthId,
-            MapCenter = new MapCenter(AreaInfo?.Center),
-            Department = new Core.Auth.Models.Department
+            BirthDate = mySqlUser.BirthDate,
+            Id = mySqlUser.Id,
+            AreaId = areaInfo.Id,
+            AuthId = mySqlUser.AuthId,
+            MapCenter = new MapCenter(areaInfo.Center),
+            Department = new Department
             {
-                Id = (ulong)Department.Id,
-                Title = Department.Title ?? "",
+                Id = department.Id,
+                Title = department.Title,
                 Role = new DepartmentRole
                 {
-                    Id = CurrentRole?.Id,
-                    Title = CurrentRole?.Title,
+                    Id = currentRole?.Id,
+                    Title = currentRole?.Title,
                 }
             },
-            Mobile = user!.Mobile,
-            Name = MySqlUser?.Name,
+            Mobile = user.Mobile,
+            Name = mySqlUser.Name,
             Version = "V3",
-            IsAdmin = CurrentRole?.Id == 2 || CurrentRole?.Id == 6,
-            IsSuperAdmin = CurrentRole?.Id == 1
+            IsAdmin = currentRole?.Id == 2 || currentRole?.Id == 6,
+            IsSuperAdmin = currentRole?.Id == 1
         };
 
 
-        if (authInfoResponse is null)
-            return NotFound(BasicResponse.ResourceNotFound);
-
         return Ok(authInfoResponse);
-
-
     }
 
     private static string PreparePhoneNumber([Required] string model)

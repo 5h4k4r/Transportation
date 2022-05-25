@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class DeviceTask
+    public class DeviceTask
     {
         public ulong TaskId { get; set; }
         public ulong DeviceId { get; set; }

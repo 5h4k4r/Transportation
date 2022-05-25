@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class EmployeeDTO
+    public class EmployeeDto
     {
         public ulong UserId { get; set; }
         public ulong? AreaId { get; set; }
@@ -13,7 +10,7 @@ namespace Core.Models
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-        public AreaInfoDTO? AreaInfo { get; set; }
+        public AreaInfoDto? AreaInfo { get; set; }
 
     }
 }

@@ -1,22 +1,22 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
-using Core.Models;
+using Core.Models.Base;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
-using Task = System.Threading.Tasks.Task;
+
 namespace Infra.Repositories;
 
 public class DepartmentsRepository : IDepartmentsRepository
 {
-    protected transportationContext _context;
+    protected TransportationContext _Context;
     private readonly IMapper _mapper;
-    public DepartmentsRepository(transportationContext context, IMapper mapper)
+    public DepartmentsRepository(TransportationContext context, IMapper mapper)
     {
-        _context = context;
+        _Context = context;
         _mapper = mapper;
     }
-    public Task<DepartmentDTO?> GetDepartmentById(ulong Id) => _context.Departments.Where(x => x.Id == Id).ProjectTo<DepartmentDTO>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+    public Task<DepartmentDto?> GetDepartmentById(ulong id) => _Context.Departments.Where(x => x.Id == id).ProjectTo<DepartmentDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
 
 

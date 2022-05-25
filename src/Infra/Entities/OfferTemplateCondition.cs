@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class OfferTemplateCondition
+    public class OfferTemplateCondition
     {
         public ulong Id { get; set; }
         public string Title { get; set; } = null!;

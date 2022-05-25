@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class AttributeServiceAreaType
+    public class AttributeServiceAreaType
     {
         public ulong Id { get; set; }
         public ulong AttributeId { get; set; }

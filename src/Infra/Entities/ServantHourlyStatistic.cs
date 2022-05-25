@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class ServantHourlyStatistic
+    public class ServantHourlyStatistic
     {
         public ulong Id { get; set; }
         public ulong DayId { get; set; }

@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Authentication;
-using Transportation.Api.Auth;
-
-namespace Core.Helpers;
+namespace Infra.Authentication;
 
 
 public class UserAuthContext

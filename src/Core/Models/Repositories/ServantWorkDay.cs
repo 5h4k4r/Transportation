@@ -1,6 +1,4 @@
-using Core.Models;
-
-namespace Infra.Repositories;
+namespace Core.Models.Repositories;
 
 
 public class ServantOnlinePeriod

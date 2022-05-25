@@ -1,4 +1,4 @@
-namespace Core.Auth.Models;
+namespace Core.Models.Authentication;
 
 public class AuthInfo
 {
@@ -44,12 +44,12 @@ public class MapCenter
 {
     public string Lat { get; set; } = string.Empty;
     public string Lng { get; set; } = string.Empty;
-    public MapCenter(string? LatLng)
+    public MapCenter(string? latLng)
     {
-        if (LatLng is null)
+        if (latLng is null)
             return;
 
-        var coordinates = LatLng.Split(",");
+        var coordinates = latLng.Split(",");
 
         if (coordinates.Length > 1)
         {
