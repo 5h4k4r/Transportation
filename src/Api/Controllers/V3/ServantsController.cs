@@ -35,7 +35,7 @@ public class ServantsController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PaginatedResponse<ServantDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListServants(int id, [FromQuery] ListServantRequest model, [FromServices] UserAuthContext authContext)
+    public async Task<IActionResult> ListServants([FromQuery] ListServantRequest model, [FromServices] UserAuthContext authContext)
     {
         var authId = authContext.GetAuthUser().Id;
         var user = await _unitOfWork.User.GetUserByAuthId(authId);
