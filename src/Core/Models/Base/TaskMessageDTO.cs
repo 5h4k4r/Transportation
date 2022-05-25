@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class TaskMessageDTO
+﻿namespace Core.Models.Base;
+    public class TaskMessageDto
     {
         public ulong TaskId { get; set; }
         public string? ChatId { get; set; }

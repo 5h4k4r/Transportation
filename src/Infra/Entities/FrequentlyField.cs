@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class FrequentlyField
+    public class FrequentlyField
     {
         public ulong Id { get; set; }
         public string Type { get; set; } = null!;

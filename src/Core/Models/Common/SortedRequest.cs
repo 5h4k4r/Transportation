@@ -1,6 +1,6 @@
 using Core.Interfaces;
 
-namespace Core.Common;
+namespace Core.Models.Common;
 
 public class SortedRequest : ISortOptions
 {

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class DailyStatisticDTO
+﻿namespace Core.Models.Base;
+    public class DailyStatisticDto
     {
         public ulong Id { get; set; }
         public ulong DayId { get; set; }

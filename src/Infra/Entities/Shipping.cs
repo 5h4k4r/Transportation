@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Shipping
+    public sealed class Shipping
     {
         public Shipping()
         {
@@ -15,6 +12,6 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<ShippingTranslation> ShippingTranslations { get; set; }
+        public ICollection<ShippingTranslation> ShippingTranslations { get; set; }
     }
 }

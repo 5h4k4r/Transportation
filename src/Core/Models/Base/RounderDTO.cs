@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class RounderDTO
+    public class RounderDto
     {
         public ushort Id { get; set; }
         public string Currency { get; set; } = null!;

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class ActiveRoleDTO
+﻿namespace Core.Models.Base;
+    public class ActiveRoleDto
     {
         public ulong UserId { get; set; }
         public byte RoleId { get; set; }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class DiscountCodeUserDTO
+﻿namespace Core.Models.Base;
+    public class DiscountCodeUserDto
     {
         public ulong Id { get; set; }
         public ulong DiscountCodeId { get; set; }

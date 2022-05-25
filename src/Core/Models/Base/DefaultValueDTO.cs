@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class DefaultValueDTO
+﻿namespace Core.Models.Base;
+    public class DefaultValueDto
     {
         public ulong Id { get; set; }
         public uint LanguageId { get; set; }

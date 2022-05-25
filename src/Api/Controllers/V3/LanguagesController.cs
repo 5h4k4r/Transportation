@@ -1,16 +1,14 @@
-namespace Api.Controllers;
-
 using System.Net.Mime;
-using AutoMapper;
 using Core.Interfaces;
-using Core.Models;
-using Core.Requests;
-using Infra.Entities.Common;
+using Core.Models.Base;
+using Core.Models.Common;
+using Core.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
-using Transportation.Api.Auth;
+
+namespace Api.Controllers.V3;
 
 [Authorize]
 [ApiController]
@@ -19,43 +17,28 @@ using Transportation.Api.Auth;
 [Route("v3/languages")]
 public class LanguagesController : ControllerBase
 {
-
     private readonly IUnitOfWork _unitOfWork;
 
-    private readonly IMapper _mapper;
-
-    public LanguagesController(IUnitOfWork unitOfWork, IMapper mapper)
+    public LanguagesController(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
 
 
-    [ProducesResponseType(typeof(List<LanguageDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<LanguageDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet]
     public async Task<ActionResult> ListLanguages([FromQuery] ListLanguagesRequest model)
     {
-
         var isLocalRequest = model.LocaleOnly.HasValue && model.LocaleOnly.Value;
-
-
         if (isLocalRequest)
         {
             var locales = await _unitOfWork.Languages.ListLanguagesLocales();
 
-            if (locales is null)
-                return NotFound();
-
             return Ok(locales);
         }
+
         var languages = await _unitOfWork.Languages.ListLanguages();
-
-
-
-        if (languages is null)
-            return NotFound(BasicResponse.ResourceNotFound);
-
 
         return Ok(languages);
     }
@@ -64,12 +47,11 @@ public class LanguagesController : ControllerBase
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
-    public async Task<ActionResult> CreateLanguage([FromBody] CreateLanguageRequest Language)
+    public async Task<ActionResult> CreateLanguage([FromBody] CreateLanguageRequest language)
     {
         try
         {
-
-            _unitOfWork.Languages.CreateLanguage(Language);
+            _unitOfWork.Languages.CreateLanguage(language);
 
             await _unitOfWork.Save();
 
@@ -80,9 +62,8 @@ public class LanguagesController : ControllerBase
         {
             var sqlException = _unitOfWork.GetException<MySqlException>(ex);
 
-            if (sqlException != null
-                && (sqlException.Number == 1062))
-                return BadRequest(BasicResponse.DuplicateEntry(Language.Locale));
+            if (sqlException is { Number: 1062 })
+                return BadRequest(BasicResponse.DuplicateEntry(language.Locale));
 
 
             return BadRequest();

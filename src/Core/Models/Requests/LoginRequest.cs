@@ -1,16 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Core.Requests;
+namespace Core.Models.Requests;
 
 
 public class LoginRequest
 {
     [Required]
-    public string AuthId { get; set; } = string.Empty;
+    public string? AuthId { get; set; }
     [Required]
-    public string AuthToken { get; set; } = string.Empty;
+    public string? AuthToken { get; set; } 
     [Required]
-    public string Mobile { get; set; } = string.Empty;
+    public string? Mobile { get; set; } 
 
     public IEnumerable<ValidationResult> Validate()
     {

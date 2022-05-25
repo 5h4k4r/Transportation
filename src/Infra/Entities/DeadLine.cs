@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class DeadLine
+    public class DeadLine
     {
         public ulong Id { get; set; }
         public ulong RequestId { get; set; }

@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Entities
 {
-    public partial class transportationContext : DbContext
+    public partial class TransportationContext : DbContext
     {
-        public transportationContext()
+        public TransportationContext()
         {
         }
 
-        public transportationContext(DbContextOptions<transportationContext> options)
+        public TransportationContext(DbContextOptions<TransportationContext> options)
             : base(options)
         {
         }
@@ -4978,6 +4975,7 @@ namespace Infra.Entities
             OnModelCreatingPartial(modelBuilder);
         }
 
+        // TODO: Unimplemented
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

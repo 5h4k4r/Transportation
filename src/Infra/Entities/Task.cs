@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Task
+    public sealed class Task
     {
         public Task()
         {
@@ -22,11 +19,11 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual Request Request { get; set; } = null!;
-        public virtual Servant Servant { get; set; } = null!;
-        public virtual ICollection<CanceledTask> CanceledTasks { get; set; }
-        public virtual ICollection<MemberPaymentType> MemberPaymentTypes { get; set; }
-        public virtual ICollection<Score> Scores { get; set; }
-        public virtual ICollection<TaskFactor> TaskFactors { get; set; }
+        public Request Request { get; set; } = null!;
+        public Servant Servant { get; set; } = null!;
+        public ICollection<CanceledTask> CanceledTasks { get; set; }
+        public ICollection<MemberPaymentType> MemberPaymentTypes { get; set; }
+        public ICollection<Score> Scores { get; set; }
+        public ICollection<TaskFactor> TaskFactors { get; set; }
     }
 }

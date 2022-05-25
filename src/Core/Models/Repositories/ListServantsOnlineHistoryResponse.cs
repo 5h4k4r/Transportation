@@ -1,4 +1,4 @@
-namespace Infra.Repositories;
+namespace Core.Models.Repositories;
 
 public class ListServantsOnlineHistory
 {
@@ -8,7 +8,7 @@ public class ListServantsOnlineHistory
     public string? OnlineHours { get; set; }
     public double? TotalTimeInSeconds { get; set; }
 
-    public ListServantsOnlineHistory(string firstName, string lastName, ulong id, string onlineHours, double totalTimeInSeconds)
+    public ListServantsOnlineHistory(string? firstName, string? lastName, ulong id, string onlineHours, double totalTimeInSeconds)
     {
         FirstName = firstName;
         LastName = lastName;

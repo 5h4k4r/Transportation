@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class TaxiMeter
+    public class TaxiMeter
     {
         public ulong TaskId { get; set; }
         public string Point1 { get; set; } = null!;

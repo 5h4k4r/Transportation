@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class MemberPaymentType
+    public class MemberPaymentType
     {
         public ulong Id { get; set; }
         public ulong MemberId { get; set; }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class OfferTemplateConditionDTO
+    public class OfferTemplateConditionDto
     {
         public ulong Id { get; set; }
         public string Title { get; set; } = null!;

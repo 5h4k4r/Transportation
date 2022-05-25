@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace Api.Extensions;
 
-public static partial class StartupConfigurations
+public static class StartupConfigurations
 {
 
     public static IServiceCollection ConfigureDatabase(this IServiceCollection services, IConfiguration config)
@@ -17,7 +17,7 @@ public static partial class StartupConfigurations
             .Bind(databaseOptions)
             .ValidateDataAnnotations();
 
-        services.AddDbContext<transportationContext>((sp, b) =>
+        services.AddDbContext<TransportationContext>((sp, b) =>
         {
             var options = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value;
             b.UseMySql(options.ConnectionString, ServerVersion.Parse(options.ServerVersion));

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Gift
+    public class Gift
     {
         public ulong Id { get; set; }
         public ulong UserId { get; set; }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Employee
+    public class Employee
     {
         public ulong UserId { get; set; }
         public ulong? AreaId { get; set; }
@@ -13,8 +10,6 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
-
         public virtual User User { get; set; } = null!;
-        public virtual AreaInfo AreaInfo { get; set; } = null!;
     }
 }

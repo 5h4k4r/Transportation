@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class ScoreDTO
+    public class ScoreDto
     {
         public ulong Id { get; set; }
         public ulong TaskId { get; set; }

@@ -1,22 +1,22 @@
 using AutoMapper;
 using Core.Extensions;
 using Core.Interfaces;
-using Core.Models;
-using Core.Repositories;
-using Core.Requests;
+using Core.Models.Base;
+using Core.Models.Common;
+using Core.Models.Repositories;
+using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
-using Infra.Responses;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Repositories;
 
 public class TasksRepository : ITasksRepository
 {
-    private readonly transportationContext _context;
+    private readonly TransportationContext _context;
     private readonly IMapper _mapper;
 
-    public TasksRepository(transportationContext context, IMapper mapper)
+    public TasksRepository(TransportationContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
@@ -28,16 +28,15 @@ public class TasksRepository : ITasksRepository
         .Include(x => x.MemberPaymentTypes).ThenInclude(x => x.Member)
         .Join(
             _context.Destinations,
-            Task => Task.Id,
-            Destination => Destination.ModelId,
-            (Task, Destination) => new
+            task => task.Id,
+            destination => destination.ModelId,
+            (task, destination) => new
             {
-                Task,
-                Destination
+                Task = task, Destination = destination
             }
         )
         .Where(x => x.Destination.ModelType == "App\\Models\\Task")
-        .ApplySorting(model.SortField, model.SortDescending ?? false)
+        .ApplySorting(model)
         .ApplyPagination(model)
         .AsNoTracking()
         .ToListAsync();
@@ -53,24 +52,24 @@ public class TasksRepository : ITasksRepository
             Status = x.Task.Status,
             CreatedAt = x.Task.CreatedAt,
             UpdatedAt = x.Task.UpdatedAt,
-            Distance = new()
+            Distance = new TaskDistance
             {
-                Distance = x.Destination?.Distance,
-                Duration = x.Destination?.Duration,
+                Distance = x.Destination.Distance,
+                Duration = x.Destination.Duration,
             },
-            Servant = new()
+            Servant = new ListTasksServant
             {
-                City = x.Task.Servant?.Address,
-                FirstName = x.Task.Servant?.FirstName,
-                LastName = x.Task.Servant?.LastName,
-                UserId = x.Task.Servant?.UserId
+                City = x.Task.Servant.Address,
+                FirstName = x.Task.Servant.FirstName,
+                LastName = x.Task.Servant.LastName,
+                UserId = x.Task.Servant.UserId
             },
-            Requester = new()
+            Requester = new Requester
             {
-                Id = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member?.Id,
-                Mobile = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member?.User?.Mobile,
-                Name = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member?.User?.Name,
-                Status = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member?.Status,
+                Id = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member.Id,
+                Mobile = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member.User.Mobile,
+                Name = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member.User.Name,
+                Status = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member.Status,
 
             }
 
@@ -81,7 +80,7 @@ public class TasksRepository : ITasksRepository
     public async Task<List<ListTasksByClient>> ListTasksByClient(ListTasksByClientRequest model)
     {
         var tasks = await GetListTasksByClientRequestQuery(model)
-        .ApplySorting(model.SortField, model.SortDescending ?? false)
+        .ApplySorting(model)
         .ApplyPagination(model)
         .AsNoTracking()
         .ToListAsync();
@@ -104,12 +103,13 @@ public class TasksRepository : ITasksRepository
     #region Private Functions
     private IQueryable<Entities.Task> GetListTasksQuery(ListTasksRequest model)
     {
-        var start = model.StartAt.StartOfDay();
+        // TODO: unused fields
+        var start = model.StartAt.EndOfDay();
         var end = model.EndAt.EndOfDay();
 
         var query = _context.Tasks
-           .Where(x => x.CreatedAt >= model.StartAt.EndOfDay())
-           .Where(x => x.CreatedAt <= model.EndAt.EndOfDay())
+           .Where(x => x.CreatedAt >= start)
+           .Where(x => x.CreatedAt <= end)
            .Include(x => x.Request)
            .ThenInclude(x => x.ServiceAreaType)
            .ThenInclude(x => x.Area)
@@ -125,8 +125,8 @@ public class TasksRepository : ITasksRepository
     {
         var tasksQuery = _context.Tasks;
 
-        bool isRequestObjectRequested = model.IncludeRequest.HasValue && model.IncludeRequest.Value;
-        bool iServantObjectRequested = model.IncludeServant.HasValue && model.IncludeServant.Value;
+        var isRequestObjectRequested = model.IncludeRequest.HasValue && model.IncludeRequest.Value;
+        var iServantObjectRequested = model.IncludeServant.HasValue && model.IncludeServant.Value;
 
         if (isRequestObjectRequested)
             tasksQuery.Include(x => x.Request);
@@ -136,12 +136,11 @@ public class TasksRepository : ITasksRepository
 
         var query = tasksQuery.Join(
             _context.Members,
-            Task => Task.Id,
-            Member => Member.ModelId,
-            (Task, Member) => new
+            task => task.Id,
+            member => member.ModelId,
+            (task, member) => new
             {
-                Task,
-                Member
+                Task = task, Member = member
             }
         ).Where(x => x.Member.ModelType.Contains("Task") && x.Member.UserId == model.ClientId);
 
@@ -154,12 +153,12 @@ public class TasksRepository : ITasksRepository
         return query.Select(x =>
              new ListTasksByClient
              {
-                 Client = _mapper.Map<MemberDTO>(x.Member),
+                 Client = _mapper.Map<MemberDto>(x.Member),
                  Task = new TaskResponse
                  {
                      Id = x.Task.Id,
-                     Request = isRequestObjectRequested ? _mapper.Map<RequestDTO>(x.Task.Request) : null,
-                     Servant = iServantObjectRequested ? _mapper.Map<ServantDTO>(x.Task.Servant) : null,
+                     Request = isRequestObjectRequested ? _mapper.Map<RequestDto>(x.Task.Request) : null,
+                     Servant = iServantObjectRequested ? _mapper.Map<ServantDto>(x.Task.Servant) : null,
                      Price = x.Task.Price,
                      Tip = x.Task.Tip,
                      Status = x.Task.Status,

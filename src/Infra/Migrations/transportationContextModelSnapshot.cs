@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infra.Migrations
 {
-    [DbContext(typeof(transportationContext))]
+    [DbContext(typeof(TransportationContext))]
     partial class transportationContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -1348,9 +1348,6 @@ namespace Infra.Migrations
                         .HasColumnType("bigint(20) unsigned")
                         .HasColumnName("area_id");
 
-                    b.Property<ulong>("AreaInfoId")
-                        .HasColumnType("bigint(20) unsigned");
-
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp")
                         .HasColumnName("created_at");
@@ -1382,8 +1379,6 @@ namespace Infra.Migrations
                     b.Property<ulong>("UserId")
                         .HasColumnType("bigint(20) unsigned")
                         .HasColumnName("user_id");
-
-                    b.HasIndex("AreaInfoId");
 
                     b.HasIndex(new[] { "UserId" }, "user_id")
                         .IsUnique();
@@ -5186,20 +5181,12 @@ namespace Infra.Migrations
 
             modelBuilder.Entity("Infra.Entities.Employee", b =>
                 {
-                    b.HasOne("Infra.Entities.AreaInfo", "AreaInfo")
-                        .WithMany()
-                        .HasForeignKey("AreaInfoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Infra.Entities.User", "User")
                         .WithOne()
                         .HasForeignKey("Infra.Entities.Employee", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("employees_user_id_foreign");
-
-                    b.Navigation("AreaInfo");
 
                     b.Navigation("User");
                 });

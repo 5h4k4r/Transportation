@@ -1,4 +1,4 @@
-namespace Infra.Repositories;
+namespace Core.Models.Repositories;
 
 
 public class ServantPerformance
@@ -13,7 +13,6 @@ public class ServantPerformance
     public int OnlineDurations { get; set; }
     public int DurationOnTasks { get; set; }
     public int DistanceOnTasks { get; set; }
-    public int Id { get; set; }
 
 }
 

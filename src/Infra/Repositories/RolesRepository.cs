@@ -1,24 +1,24 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
-using Core.Models;
+using Core.Models.Base;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
-using Task = System.Threading.Tasks.Task;
+
 namespace Infra.Repositories;
 
 public class RolesRepository : IRolesRepository
 {
-    protected transportationContext _context;
+    private readonly TransportationContext _context;
     private readonly IMapper _mapper;
-    public RolesRepository(transportationContext context, IMapper mapper)
+    public RolesRepository(TransportationContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
     }
-    public Task<RoleDTO?> GetRoleById(ulong Id) => _context.Roles.Where(x => x.Id == Id).ProjectTo<RoleDTO>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+    public Task<RoleDto?> GetRoleById(ulong id) => _context.Roles.Where(x => x.Id == id).ProjectTo<RoleDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
-    public Task<List<RoleDTO>> ListRoleByTtpe(sbyte TypeId) => _context.Roles.Where(x => x.Type == TypeId).ProjectTo<RoleDTO>(_mapper.ConfigurationProvider).AsNoTracking().ToListAsync();
+    public Task<List<RoleDto>> ListRoleByTtpe(sbyte typeId) => _context.Roles.Where(x => x.Type == typeId).ProjectTo<RoleDto>(_mapper.ConfigurationProvider).AsNoTracking().ToListAsync();
 
 
 }

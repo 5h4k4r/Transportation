@@ -1,6 +1,6 @@
-using Core.Models;
-using Core.Requests;
-using Infra.Repositories;
+using Core.Models.Base;
+using Core.Models.Repositories;
+using Core.Models.Requests;
 
 namespace Core.Interfaces;
 
@@ -8,6 +8,9 @@ namespace Core.Interfaces;
 public interface IServantsRepository
 {
 
-    Task<ServantDTO?> GetServantById(ulong Id);
-    Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int ServantId, ulong ServantUserId);
+    Task<ServantDto?> GetServantById(int id, ulong areaId);
+    Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int servantId, ulong servantUserId);
+    Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId);
+    Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId);
+    void CreateServant(ServantDto servant);
 }

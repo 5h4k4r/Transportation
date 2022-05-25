@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class DiscountCode
+    public sealed class DiscountCode
     {
         public DiscountCode()
         {
@@ -24,7 +21,7 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual AreaInfo Area { get; set; } = null!;
-        public virtual ICollection<DiscountCodeUser> DiscountCodeUsers { get; set; }
+        public AreaInfo Area { get; set; } = null!;
+        public ICollection<DiscountCodeUser> DiscountCodeUsers { get; set; }
     }
 }

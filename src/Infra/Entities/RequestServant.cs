@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class RequestServant
+    public class RequestServant
     {
         public ulong RequestId { get; set; }
         public string? Online { get; set; }

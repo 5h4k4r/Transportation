@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class DestinationDTO
+﻿namespace Core.Models.Base;
+    public class DestinationDto
     {
         public ulong Id { get; set; }
         public string ModelType { get; set; } = null!;

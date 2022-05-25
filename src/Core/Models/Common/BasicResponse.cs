@@ -1,7 +1,4 @@
-using System.Text.Json.Serialization;
-using Core.Common;
-
-namespace Infra.Entities.Common;
+namespace Core.Models.Common;
 
 public sealed class BasicResponse
 {
@@ -119,6 +116,7 @@ public sealed class BasicResponse
     /// <summary>
     /// Represents error when the requested resource does not exist
     /// </summary>
+    /// <param name="resourceName"></param>
     /// <param name="resourceId">Id of the requested resource</param>
     public static BasicResponse ResourceDoesNotExist(in string resourceName,
                                                      in int resourceId)

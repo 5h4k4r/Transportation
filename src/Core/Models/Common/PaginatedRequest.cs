@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Core.Interfaces;
 
-namespace Core.Common;
+namespace Core.Models.Common;
 public class PaginatedRequest : IPagingOptions
 {
     /// <summary>

@@ -1,10 +1,10 @@
-using Core.Models;
+using Core.Models.Base;
 
 namespace Core.Interfaces;
 
 public interface IDepartmentsRepository
 {
 
-    Task<DepartmentDTO?> GetDepartmentById(ulong Id);
+    Task<DepartmentDto?> GetDepartmentById(ulong id);
 
 }

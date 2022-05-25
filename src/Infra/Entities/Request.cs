@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Request
+    public sealed class Request
     {
         public Request()
         {
@@ -24,11 +21,11 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual ServiceAreaType ServiceAreaType { get; set; } = null!;
-        public virtual RequestServant RequestServant { get; set; } = null!;
-        public virtual ICollection<DeadLine> DeadLines { get; set; }
-        public virtual ICollection<RequestOptionService> RequestOptionServices { get; set; }
-        public virtual ICollection<RequestRequirement> RequestRequirements { get; set; }
-        public virtual ICollection<Task> Tasks { get; set; }
+        public ServiceAreaType ServiceAreaType { get; set; } = null!;
+        public RequestServant RequestServant { get; set; } = null!;
+        public ICollection<DeadLine> DeadLines { get; set; }
+        public ICollection<RequestOptionService> RequestOptionServices { get; set; }
+        public ICollection<RequestRequirement> RequestRequirements { get; set; }
+        public ICollection<Task> Tasks { get; set; }
     }
 }

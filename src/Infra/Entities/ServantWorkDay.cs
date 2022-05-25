@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class ServantWorkDay
+    public sealed class ServantWorkDay
     {
         public ServantWorkDay()
         {
@@ -17,8 +14,8 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual ICollection<DailyStatistic> DailyStatistics { get; set; }
-        public virtual ICollection<ServantDailyStatistic> ServantDailyStatistics { get; set; }
-        public virtual ICollection<TaskHourlyStatistic> TaskHourlyStatistics { get; set; }
+        public ICollection<DailyStatistic> DailyStatistics { get; set; }
+        public ICollection<ServantDailyStatistic> ServantDailyStatistics { get; set; }
+        public ICollection<TaskHourlyStatistic> TaskHourlyStatistics { get; set; }
     }
 }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class DocumentDTO
+﻿namespace Core.Models.Base;
+    public class DocumentDto
     {
         public ulong Id { get; set; }
         public string Path { get; set; } = null!;

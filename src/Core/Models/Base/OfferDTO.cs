@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class OfferDTO
+﻿namespace Core.Models.Base;
+    public class OfferDto
     {
         public ulong Id { get; set; }
         public byte RoleId { get; set; }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class CategoryDTO
+﻿namespace Core.Models.Base;
+    public class CategoryDto
     {
 
         public ulong Id { get; set; }

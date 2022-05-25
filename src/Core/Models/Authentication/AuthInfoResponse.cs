@@ -1,6 +1,4 @@
-using Core.Models;
-
-namespace Core.Auth.Models;
+namespace Core.Models.Authentication;
 
 public class AuthInfo
 {
@@ -23,12 +21,12 @@ public class AuthInfo
 public class Department
 {
     public ulong Id { get; set; }
-    public Role? Role { get; set; }
+    public DepartmentRole? Role { get; set; }
     public string Title { get; set; } = string.Empty;
 
 }
 
-public class Role
+public class DepartmentRole
 {
     public ulong? Id { get; set; }
     public IEnumerable<Permission> Permissions { get; set; } = Array.Empty<Permission>();
@@ -46,12 +44,12 @@ public class MapCenter
 {
     public string Lat { get; set; } = string.Empty;
     public string Lng { get; set; } = string.Empty;
-    public MapCenter(string? LatLng)
+    public MapCenter(string? latLng)
     {
-        if (LatLng is null)
+        if (latLng is null)
             return;
 
-        var coordinates = LatLng.Split(",");
+        var coordinates = latLng.Split(",");
 
         if (coordinates.Length > 1)
         {

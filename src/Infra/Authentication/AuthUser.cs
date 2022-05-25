@@ -1,6 +1,7 @@
-namespace Transportation.Api.Auth;
-
 using System.Text.Json.Serialization;
+
+namespace Infra.Authentication;
+
 // Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
 public class Region
 {
@@ -81,5 +82,9 @@ public class AuthUser
 
     [JsonPropertyName("token")]
     public TokenObject? Token { get; set; }
+    [JsonIgnore]
+    public IEnumerable<byte>? RoleUsers { get; set; }
+    public ulong? AreaId { get; set; }
+    public ulong? LanguageId { get; set; }
 }
 

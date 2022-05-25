@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class VehicleOwnerDTO
+    public class VehicleOwnerDto
     {
         public ulong Id { get; set; }
         public ulong UserId { get; set; }
@@ -12,5 +9,6 @@ namespace Core.Models
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
+        public virtual UserDto User { get; set; } = null!;
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Group
+    public sealed class Group
     {
         public Group()
         {
@@ -15,6 +12,6 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual ICollection<GroupUser> GroupUsers { get; set; }
+        public ICollection<GroupUser> GroupUsers { get; set; }
     }
 }

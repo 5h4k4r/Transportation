@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
-using Core.Models;
+using Core.Models.Base;
 using Infra.Entities;
 using Infra.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +11,9 @@ public class UsersRepository : IUsersRepository
 {
 
 
-    private readonly transportationContext _context;
+    private readonly TransportationContext _context;
     private readonly IMapper _mapper;
-    public UsersRepository(transportationContext context, IMapper mapper)
+    public UsersRepository(TransportationContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
@@ -22,24 +22,24 @@ public class UsersRepository : IUsersRepository
 
 
 
-    public Task<UserDTO?> GetUserById([Required] int Id) =>
+    public Task<UserDto?> GetUserById([Required] int id) =>
         _context.Users
-        .Where(x => x.Id == (ulong)Id)
-        .ProjectTo<UserDTO?>(_mapper.ConfigurationProvider)
+        .Where(x => x.Id == (ulong)id)
+        .ProjectTo<UserDto?>(_mapper.ConfigurationProvider)
         .FirstOrDefaultAsync();
 
-    public Task<UserDTO?> GetUserByPhone([Required] string Phone, bool withRoleUsers = false) =>
+    public Task<UserDto?> GetUserByPhone([Required] string phone, bool withRoleUsers = false) =>
          _context.Users
-        .Where(x => x.Mobile == Phone)
+        .Where(x => x.Mobile == phone)
         .WithRoleUser(withRoleUsers)
-        .ProjectTo<UserDTO?>(_mapper.ConfigurationProvider)
+        .ProjectTo<UserDto?>(_mapper.ConfigurationProvider)
         .FirstOrDefaultAsync();
 
 
-    public Task<UserDTO?> GetUserByAuthId([Required] string AuthId, bool withRoleUsers = false) => _context.Users
-        .Where(x => x.AuthId == AuthId)
+    public Task<UserDto?> GetUserByAuthId([Required] string authId, bool withRoleUsers = false) => _context.Users
+        .Where(x => x.AuthId == authId)
         .WithRoleUser(withRoleUsers)
-        .ProjectTo<UserDTO?>(_mapper.ConfigurationProvider)
+        .ProjectTo<UserDto?>(_mapper.ConfigurationProvider)
         .FirstOrDefaultAsync();
 
 }

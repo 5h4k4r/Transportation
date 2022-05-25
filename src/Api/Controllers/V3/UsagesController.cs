@@ -1,13 +1,14 @@
 using System.Net.Mime;
 using Core.Interfaces;
-using Core.Models;
-using Infra.Entities.Common;
+using Core.Models.Base;
+using Core.Models.Common;
+using Core.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 
-namespace Api.Controllers;
+namespace Api.Controllers.V3;
 
 [ApiController]
 [Produces(MediaTypeNames.Application.Json)]
@@ -25,25 +26,23 @@ public class UsagesController : ControllerBase
     }
 
 
-    [ProducesResponseType(typeof(List<UsageDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<UsageDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet]
     public async Task<IActionResult> ListUsages()
     {
         var usages = await _unitOfWork.Usages.ListUsages();
 
-        if (usages is null)
-            return NotFound(BasicResponse.ResourceNotFound);
-
+      
         return Ok(usages);
     }
 
-    [ProducesResponseType(typeof(List<UsageDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<UsageDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUsageById([FromQuery] ulong Id)
+    public async Task<IActionResult> GetUsageById([FromQuery] ulong id)
     {
-        var usage = await _unitOfWork.Usages.GetUsageById(Id);
+        var usage = await _unitOfWork.Usages.GetUsageById(id);
 
         if (usage is null)
             return NotFound(BasicResponse.ResourceNotFound);
