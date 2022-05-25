@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using AutoMapper;
 using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
@@ -20,12 +19,9 @@ public class LanguagesController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    private readonly IMapper _mapper;
-
-    public LanguagesController(IUnitOfWork unitOfWork, IMapper mapper)
+    public LanguagesController(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
 
 

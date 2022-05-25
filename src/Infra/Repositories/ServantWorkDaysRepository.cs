@@ -23,12 +23,7 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
     {
         var excludeStartHour = model.ExcludeStartHour ;
         var excludeEndHour = model.ExcludeEndHour;
-        var today = DateTime.UtcNow;
-
-        // TODO: These two fields are not used
-        var startOfExcludedTimeSpan = new DateTime(today.Year, today.Month, today.Day, excludeStartHour ?? 0, 0, 0, 0).ToUniversalTime().TimeOfDay;
-        var endOfExcludedTimeSpan = new DateTime(today.Year, today.Month, today.Day, excludeEndHour ?? 0, 0, 0, 0).ToUniversalTime().TimeOfDay;
-
+        
         var dailyStats = await GetServantOnlinePeriodsQuery(model, servantId)
            .OrderByDescending(x => x.StartAt)
            .GroupBy(x => x.ServantDailyStatistic.DayId)
@@ -107,18 +102,7 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
 
     public Task<int> GetServantOnlinePeriodsCount(ulong servantId, GetServantOnlinePeriodsRequest model)
     {
-        var excludeStartHour = model.ExcludeStartHour ?? null;
-        var excludeEndHour = model.ExcludeEndHour ?? null;
-        var today = DateTime.UtcNow;
-
-        // TODO: Unused fields
-        var startOfExcludedTimeSpan = new DateTime(today.Year, today.Month, today.Day, excludeStartHour ?? 0, 0, 0, 0).ToUniversalTime().TimeOfDay;
-        var endOfExcludedTimeSpan = new DateTime(today.Year, today.Month, today.Day, excludeEndHour ?? 0, 0, 0, 0).ToUniversalTime().TimeOfDay;
-
         var query = GetServantOnlinePeriodsQuery(model, servantId);
-
-
-
 
         var count = query
            .OrderByDescending(x => x.StartAt)
@@ -133,12 +117,7 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
 
         var excludeStartHour = model.ExcludeStartHour ?? null;
         var excludeEndHour = model.ExcludeEndHour ?? null;
-        var today = DateTime.UtcNow;
-
-        var startOfExcludedTimeSpan = new DateTime(today.Year, today.Month, today.Day, excludeStartHour ?? 0, 0, 0, 0).ToUniversalTime().TimeOfDay;
-        var endOfExcludedTimeSpan = new DateTime(today.Year, today.Month, today.Day, excludeEndHour ?? 0, 0, 0, 0).ToUniversalTime().TimeOfDay;
-
-
+        
         var query = GetServantOnlinePeriodsQuery(model);
 
         var onlineHistory = await query

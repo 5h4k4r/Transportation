@@ -9,7 +9,7 @@ namespace Core.Models.Requests;
 
 public class ListTasksByClientRequest : IPagingOptions, ISortOptions, IValidatableObject
 {
-    private string? _SortField;
+    private string? _sortField;
 
     [Required]
     public ulong? ClientId { get; set; }
@@ -31,17 +31,17 @@ public class ListTasksByClientRequest : IPagingOptions, ISortOptions, IValidatab
     )]
     public string? SortField
     {
-        get => _SortField;
+        get => _sortField;
         set
         {
             // if value contains 'Client' then change it to Member to match the database
             if (value != null && value.Contains("Client"))
             {
-                _SortField = value.Replace("Client", "Member");
+                _sortField = value.Replace("Client", "Member");
             }
             else
             {
-                _SortField = value;
+                _sortField = value;
             }
         }
     }

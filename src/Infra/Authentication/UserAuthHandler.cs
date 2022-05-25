@@ -11,9 +11,8 @@ namespace Infra.Authentication;
 
 public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
 {
-    private readonly IOptionsMonitor<UserAuthOptions> _Options;
-    private readonly JsonSerializerOptions _JsonSerializerOptions;
-    private readonly UserAuthContext _UserAuthContext;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly UserAuthContext _userAuthContext;
     private readonly IUnitOfWork _unitOfWork;
 
     public UserAuthHandler(
@@ -25,10 +24,9 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
         IUnitOfWork unitOfWork
         ) : base(options, logger, encoder, clock)
     {
-        _Options = options;
-        _UserAuthContext = authContext;
+        _userAuthContext = authContext;
         _unitOfWork = unitOfWork;
-        _JsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        _jsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -41,7 +39,7 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
 
         try
         {
-            var resp = JsonSerializer.Deserialize<AuthUser>(auth, _JsonSerializerOptions);
+            var resp = JsonSerializer.Deserialize<AuthUser>(auth, _jsonSerializerOptions);
 
             if (resp is not { } user)
                 // return AuthenticateResult.Fail(new GatewayAuthException(GatewayAuthException.ErrorCode.InvalidUserModel, "User ID is empty"));
@@ -57,7 +55,7 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
 
             resp.RoleUsers = databaseUser.RoleUsers.Select(x=>x.RoleId);
 
-            _UserAuthContext.SetAuthUser(resp);
+            _userAuthContext.SetAuthUser(resp);
 
             var claimsIdentity = new ClaimsIdentity(GenerateClaims(user), nameof(UserAuthHandler));
             var ticket = new AuthenticationTicket(new ClaimsPrincipal(claimsIdentity), Scheme.Name);

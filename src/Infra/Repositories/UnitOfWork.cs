@@ -15,51 +15,51 @@ public class UnitOfWork : IUnitOfWork
         _mapper = mapper;
     }
 
-    private IServantsRepository? _Servants;
-    public IServantsRepository Servants => _Servants ??= new ServantsRepository(_repoContext, _mapper);
+    private IServantsRepository? _servants;
+    public IServantsRepository Servants => _servants ??= new ServantsRepository(_repoContext, _mapper);
 
-    private IVehiclesRepository? _Vehicles;
-    public IVehiclesRepository Vehicles => _Vehicles ??= new VehiclesRepository(_repoContext, _mapper);
+    private IVehiclesRepository? _vehicles;
+    public IVehiclesRepository Vehicles => _vehicles ??= new VehiclesRepository(_repoContext, _mapper);
 
-    private IUsersRepository? _User;
-    public IUsersRepository User => _User ??= new UsersRepository(_repoContext, _mapper);
+    private IUsersRepository? _user;
+    public IUsersRepository User => _user ??= new UsersRepository(_repoContext, _mapper);
 
-    private IGendersRepository? _Gender;
+    private IGendersRepository? _gender;
 
-    public IGendersRepository Genders => _Gender ??= new GendersRepository(_repoContext, _mapper);
+    public IGendersRepository Genders => _gender ??= new GendersRepository(_repoContext, _mapper);
 
-    private ITasksRepository? _Tasks;
-    public ITasksRepository Tasks => _Tasks ??= new TasksRepository(_repoContext, _mapper);
-    private IRoleUsersRepository? _RoleUsers;
-    public IRoleUsersRepository RoleUsers => _RoleUsers ??= new RoleUserRepository(_repoContext, _mapper);
+    private ITasksRepository? _tasks;
+    public ITasksRepository Tasks => _tasks ??= new TasksRepository(_repoContext, _mapper);
+    private IRoleUsersRepository? _roleUsers;
+    public IRoleUsersRepository RoleUsers => _roleUsers ??= new RoleUserRepository(_repoContext, _mapper);
 
-    private IRolesRepository? _Roles;
-    public IRolesRepository Roles => _Roles ??= new RolesRepository(_repoContext, _mapper);
+    private IRolesRepository? _roles;
+    public IRolesRepository Roles => _roles ??= new RolesRepository(_repoContext, _mapper);
 
-    private IAreaInfosRepository? _AreaInfos;
-    public IAreaInfosRepository AreaInfos => _AreaInfos ??= new AreaInfosRepository(_repoContext, _mapper);
+    private IAreaInfosRepository? _areaInfos;
+    public IAreaInfosRepository AreaInfos => _areaInfos ??= new AreaInfosRepository(_repoContext, _mapper);
 
-    private IAreaDepartmentsRepository? _AreaDepartments;
+    private IAreaDepartmentsRepository? _areaDepartments;
 
     public IAreaDepartmentsRepository AreaDepartments =>
-        _AreaDepartments ??= new AreaDepartmentsRepository(_repoContext, _mapper);
+        _areaDepartments ??= new AreaDepartmentsRepository(_repoContext, _mapper);
 
-    private IDepartmentsRepository? _Departments;
-    public IDepartmentsRepository Departments => _Departments ??= new DepartmentsRepository(_repoContext, _mapper);
+    private IDepartmentsRepository? _departments;
+    public IDepartmentsRepository Departments => _departments ??= new DepartmentsRepository(_repoContext, _mapper);
 
-    private IEmployeesRepository? _Employees;
-    public IEmployeesRepository Employees => _Employees ??= new EmployeesRepository(_repoContext, _mapper);
+    private IEmployeesRepository? _employees;
+    public IEmployeesRepository Employees => _employees ??= new EmployeesRepository(_repoContext, _mapper);
 
-    private ILanguagesRepository? _Languages;
-    public ILanguagesRepository Languages => _Languages ??= new LanguagesRepository(_repoContext, _mapper);
+    private ILanguagesRepository? _languages;
+    public ILanguagesRepository Languages => _languages ??= new LanguagesRepository(_repoContext, _mapper);
 
-    private IServantWorkDaysRepository? _ServantWorkDays;
+    private IServantWorkDaysRepository? _servantWorkDays;
 
     public IServantWorkDaysRepository ServantWorkDays =>
-        _ServantWorkDays ??= new ServantWorkDaysRepository(_repoContext);
+        _servantWorkDays ??= new ServantWorkDaysRepository(_repoContext);
 
-    private IUsagesRepository? _Usages;
-    public IUsagesRepository Usages => _Usages ??= new UsagesRepository(_repoContext, _mapper);
+    private IUsagesRepository? _usages;
+    public IUsagesRepository Usages => _usages ??= new UsagesRepository(_repoContext, _mapper);
 
 
     public Task<int> Save() => _repoContext.SaveChangesAsync();
