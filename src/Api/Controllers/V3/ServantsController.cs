@@ -205,10 +205,23 @@ public class ServantsController : ControllerBase
     [HttpPost]
     public IActionResult CreateServant([FromBody] CreateServantRequest request)
     {
-        var servant = _mapper.Map<ServantDTO>(request);
-        _unitOfWork.Servants.CreateServant(servant);
+        try
+        {
+            var servant = _mapper.Map<ServantDTO>(request);
+            _unitOfWork.Servants.CreateServant(servant);
 
-        return Ok(BasicResponse.Successful);
+            var isSave = _unitOfWork.Save();
+            
+            return Ok(BasicResponse.Successful);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return NotFound(BasicResponse.Unknown);
+        }
+        
+
+        
 
     }
 
