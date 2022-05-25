@@ -17,4 +17,6 @@ public class ServantDto
     public DateTime? DeletedAt { get; set; }
     public IEnumerable<ServantScoreDto>? ServantScores { get; set; }
 
+    public virtual UserDto User { get; set; } = null!;
+
 }

@@ -45,10 +45,11 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var servants = await _unitOfWork.Servants.ListServants(model, user.AreaId.Value);
+        var items = await _unitOfWork.Servants.ListServants(model, user.AreaId.Value);
+        var count = await _unitOfWork.Servants.ListServantsCount(model, user.AreaId.Value);
 
 
-        return Ok(servants);
+        return Ok(new PaginatedResponse<ServantDto>(count, model, items));
 
 
     }
@@ -69,7 +70,7 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantById((ulong)id, user.AreaId.Value);
+        var servant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceNotFound);
@@ -100,7 +101,7 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var databaseServant = await _unitOfWork.Servants.GetServantById((ulong)id, user.AreaId.Value);
+        var databaseServant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
 
         if (databaseServant == null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(ServantPerformed), id));
@@ -150,7 +151,7 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantById((ulong)id, user.AreaId.Value);
+        var servant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), id));

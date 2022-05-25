@@ -2,7 +2,7 @@
 
 namespace Infra.Entities
 {
-    public class TransportationContext : DbContext
+    public partial class TransportationContext : DbContext
     {
         public TransportationContext()
         {
@@ -4976,9 +4976,6 @@ namespace Infra.Entities
         }
 
         // TODO: Unimplemented
-        private void OnModelCreatingPartial(ModelBuilder modelBuilder)
-        {
-            throw new NotImplementedException();
-        }
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

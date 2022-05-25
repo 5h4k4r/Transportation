@@ -36,7 +36,7 @@ public class TasksRepository : ITasksRepository
             }
         )
         .Where(x => x.Destination.ModelType == "App\\Models\\Task")
-        .ApplySorting(model.SortField, model.SortDescending ?? false)
+        .ApplySorting(model)
         .ApplyPagination(model)
         .AsNoTracking()
         .ToListAsync();
@@ -80,7 +80,7 @@ public class TasksRepository : ITasksRepository
     public async Task<List<ListTasksByClient>> ListTasksByClient(ListTasksByClientRequest model)
     {
         var tasks = await GetListTasksByClientRequestQuery(model)
-        .ApplySorting(model.SortField, model.SortDescending ?? false)
+        .ApplySorting(model)
         .ApplyPagination(model)
         .AsNoTracking()
         .ToListAsync();

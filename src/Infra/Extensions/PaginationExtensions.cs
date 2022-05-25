@@ -15,17 +15,17 @@ public static class PaginationExtensions
         return dbSet.Skip(page * limit).Take(limit);
     }
 
-    public static IQueryable<T> ApplySorting<T>(this IQueryable<T> source, string? columnName, bool isDescending = true)
+    public static IQueryable<T> ApplySorting<T>(this IQueryable<T> source, ISortOptions model)
     {
         try
         {
             // return unsorted if no property name was given
-            if (string.IsNullOrEmpty(columnName))
+            if (string.IsNullOrEmpty(model.SortField))
                 return source;
             // Sorted by property of a property ie. Task.Id
-            if (columnName.Contains('.'))
+            if (model.SortField.Contains('.'))
             {
-                var nameParts = columnName.Split('.');
+                var nameParts = model.SortField.Split('.');
                 var parentPropertyName = nameParts[0];
                 var childPropertyName = nameParts[1];
 
@@ -35,7 +35,7 @@ public static class PaginationExtensions
                 var childProperty = Expression.Property(parentProperty, childPropertyName); // x.Task.id
 
                 var lambdaExpression = Expression.Lambda(childProperty, parameterExpression); // param_0 => x.Task.id
-                var methodName = isDescending ? "OrderByDescending" : "OrderBy";
+                var methodName = model.SortDescending ?? false ? "OrderByDescending" : "OrderBy";
 
                 Expression methodCallExpression = Expression.Call(typeof(Queryable), methodName,
                     new[] { source.ElementType, childProperty.Type },
@@ -46,10 +46,10 @@ public static class PaginationExtensions
             else // Sorted by a property ie. Id
             {
                 var parameter = Expression.Parameter(source.ElementType, ""); // x
-                var property = Expression.Property(parameter, columnName); // x.id
+                var property = Expression.Property(parameter, model.SortField); // x.id
                 var lambda = Expression.Lambda(property, parameter); // x => x.id
 
-                var methodName = isDescending ? "OrderByDescending" : "OrderBy";
+                var methodName = model.SortDescending ?? false ? "OrderByDescending" : "OrderBy";
 
                 Expression methodCallExpression = Expression.Call(typeof(Queryable), methodName,
                     new[] { source.ElementType, property.Type },
