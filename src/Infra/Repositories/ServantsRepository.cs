@@ -147,10 +147,6 @@ public class ServantsRepository : IServantsRepository
         if (model.SearchField is null || model.SearchValue is null)
             return query.ProjectTo<ServantDto>(_mapper.ConfigurationProvider).ToListAsync();
 
-
-        if (model.SearchField is null || model.SearchValue is null)
-            return query;
-
         if (model.SearchField == "Name")
             query = query.Where(x => x.FirstName.Contains(model.SearchValue) || x.LastName.Contains(model.SearchValue));
 
