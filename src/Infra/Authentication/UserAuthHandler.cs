@@ -52,6 +52,7 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
             resp.RoleUsers = databaseUser.RoleUsers.Select(x=>x.RoleId);
             resp.AreaId = databaseUser.AreaId;
             resp.LanguageId = databaseUser.LanguageId;
+            resp.MySqlId = databaseUser.Id;
             _userAuthContext.SetAuthUser(resp);
 
             var claimsIdentity = new ClaimsIdentity(GenerateClaims(user), nameof(UserAuthHandler));
@@ -101,6 +102,9 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
     
         if(user.LanguageId is not null)
             claims.Add(new Claim(ClaimTypes.Locality, user.LanguageId.ToString()));
+        
+        if(user.MySqlId is not null)
+            claims.Add(new Claim(ClaimTypes.Sid, user.MySqlId.ToString()));
 
         return claims;
     }
