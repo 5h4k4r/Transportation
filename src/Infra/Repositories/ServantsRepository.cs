@@ -157,7 +157,7 @@ public class ServantsRepository : IServantsRepository
             query = query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue));
 
 
-        return query.ProjectTo<ServantDTO>(_mapper.ConfigurationProvider).ApplyPagination(model).ToListAsync(); ;
+        return query.ProjectTo<ServantDTO>(_mapper.ConfigurationProvider).ApplyPagination(model).ToListAsync();
 
     }
 
