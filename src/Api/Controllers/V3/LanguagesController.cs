@@ -37,8 +37,9 @@ public class LanguagesController : ControllerBase
 
             return Ok(locales);
         }
+
         var languages = await _unitOfWork.Languages.ListLanguages();
-        
+
         return Ok(languages);
     }
 
@@ -61,8 +62,7 @@ public class LanguagesController : ControllerBase
         {
             var sqlException = _unitOfWork.GetException<MySqlException>(ex);
 
-            if (sqlException != null
-                && (sqlException.Number == 1062))
+            if (sqlException is { Number: 1062 })
                 return BadRequest(BasicResponse.DuplicateEntry(language.Locale));
 
 
