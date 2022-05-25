@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class TelescopeEntriesTagDTO
+    public class TelescopeEntriesTagDto
     {
         public Guid EntryUuid { get; set; }
         public string Tag { get; set; } = null!;

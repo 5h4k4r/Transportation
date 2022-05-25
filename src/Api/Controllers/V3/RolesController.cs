@@ -1,11 +1,11 @@
 using System.Net.Mime;
 using Core.Interfaces;
-using Core.Models;
-using Infra.Entities.Common;
+using Core.Models.Base;
+using Core.Models.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers;
+namespace Api.Controllers.V3;
 
 
 [Authorize]
@@ -22,13 +22,13 @@ public class RolesController : ControllerBase
         _unitOfWork = unitOfWork;
     }
 
-    [ProducesResponseType(typeof(List<RoleDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<RoleDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{type}")]
     public async Task<ActionResult> ListRolesByType(sbyte type)
     {
         var roles = await _unitOfWork.Roles.ListRoleByTtpe(type);
-        if (roles is null)
+        if (roles.Count == 0)
             return NotFound();
 
         return Ok(roles);

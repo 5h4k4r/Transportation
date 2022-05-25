@@ -1,9 +1,9 @@
-using Core.Models;
+using Core.Models.Base;
 
 
 namespace Core.Interfaces;
 
 public interface IGendersRepository
 {
-    Task<List<GenderTranslationDTO>> ListGenders(uint LanguageId);
+    Task<List<GenderTranslationDto>> ListGenders(uint languageId);
 }

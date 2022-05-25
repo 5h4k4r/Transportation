@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Label
+    public sealed class Label
     {
         public Label()
         {
@@ -19,7 +16,7 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual Unit? Unit { get; set; }
-        public virtual ICollection<Field> Fields { get; set; }
+        public Unit? Unit { get; set; }
+        public ICollection<Field> Fields { get; set; }
     }
 }

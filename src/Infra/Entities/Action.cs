@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Action
+    public sealed class Action
     {
         public Action()
         {
@@ -16,6 +13,6 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual ICollection<ActionUsage> ActionUsages { get; set; }
+        public ICollection<ActionUsage> ActionUsages { get; set; }
     }
 }

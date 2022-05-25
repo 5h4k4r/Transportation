@@ -1,15 +1,15 @@
-using Core.Models;
-using Core.Requests;
+using Core.Models.Base;
+using Core.Models.Requests;
 
 namespace Core.Interfaces;
 
 public interface IAreaInfosRepository
 {
-    Task<AreaInfoDTO?> GetAreaInfoById(ulong Id);
+    Task<AreaInfoDto?> GetAreaInfoById(ulong id);
 
-    Task<AreaInfoDTO?> GetAreaInfoByUser(UserDTO user);
-    Task<AreaInfoDTO?> GetAreaInfoByTitle(string Title);
-    Task<List<AreaInfoDTO>> ListAreaInfos(ListAreaInfosRequest model);
+    Task<AreaInfoDto?> GetAreaInfoByUser(UserDto user);
+    Task<AreaInfoDto?> GetAreaInfoByTitle(string title);
+    Task<List<AreaInfoDto>> ListAreaInfos(ListAreaInfosRequest model);
 
 
 }

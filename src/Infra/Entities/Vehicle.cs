@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Vehicle
+    public sealed class Vehicle
     {
         public Vehicle()
         {
@@ -19,8 +16,8 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<VehicleDetail> VehicleDetails { get; set; }
-        public virtual ICollection<VehicleOwner> VehicleOwners { get; set; }
-        public virtual ICollection<VehicleUser> VehicleUsers { get; set; }
+        public ICollection<VehicleDetail> VehicleDetails { get; set; }
+        public ICollection<VehicleOwner> VehicleOwners { get; set; }
+        public ICollection<VehicleUser> VehicleUsers { get; set; }
     }
 }

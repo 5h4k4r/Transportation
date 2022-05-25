@@ -1,12 +1,11 @@
-using System.ComponentModel.DataAnnotations;
-using Core.Models;
+using Core.Models.Base;
 
 namespace Core.Interfaces;
 
 public interface IUsersRepository
 {
 
-    Task<UserDTO?> GetUserById(int Id);
-    Task<UserDTO?> GetUserByPhone(string Phone, bool withRoleUsers = false);
-    Task<UserDTO?> GetUserByAuthId(string AuthId, bool withRoleUsers = false);
+    Task<UserDto?> GetUserById(int id);
+    Task<UserDto?> GetUserByPhone(string phone, bool withRoleUsers = false);
+    Task<UserDto?> GetUserByAuthId(string authId, bool withRoleUsers = false);
 }

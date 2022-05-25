@@ -1,6 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+using Core.Validations;
 
-namespace Core.Requests;
+namespace Core.Models.Requests;
 
 public class ListAreaInfosRequest
 {

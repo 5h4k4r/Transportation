@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class TelescopeEntriesTag
+    public class TelescopeEntriesTag
     {
         public Guid EntryUuid { get; set; }
         public string Tag { get; set; } = null!;

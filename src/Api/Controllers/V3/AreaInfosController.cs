@@ -1,16 +1,15 @@
 using System.Net.Mime;
 using Api.Extensions;
-using Core.Helpers;
 using Core.Interfaces;
-using Core.Models;
-using Core.Requests;
-using Infra.Entities;
-using Infra.Entities.Common;
-using Infra.Responses;
+using Core.Models.Base;
+using Core.Models.Common;
+using Core.Models.Requests;
+using Infra.Authentication;
+using Infra.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers;
+namespace Api.Controllers.V3;
 
 [ApiController]
 [Produces(MediaTypeNames.Application.Json)]
@@ -35,14 +34,14 @@ public class AreaInfosController : ControllerBase
     public async Task<ActionResult> ListAreaInfos([FromQuery] ListAreaInfosRequest model, [FromServices] UserAuthContext authContext)
     {
         var user = authContext.GetAuthUser();
-        var MySqlUser = await _unitOfWork.User.GetUserByAuthId(user.Id, true);
+        var mySqlUser = await _unitOfWork.User.GetUserByAuthId(user.Id, true);
 
-        if (MySqlUser is null)
+        if (mySqlUser is null)
             return BadRequest();
 
-        var areaList = new List<AreaInfoDTO>();
+        var areaList = new List<AreaInfoDto>();
 
-        if (MySqlUser.HasRole("superadmin"))
+        if (mySqlUser.HasRole("superadmin"))
             areaList = await _unitOfWork.AreaInfos.ListAreaInfos(model);
 
         else
@@ -50,9 +49,8 @@ public class AreaInfosController : ControllerBase
 
 
             // TODO: this can be done with a join with area_infos table if area_id in employee table was foreign key
-            // Done!
 
-            var employee = await _unitOfWork.Employees.GetEmployeeByUserId(MySqlUser.Id);
+            var employee = await _unitOfWork.Employees.GetEmployeeByUserId(mySqlUser.Id);
 
 
             if (employee is null || !employee.AreaId.HasValue)
@@ -61,10 +59,10 @@ public class AreaInfosController : ControllerBase
             var areaInfo = employee.AreaInfo;
 
             if (areaInfo is not null)
-                areaList = new List<AreaInfoDTO> { areaInfo };
+                areaList = new List<AreaInfoDto> { areaInfo };
         }
 
-        List<ListAreaInfoResponse> areasResponse = areaList.Select(x => new ListAreaInfoResponse
+        var areasResponse = areaList.Select(x => new ListAreaInfoResponse
         {
             Id = x.Id,
             Title = x.Title,

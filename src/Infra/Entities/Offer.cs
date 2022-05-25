@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Offer
+    public class Offer
     {
         public ulong Id { get; set; }
         public byte RoleId { get; set; }

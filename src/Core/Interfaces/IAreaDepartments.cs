@@ -1,11 +1,11 @@
-using Core.Models;
+using Core.Models.Base;
 
 namespace Core.Interfaces
 {
     public interface IAreaDepartmentsRepository
     {
-        Task<List<AreaDepartmentDTO>> GetAreaDepartmentsByRoleUserId(ulong Id);
+        Task<List<AreaDepartmentDto>> GetAreaDepartmentsByRoleUserId(ulong id);
 
-        Task<AreaDepartmentDTO?> GetAreaDepartmentByRoleUserId(ulong id);
+        Task<AreaDepartmentDto?> GetAreaDepartmentByRoleUserId(ulong id);
     }
 }

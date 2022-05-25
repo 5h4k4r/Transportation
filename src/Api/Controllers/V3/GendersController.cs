@@ -1,13 +1,12 @@
 using System.Net.Mime;
-using AutoMapper;
-using Core.Helpers;
 using Core.Interfaces;
-using Core.Models;
-using Infra.Entities.Common;
+using Core.Models.Base;
+using Core.Models.Common;
+using Infra.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers;
+namespace Api.Controllers.V3;
 
 [Authorize]
 [ApiController]
@@ -18,16 +17,13 @@ public class GendersController : ControllerBase
 {
 
     private readonly IUnitOfWork _unitOfWork;
-
-    private readonly IMapper _mapper;
-
-    public GendersController(IUnitOfWork unitOfWork, IMapper mapper)
+    public GendersController(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
+     
     }
 
-    [ProducesResponseType(typeof(List<GenderTranslationDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<GenderTranslationDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet]
     public async Task<ActionResult> ListGenders([FromServices] UserAuthContext authContext)
@@ -44,12 +40,12 @@ public class GendersController : ControllerBase
         if (!user.LanguageId.HasValue)
             user.LanguageId = 3;
 
-        var Gender = await _unitOfWork.Genders.ListGenders(user.LanguageId.Value);
+        var gender = await _unitOfWork.Genders.ListGenders(user.LanguageId.Value);
 
-        if (Gender.Count == 0)
-            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Gender), (int)user.LanguageId, nameof(user.LanguageId)));
+        if (gender.Count == 0)
+            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(gender), (int)user.LanguageId, nameof(user.LanguageId)));
 
-        return Ok(Gender);
+        return Ok(gender);
     }
 
 

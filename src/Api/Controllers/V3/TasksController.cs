@@ -1,15 +1,13 @@
 using System.Net.Mime;
-using Core.Common;
-using Core.Helpers;
 using Core.Interfaces;
-using Core.Repositories;
-using Core.Requests;
-using Infra.Entities.Common;
-using Infra.Responses;
+using Core.Models.Common;
+using Core.Models.Repositories;
+using Core.Models.Requests;
+using Infra.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers;
+namespace Api.Controllers.V3;
 
 
 [Authorize]
@@ -35,9 +33,9 @@ public class TasksController : ControllerBase
     [ProducesResponseType(typeof(PaginatedResponse<ListTasks>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListTasks([FromQuery] ListTasksRequest model, [FromServices] UserAuthContext authContext)
     {
-        var AuthId = authContext.GetAuthUser().Id;
+        var authId = authContext.GetAuthUser().Id;
 
-        var user = await _unitOfWork.User.GetUserByAuthId(AuthId);
+        var user = await _unitOfWork.User.GetUserByAuthId(authId);
 
         if (user is null || !user.AreaId.HasValue)
             return NotFound();
@@ -47,9 +45,6 @@ public class TasksController : ControllerBase
 
         var items = await _unitOfWork.Tasks.ListTasks(model);
         var count = await _unitOfWork.Tasks.CountTasks(model);
-
-        if (items is null)
-            return NotFound();
 
         return Ok(new PaginatedResponse<ListTasks>(count, model, items));
     }
@@ -64,9 +59,6 @@ public class TasksController : ControllerBase
     {
         var items = await _unitOfWork.Tasks.ListTasksByClient(model);
         var count = await _unitOfWork.Tasks.CountClientTasks(model);
-
-        if (items is null)
-            return NotFound();
 
         return Ok(new PaginatedResponse<ListTasksByClient>(count, model, items));
     }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Option
+    public sealed class Option
     {
         public Option()
         {
@@ -18,8 +15,8 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<OptionServiceAreaType> OptionServiceAreaTypes { get; set; }
-        public virtual ICollection<OptionSubscriber> OptionSubscribers { get; set; }
-        public virtual ICollection<RequestOptionService> RequestOptionServices { get; set; }
+        public ICollection<OptionServiceAreaType> OptionServiceAreaTypes { get; set; }
+        public ICollection<OptionSubscriber> OptionSubscribers { get; set; }
+        public ICollection<RequestOptionService> RequestOptionServices { get; set; }
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class DiscountCodeServiceAreaType
+    public class DiscountCodeServiceAreaType
     {
         public ulong DiscountCodeId { get; set; }
         public ulong ServiceAreaTypeId { get; set; }

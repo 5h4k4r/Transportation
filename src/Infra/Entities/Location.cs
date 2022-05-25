@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Location
+    public class Location
     {
         public ulong Id { get; set; }
         public ulong TraceId { get; set; }

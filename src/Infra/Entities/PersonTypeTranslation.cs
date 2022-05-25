@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class PersonTypeTranslation
+    public class PersonTypeTranslation
     {
         public ulong Id { get; set; }
         public ulong PersonTypeId { get; set; }

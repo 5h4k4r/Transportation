@@ -1,12 +1,12 @@
-using Core.Models;
+using Core.Models.Base;
 
-namespace Core.Repositories;
+namespace Core.Models.Repositories;
 
 public class TaskResponse
 {
     public ulong Id { get; set; }
-    public RequestDTO? Request { get; set; }
-    public ServantDTO? Servant { get; set; }
+    public RequestDto? Request { get; set; }
+    public ServantDto? Servant { get; set; }
     public int Price { get; set; }
     public int Tip { get; set; }
     public sbyte Status { get; set; }

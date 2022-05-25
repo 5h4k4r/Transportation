@@ -1,33 +1,33 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
-using Core.Models;
-using Core.Requests;
+using Core.Models.Base;
+using Core.Models.Requests;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
-using Task = System.Threading.Tasks.Task;
+
 namespace Infra.Repositories;
 
 public class EmployeesRepository : IEmployeesRepository
 {
-    protected transportationContext _context;
+    protected TransportationContext _Context;
     private readonly IMapper _mapper;
-    public EmployeesRepository(transportationContext context, IMapper mapper)
+    public EmployeesRepository(TransportationContext context, IMapper mapper)
     {
-        _context = context;
+        _Context = context;
         _mapper = mapper;
     }
 
-    public EmployeeDTO ChangeEmployeeLanguage(ChangeEmployeeLanguageRequest model)
+    public EmployeeDto ChangeEmployeeLanguage(ChangeEmployeeLanguageRequest model)
     {
 
-        var databaseModel = _context.Employees.Update(new Employee { UserId = model.UserId, LanguageId = (uint)model.LanguageId!.Value });
+        var databaseModel = _Context.Employees.Update(new Employee { UserId = model.UserId, LanguageId = (uint)model.LanguageId!.Value });
 
-        return _mapper.Map<EmployeeDTO>(databaseModel);
+        return _mapper.Map<EmployeeDto>(databaseModel);
     }
 
-    public Task<EmployeeDTO?> GetEmployeeByUserId(ulong Id) =>
-         _context.Employees.Where(x => x.UserId == Id).ProjectTo<EmployeeDTO?>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+    public Task<EmployeeDto?> GetEmployeeByUserId(ulong id) =>
+         _Context.Employees.Where(x => x.UserId == id).ProjectTo<EmployeeDto?>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
 
 }

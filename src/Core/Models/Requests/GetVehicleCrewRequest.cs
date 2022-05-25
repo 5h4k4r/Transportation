@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Core.Requests;
+namespace Core.Models.Requests;
 
 public class GetVehicleCrewRequest
 {

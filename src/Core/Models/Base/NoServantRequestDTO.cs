@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class NoServantRequestDTO
+﻿namespace Core.Models.Base;
+    public class NoServantRequestDto
     {
         public ulong Id { get; set; }
         public ulong UserId { get; set; }

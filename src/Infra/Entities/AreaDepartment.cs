@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class AreaDepartment
+    public class AreaDepartment
     {
         public ulong Id { get; set; }
         public ulong? AreaId { get; set; }

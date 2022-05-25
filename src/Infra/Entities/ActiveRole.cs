@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class ActiveRole
+    public class ActiveRole
     {
         public ulong UserId { get; set; }
         public byte RoleId { get; set; }

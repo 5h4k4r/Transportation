@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class TaxiMeterDTO
+    public class TaxiMeterDto
     {
         public ulong TaskId { get; set; }
         public string Point1 { get; set; } = null!;

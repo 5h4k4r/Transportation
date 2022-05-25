@@ -1,5 +1,5 @@
 
-namespace Core.Auth.Models;
+namespace Core.Models.Authentication;
 
 public enum Role
 {

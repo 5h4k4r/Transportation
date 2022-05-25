@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class DeviceTaskDTO
+﻿namespace Core.Models.Base;
+    public class DeviceTaskDto
     {
         public ulong TaskId { get; set; }
         public ulong DeviceId { get; set; }

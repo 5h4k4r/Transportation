@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class ServiceAreaType
+    public sealed class ServiceAreaType
     {
         public ServiceAreaType()
         {
@@ -29,18 +26,18 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual AreaInfo Area { get; set; } = null!;
-        public virtual Category Category { get; set; } = null!;
-        public virtual Service Service { get; set; } = null!;
-        public virtual Type? Type { get; set; }
-        public virtual Usage? Usage { get; set; }
-        public virtual ICollection<AttributeServiceAreaType> AttributeServiceAreaTypes { get; set; }
-        public virtual ICollection<Commission> Commissions { get; set; }
-        public virtual ICollection<Discount> Discounts { get; set; }
-        public virtual ICollection<NoServantRequest> NoServantRequests { get; set; }
-        public virtual ICollection<OptionServiceAreaType> OptionServiceAreaTypes { get; set; }
-        public virtual ICollection<Request> Requests { get; set; }
-        public virtual ICollection<Requirement> Requirements { get; set; }
-        public virtual ICollection<ServiceAreaTypeTranslation> ServiceAreaTypeTranslations { get; set; }
+        public AreaInfo Area { get; set; } = null!;
+        public Category Category { get; set; } = null!;
+        public Service Service { get; set; } = null!;
+        public Type? Type { get; set; }
+        public Usage? Usage { get; set; }
+        public ICollection<AttributeServiceAreaType> AttributeServiceAreaTypes { get; set; }
+        public ICollection<Commission> Commissions { get; set; }
+        public ICollection<Discount> Discounts { get; set; }
+        public ICollection<NoServantRequest> NoServantRequests { get; set; }
+        public ICollection<OptionServiceAreaType> OptionServiceAreaTypes { get; set; }
+        public ICollection<Request> Requests { get; set; }
+        public ICollection<Requirement> Requirements { get; set; }
+        public ICollection<ServiceAreaTypeTranslation> ServiceAreaTypeTranslations { get; set; }
     }
 }

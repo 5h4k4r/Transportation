@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Commission
+    public class Commission
     {
         public ulong Id { get; set; }
         public ulong ServiceAreaTypeId { get; set; }

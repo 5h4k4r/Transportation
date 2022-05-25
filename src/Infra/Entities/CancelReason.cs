@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class CancelReason
+    public sealed class CancelReason
     {
         public CancelReason()
         {
@@ -17,7 +14,7 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<CancelReasonTranslation> CancelReasonTranslations { get; set; }
-        public virtual ICollection<CanceledTask> CanceledTasks { get; set; }
+        public ICollection<CancelReasonTranslation> CancelReasonTranslations { get; set; }
+        public ICollection<CanceledTask> CanceledTasks { get; set; }
     }
 }

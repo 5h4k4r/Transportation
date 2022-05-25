@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class PersonTypeTranslationDTO
+    public class PersonTypeTranslationDto
     {
         public ulong Id { get; set; }
         public ulong PersonTypeId { get; set; }

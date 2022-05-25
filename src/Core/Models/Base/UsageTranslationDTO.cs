@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class UsageTranslationDTO
+﻿namespace Core.Models.Base;
+    public class UsageTranslationDto
     {
         public ulong Id { get; set; }
         public ulong UsageId { get; set; }

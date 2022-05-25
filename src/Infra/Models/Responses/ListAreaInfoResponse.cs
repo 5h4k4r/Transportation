@@ -1,4 +1,4 @@
-namespace Infra.Responses;
+namespace Infra.Models.Responses;
 
 public class ListAreaInfoResponse
 {
