@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Service
+    public sealed class Service
     {
         public Service()
         {
@@ -23,13 +20,13 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<Account> Accounts { get; set; }
-        public virtual ICollection<DailyStatistic> DailyStatistics { get; set; }
-        public virtual ICollection<RequestOptionService> RequestOptionServices { get; set; }
-        public virtual ICollection<ServantDailyStatistic> ServantDailyStatistics { get; set; }
-        public virtual ICollection<ServantScore> ServantScores { get; set; }
-        public virtual ICollection<ServiceAreaType> ServiceAreaTypes { get; set; }
-        public virtual ICollection<ServiceTranslation> ServiceTranslations { get; set; }
-        public virtual ICollection<TaskHourlyStatistic> TaskHourlyStatistics { get; set; }
+        public ICollection<Account> Accounts { get; set; }
+        public ICollection<DailyStatistic> DailyStatistics { get; set; }
+        public ICollection<RequestOptionService> RequestOptionServices { get; set; }
+        public ICollection<ServantDailyStatistic> ServantDailyStatistics { get; set; }
+        public ICollection<ServantScore> ServantScores { get; set; }
+        public ICollection<ServiceAreaType> ServiceAreaTypes { get; set; }
+        public ICollection<ServiceTranslation> ServiceTranslations { get; set; }
+        public ICollection<TaskHourlyStatistic> TaskHourlyStatistics { get; set; }
     }
 }

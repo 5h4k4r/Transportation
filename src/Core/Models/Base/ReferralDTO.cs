@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class ReferralDTO
+    public class ReferralDto
     {
         public ulong Id { get; set; }
         public ulong InviterId { get; set; }

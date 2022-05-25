@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class UnitDTO
+    public class UnitDto
     {
 
         public ulong Id { get; set; }

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-public partial class ServantDTO
+﻿namespace Core.Models.Base;
+public class ServantDto
 {
 
     public int Id { get; set; }
@@ -18,7 +15,7 @@ public partial class ServantDTO
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
-    public IEnumerable<ServantScoreDTO>? ServantScores { get; set; }
+    public IEnumerable<ServantScoreDto>? ServantScores { get; set; }
 
     public virtual UserDTO User { get; set; } = null!;
 

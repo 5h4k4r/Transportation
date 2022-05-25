@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class ClientFileDTO
+﻿namespace Core.Models.Base;
+    public class ClientFileDto
     {
         public ulong Id { get; set; }
         public ulong FileId { get; set; }

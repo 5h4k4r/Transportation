@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 
-namespace Core.Helpers;
+namespace Infra.Authentication;
 
 
 public class UserAuthOptions : AuthenticationSchemeOptions

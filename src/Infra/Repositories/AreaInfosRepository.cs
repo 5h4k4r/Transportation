@@ -1,45 +1,44 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core.Helpers;
 using Core.Interfaces;
-using Core.Models;
-using Core.Requests;
+using Core.Models.Base;
+using Core.Models.Requests;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
 namespace Infra.Repositories;
 
 public class AreaInfosRepository : IAreaInfosRepository
 {
-    protected transportationContext _context;
+    protected TransportationContext _Context;
     private readonly IMapper _mapper;
-    public AreaInfosRepository(transportationContext context, IMapper mapper)
+    public AreaInfosRepository(TransportationContext context, IMapper mapper)
     {
-        _context = context;
+        _Context = context;
         _mapper = mapper;
     }
 
-    public Task<AreaInfoDTO?> GetAreaInfoById(ulong Id) =>
-     _context.AreaInfos
-             .ProjectTo<AreaInfoDTO>(_mapper.ConfigurationProvider)
-             .Where(x => x.Id == Id)
+    public Task<AreaInfoDto?> GetAreaInfoById(ulong id) =>
+     _Context.AreaInfos
+             .ProjectTo<AreaInfoDto>(_mapper.ConfigurationProvider)
+             .Where(x => x.Id == id)
              .FirstOrDefaultAsync();
 
 
-    public Task<AreaInfoDTO?> GetAreaInfoByUser(UserDTO user) =>
-         _context.AreaInfos.Where(x => x.Id == user.AreaId).ProjectTo<AreaInfoDTO>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
+    public Task<AreaInfoDto?> GetAreaInfoByUser(UserDto user) =>
+         _Context.AreaInfos.Where(x => x.Id == user.AreaId).ProjectTo<AreaInfoDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
 
-    public Task<AreaInfoDTO?> GetAreaInfoByTitle(string Title) =>
-    _context.AreaInfos
-            .Where(x => x.Title == Title)
-            .ProjectTo<AreaInfoDTO>(_mapper.ConfigurationProvider)
+    public Task<AreaInfoDto?> GetAreaInfoByTitle(string title) =>
+    _Context.AreaInfos
+            .Where(x => x.Title == title)
+            .ProjectTo<AreaInfoDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
 
 
 
-    public Task<List<AreaInfoDTO>> ListAreaInfos(ListAreaInfosRequest? model)
+    public Task<List<AreaInfoDto>> ListAreaInfos(ListAreaInfosRequest? model)
     {
-        var query = _context.AreaInfos.AsQueryable();
+        var query = _Context.AreaInfos.AsQueryable();
 
         if (model?.Type is not null)
             query = query.Where(x => x.Type == model.Type);
@@ -47,6 +46,6 @@ public class AreaInfosRepository : IAreaInfosRepository
         if (model?.Title is not null)
             query = query.Where(x => x.Title.Equals(model.Title));
 
-        return query.ProjectTo<AreaInfoDTO>(_mapper.ConfigurationProvider).ToListAsync();
+        return query.ProjectTo<AreaInfoDto>(_mapper.ConfigurationProvider).ToListAsync();
     }
 }

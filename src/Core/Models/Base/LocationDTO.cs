@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class LocationDTO
+﻿namespace Core.Models.Base;
+    public class LocationDto
     {
         public ulong Id { get; set; }
         public ulong TraceId { get; set; }

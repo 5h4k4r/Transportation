@@ -1,6 +1,6 @@
-using Core.Repositories;
+using Core.Models.Repositories;
 
-namespace Infra.Repositories;
+namespace Infra.Models.Responses;
 
 public class ServantPerformanceWithUserResponse
 {

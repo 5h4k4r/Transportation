@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class TaskFactor
+    public class TaskFactor
     {
         public ulong Id { get; set; }
         public ulong TaskId { get; set; }

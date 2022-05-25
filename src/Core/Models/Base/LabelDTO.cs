@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class LabelDTO
+﻿namespace Core.Models.Base;
+    public class LabelDto
     {
 
         public ulong Id { get; set; }

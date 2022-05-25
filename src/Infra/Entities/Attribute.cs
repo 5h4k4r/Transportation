@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Attribute
+    public sealed class Attribute
     {
         public Attribute()
         {
@@ -16,6 +13,6 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<AttributeServiceAreaType> AttributeServiceAreaTypes { get; set; }
+        public ICollection<AttributeServiceAreaType> AttributeServiceAreaTypes { get; set; }
     }
 }

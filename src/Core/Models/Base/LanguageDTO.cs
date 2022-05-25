@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class LanguageDTO
+﻿namespace Core.Models.Base;
+    public class LanguageDto
     {
 
         public uint Id { get; set; }

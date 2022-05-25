@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class FieldDTO
+﻿namespace Core.Models.Base;
+    public class FieldDto
     {
      
         public ulong Id { get; set; }

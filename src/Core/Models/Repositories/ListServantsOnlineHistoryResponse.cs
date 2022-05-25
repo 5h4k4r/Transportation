@@ -1,4 +1,4 @@
-namespace Infra.Repositories;
+namespace Core.Models.Repositories;
 
 public class ListServantsOnlineHistory
 {

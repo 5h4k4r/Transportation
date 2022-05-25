@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class OptionServiceAreaTypeDTO
+    public class OptionServiceAreaTypeDto
     {
         public ulong Id { get; set; }
         public ulong OptionId { get; set; }

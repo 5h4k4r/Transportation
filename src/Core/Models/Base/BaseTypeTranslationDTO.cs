@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class BaseTypeTranslationDTO
+﻿namespace Core.Models.Base;
+    public class BaseTypeTranslationDto
     {
         public ulong Id { get; set; }
         public ulong BaseTypeId { get; set; }

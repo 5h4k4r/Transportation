@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class FailedJob
+    public class FailedJob
     {
         public ulong Id { get; set; }
         public string Connection { get; set; } = null!;

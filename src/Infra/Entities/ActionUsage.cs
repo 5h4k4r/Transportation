@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class ActionUsage
+    public class ActionUsage
     {
         public ulong ActionId { get; set; }
         public ulong UsageId { get; set; }

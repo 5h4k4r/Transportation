@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class DeadLineDTO
+﻿namespace Core.Models.Base;
+    public class DeadLineDto
     {
         public ulong Id { get; set; }
         public ulong RequestId { get; set; }

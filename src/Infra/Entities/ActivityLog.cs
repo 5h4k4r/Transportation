@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class ActivityLog
+    public class ActivityLog
     {
         public ulong Id { get; set; }
         public ulong ActionBy { get; set; }

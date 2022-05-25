@@ -1,13 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Core.Requests;
+namespace Core.Models.Requests;
 
 
 public class AuthCheckRequest : IValidatableObject
 {
 
     [Required]
-    public string Mobile { get; set; } = string.Empty;
+    public string? Mobile { get; set; }
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         if (Mobile is null)

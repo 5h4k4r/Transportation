@@ -1,10 +1,9 @@
-using Core.Interfaces;
-using Core.Models;
+using Core.Models.Base;
 
 namespace Core.Interfaces;
 
 public interface IRoleUsersRepository
 {
-    Task<RoleUserDTO?> GetRoleUserByUserId(ulong userId);
+    Task<RoleUserDto?> GetRoleUserByUserId(ulong userId);
 
 }

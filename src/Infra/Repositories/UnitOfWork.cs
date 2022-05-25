@@ -1,16 +1,15 @@
 using AutoMapper;
 using Core.Interfaces;
-using Core.Repositories;
 using Infra.Entities;
 
 namespace Infra.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly transportationContext _repoContext;
+    private readonly TransportationContext _repoContext;
     private readonly IMapper _mapper;
 
-    public UnitOfWork(transportationContext repositoryContext, IMapper mapper)
+    public UnitOfWork(TransportationContext repositoryContext, IMapper mapper)
     {
         _repoContext = repositoryContext;
         _mapper = mapper;
@@ -166,7 +165,7 @@ public class UnitOfWork : IUnitOfWork
         get
         {
             if (_ServantWorkDays == null)
-                _ServantWorkDays = new ServantWorkDaysRepository(_repoContext, _mapper);
+                _ServantWorkDays = new ServantWorkDaysRepository(_repoContext);
 
             return _ServantWorkDays;
         }
@@ -195,7 +194,7 @@ public class UnitOfWork : IUnitOfWork
     public T? GetException<T>(Exception exception)
     where T : Exception
     {
-        Exception innerException = exception;
+        var innerException = exception;
         while (innerException != null)
         {
             if (innerException is T result)

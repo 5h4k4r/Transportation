@@ -1,6 +1,6 @@
-using Core.Repositories;
-using Core.Requests;
-using Infra.Responses;
+using Core.Models.Common;
+using Core.Models.Repositories;
+using Core.Models.Requests;
 
 namespace Core.Interfaces;
 

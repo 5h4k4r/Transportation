@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class User
+    public sealed class User
     {
         public User()
         {
@@ -34,22 +31,22 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual Gender? Gender { get; set; }
-        public virtual Language? Language { get; set; }
-        public virtual AreaInfo? AreaInfo { get; set; }
-        public virtual Servant Servant { get; set; } = null!;
-        public virtual ICollection<Account> Accounts { get; set; }
-        public virtual ICollection<CanceledTask> CanceledTasks { get; set; }
-        public virtual ICollection<Device> Devices { get; set; }
-        public virtual ICollection<DiscountCodeUser> DiscountCodeUsers { get; set; }
-        public virtual ICollection<Favorite> Favorites { get; set; }
-        public virtual ICollection<Gift> Gifts { get; set; }
-        public virtual ICollection<GroupUser> GroupUsers { get; set; }
-        public virtual ICollection<Member> Members { get; set; }
-        public virtual ICollection<NoServantRequest> NoServantRequests { get; set; }
-        public virtual ICollection<RoleUser> RoleUsers { get; set; }
-        public virtual ICollection<UserArea> UserAreas { get; set; }
-        public virtual ICollection<VehicleOwner> VehicleOwners { get; set; }
-        public virtual ICollection<VehicleUser> VehicleUsers { get; set; }
+        public Gender? Gender { get; set; }
+        public Language? Language { get; set; }
+        public AreaInfo? AreaInfo { get; set; }
+        public Servant Servant { get; set; } = null!;
+        public ICollection<Account> Accounts { get; set; }
+        public ICollection<CanceledTask> CanceledTasks { get; set; }
+        public ICollection<Device> Devices { get; set; }
+        public ICollection<DiscountCodeUser> DiscountCodeUsers { get; set; }
+        public ICollection<Favorite> Favorites { get; set; }
+        public ICollection<Gift> Gifts { get; set; }
+        public ICollection<GroupUser> GroupUsers { get; set; }
+        public ICollection<Member> Members { get; set; }
+        public ICollection<NoServantRequest> NoServantRequests { get; set; }
+        public ICollection<RoleUser> RoleUsers { get; set; }
+        public ICollection<UserArea> UserAreas { get; set; }
+        public ICollection<VehicleOwner> VehicleOwners { get; set; }
+        public ICollection<VehicleUser> VehicleUsers { get; set; }
     }
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Rounder
+    public class Rounder
     {
         public ushort Id { get; set; }
         public string Currency { get; set; } = null!;

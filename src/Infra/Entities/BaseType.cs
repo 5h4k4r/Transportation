@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class BaseType
+    public sealed class BaseType
     {
         public BaseType()
         {
@@ -15,6 +12,6 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<BaseTypeTranslation> BaseTypeTranslations { get; set; }
+        public ICollection<BaseTypeTranslation> BaseTypeTranslations { get; set; }
     }
 }

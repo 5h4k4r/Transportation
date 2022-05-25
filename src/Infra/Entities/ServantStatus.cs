@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class ServantStatus
+    public class ServantStatus
     {
         public ulong Id { get; set; }
         public ulong ServantId { get; set; }

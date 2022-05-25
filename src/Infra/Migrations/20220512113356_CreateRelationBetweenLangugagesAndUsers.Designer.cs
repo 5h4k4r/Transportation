@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infra.Migrations
 {
-    [DbContext(typeof(transportationContext))]
+    [DbContext(typeof(TransportationContext))]
     [Migration("20220512113356_CreateRelationBetweenLangugagesAndUsers")]
     partial class CreateRelationBetweenLangugagesAndUsers
     {
