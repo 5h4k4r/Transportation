@@ -11,7 +11,7 @@ namespace Infra.Repositories;
 
 public class UsagesRepository : IUsagesRepository
 {
-    protected readonly TransportationContext Context;
+    private readonly TransportationContext Context;
     private readonly IMapper _mapper;
     public UsagesRepository(TransportationContext context, IMapper mapper)
     {
