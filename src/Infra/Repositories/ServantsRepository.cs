@@ -141,6 +141,7 @@ public class ServantsRepository : IServantsRepository
             .ToListAsync();
 
         }
+        return query.ProjectTo<ServantDTO>(_mapper.ConfigurationProvider).ToListAsync();
 
     }
     public Task<int> ListServantsCount(ListServantRequest model, ulong UserAreaId)
