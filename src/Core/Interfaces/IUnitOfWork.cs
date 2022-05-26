@@ -18,6 +18,7 @@ public interface IUnitOfWork : IDisposable
     IUsagesRepository Usages { get; }
 
     IGendersRepository Genders { get; }
+    IJobRepository Jobs { get; }
     Task<int> Save();
     T? GetException<T>(Exception e) where T : Exception;
 }

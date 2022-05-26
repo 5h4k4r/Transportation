@@ -8,7 +8,7 @@ public static class PaginationExtensions
 {
     public static IQueryable<T> ApplyPagination<T>(this IQueryable<T> dbSet, IPagingOptions model) where T : class
     {
-        var limit = model.Limit ?? Constants.DefaultPaginationLimit;
+        var limit = model.Limit ?? CoreConstants.DefaultPaginationLimit;
         var page = model.Page ?? 0;
 
 

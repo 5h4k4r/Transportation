@@ -6,7 +6,7 @@ namespace Core.Models.Requests;
 public class ListVehiclesRequest : IPagingOptions, IValidatableObject
 {
     public int? Page { get; set; }
-    [Range(0, Constants.MaxPaginationLimit)]
+    [Range(0, CoreConstants.MaxPaginationLimit)]
     public int? Limit { get; set; }
     /// <summary>
     /// Allowed Values: id, title, plateNumber, vim

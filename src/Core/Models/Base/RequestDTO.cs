@@ -12,5 +12,7 @@
         public sbyte Status { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
+        public ServiceAreaTypeDto ServiceAreaType { get; set; } = null!;
     }
 }

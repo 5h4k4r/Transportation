@@ -13,8 +13,8 @@ public class ListServantRequest : IPagingOptions, ISortOptions, IValidatableObje
     public string? SearchField { get; set; }
     public string? SearchValue { get; set; }
     public int? Page { get; set; } = 0;
-    [Range(0, Constants.MaxPaginationLimit)]
-    public int? Limit { get; set; } = Constants.DefaultPaginationLimit;
+    [Range(0, CoreConstants.MaxPaginationLimit)]
+    public int? Limit { get; set; } = CoreConstants.DefaultPaginationLimit;
     /// <summary>
     /// Allowed Values:  "Address", "AreaId", "CreatedAt", "Id", "UserId", "BankId", "Certificate", "NationalId", "FirstName", "LastName", "GenderId" 
     /// </summary>

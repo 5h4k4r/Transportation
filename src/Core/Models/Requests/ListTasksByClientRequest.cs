@@ -48,7 +48,7 @@ public class ListTasksByClientRequest : IPagingOptions, ISortOptions, IValidatab
 
     public bool? SortDescending { get; set; } = false;
     public int? Page { get; set; } = 0;
-    public int? Limit { get; set; } = Constants.DefaultPaginationLimit;
+    public int? Limit { get; set; } = CoreConstants.DefaultPaginationLimit;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

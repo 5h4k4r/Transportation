@@ -2,6 +2,8 @@ using AutoMapper;
 using Core.Models.Base;
 using Core.Models.Requests;
 using Infra.Entities;
+using Task = Infra.Entities.Task;
+
 namespace Infra.Mapper;
 public class MapperProfile : Profile
 {
@@ -30,6 +32,7 @@ public class MapperProfile : Profile
         CreateMap<UsageDto, Usage>().ReverseMap();
         CreateMap<GenderTranslation, GenderTranslationDto>().ReverseMap();
         CreateMap<VehicleOwner, VehicleOwnerDto>().ReverseMap();
+        CreateMap<Task, TaskDto>().ReverseMap();
 
 
     }

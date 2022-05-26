@@ -15,8 +15,8 @@ public class ListServantsOnlineHistoryRequest : IPagingOptions, IValidatableObje
 
     public int? Page { get; set; } = 0;
 
-    [Range(0, Constants.MaxPaginationLimit)]
-    public int? Limit { get; set; } = Constants.DefaultPaginationLimit;
+    [Range(0, CoreConstants.MaxPaginationLimit)]
+    public int? Limit { get; set; } = CoreConstants.DefaultPaginationLimit;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

@@ -32,6 +32,8 @@ public class LanguagesController : ControllerBase
     public async Task<ActionResult> ListLanguages([FromQuery] ListLanguagesRequest model)
     {
         var isLocalRequest = model.LocaleOnly.HasValue && model.LocaleOnly.Value;
+
+
         if (isLocalRequest)
         {
             var locales = await _unitOfWork.Languages.ListLanguagesLocales();

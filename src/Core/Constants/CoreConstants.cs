@@ -1,7 +1,7 @@
 
 namespace Core;
 
-public static class Constants
+public static class CoreConstants
 {
     public const int MaxPaginationLimit = 50;
     public const int DefaultPaginationLimit = 20;

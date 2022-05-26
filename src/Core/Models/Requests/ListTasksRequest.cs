@@ -29,7 +29,7 @@ public class ListTasksRequest : IPagingOptions, ISortOptions, IValidatableObject
     public string? SortField { get; set; }
     public bool? SortDescending { get; set; } = false;
     public int? Page { get; set; } = 0;
-    public int? Limit { get; set; } = Constants.DefaultPaginationLimit;
+    public int? Limit { get; set; } = CoreConstants.DefaultPaginationLimit;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

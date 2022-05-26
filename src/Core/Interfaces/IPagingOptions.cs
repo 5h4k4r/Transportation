@@ -17,6 +17,6 @@ public interface IPagingOptions
     /// The default number of documents returned per page.
     /// </summary>
 
-    [Range(0, Constants.MaxPaginationLimit)]
+    [Range(0, CoreConstants.MaxPaginationLimit)]
     int? Limit { get; set; }
 }
