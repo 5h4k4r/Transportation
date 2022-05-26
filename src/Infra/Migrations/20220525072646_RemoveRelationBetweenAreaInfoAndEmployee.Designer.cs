@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infra.Migrations
 {
-    [DbContext(typeof(transportationContext))]
+    [DbContext(typeof(TransportationContext))]
     [Migration("20220525072646_RemoveRelationBetweenAreaInfoAndEmployee")]
     partial class RemoveRelationBetweenAreaInfoAndEmployee
     {

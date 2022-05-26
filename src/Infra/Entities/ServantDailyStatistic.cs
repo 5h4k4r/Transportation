@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class ServantDailyStatistic
+    public class ServantDailyStatistic
     {
         public ulong Id { get; set; }
         public ulong DayId { get; set; }
@@ -21,8 +18,8 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual ServantWorkDay Day { get; set; } = null!;
-        public virtual Servant Servant { get; set; } = null!;
-        public virtual Service Service { get; set; } = null!;
+        public virtual ServantWorkDay? Day { get; set; } 
+        public virtual Servant? Servant { get; set; } 
+        public virtual Service? Service { get; set; } 
     }
 }

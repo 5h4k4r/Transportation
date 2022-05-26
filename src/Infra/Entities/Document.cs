@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Document
+    public class Document
     {
         public ulong Id { get; set; }
         public string Path { get; set; } = null!;

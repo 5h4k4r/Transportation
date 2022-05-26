@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Destination
+    public class Destination
     {
         public ulong Id { get; set; }
         public string ModelType { get; set; } = null!;

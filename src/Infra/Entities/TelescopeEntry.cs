@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class TelescopeEntry
+    public class TelescopeEntry
     {
         public ulong Sequence { get; set; }
         public Guid Uuid { get; set; }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class UserDTO
+    public class UserDto
     {
 
         public ulong Id { get; set; }
-        public string Mobile { get; set; } = null!;
+        public string Mobile { get; set; }
         public string? Name { get; set; }
         public string? AuthId { get; set; }
         public byte? GenderId { get; set; }
@@ -18,9 +15,9 @@ namespace Core.Models
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public ICollection<RoleUserDTO> RoleUsers { get; set; } = null!;
-        public virtual LanguageDTO? Language { get; set; }
-        public virtual AreaInfoDTO? AreaInfo { get; set; }
+        public ICollection<RoleUserDto> RoleUsers { get; set; } = null!;
+        public virtual LanguageDto? Language { get; set; }
+        public virtual AreaInfoDto? AreaInfo { get; set; }
 
     }
 }

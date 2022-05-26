@@ -1,16 +1,15 @@
 using AutoMapper;
 using Core.Interfaces;
-using Core.Repositories;
 using Infra.Entities;
 
 namespace Infra.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly transportationContext _repoContext;
+    private readonly TransportationContext _repoContext;
     private readonly IMapper _mapper;
 
-    public UnitOfWork(transportationContext repositoryContext, IMapper mapper)
+    public UnitOfWork(TransportationContext repositoryContext, IMapper mapper)
     {
         _repoContext = repositoryContext;
         _mapper = mapper;
@@ -18,171 +17,50 @@ public class UnitOfWork : IUnitOfWork
     }
 
     private IServantsRepository? _Servants;
-    public IServantsRepository Servants
-    {
-        get
-        {
-            if (_Servants == null)
-                _Servants = new ServantsRepository(_repoContext, _mapper);
-
-            return _Servants;
-        }
-    }
+    public IServantsRepository Servants => _Servants ??= new ServantsRepository(_repoContext, _mapper);
 
     private IVehiclesRepository? _Vehicles;
-    public IVehiclesRepository Vehicles
-    {
-        get
-        {
-            if (_Vehicles == null)
-                _Vehicles = new VehiclesRepository(_repoContext, _mapper);
-
-            return _Vehicles;
-        }
-    }
+    public IVehiclesRepository Vehicles => _Vehicles ??= new VehiclesRepository(_repoContext, _mapper);
 
     private IUsersRepository? _User;
-    public IUsersRepository User
-    {
-        get
-        {
-            if (_User == null)
-                _User = new UsersRepository(_repoContext, _mapper);
-
-            return _User;
-        }
-    }
+    public IUsersRepository User => _User ??= new UsersRepository(_repoContext, _mapper);
 
     private IGendersRepository? _Gender;
-    public IGendersRepository Genders
-    {
-        get
-        {
-            if (_Gender == null)
-                _Gender = new GendersRepository(_repoContext, _mapper);
 
-            return _Gender;
-        }
-    }
+    public IGendersRepository Genders => _Gender ??= new GendersRepository(_repoContext, _mapper);
 
-    public ITasksRepository? _Tasks;
-    public ITasksRepository Tasks
-    {
-        get
-        {
-            if (_Tasks == null)
-                _Tasks = new TasksRepository(_repoContext, _mapper);
+    private ITasksRepository? _Tasks;
+    public ITasksRepository Tasks => _Tasks ??= new TasksRepository(_repoContext, _mapper);
+    private IRoleUsersRepository? _RoleUsers;
+    public IRoleUsersRepository RoleUsers => _RoleUsers ??= new RoleUserRepository(_repoContext, _mapper);
 
-            return _Tasks;
-        }
-    }
-    public IRoleUsersRepository? _RoleUsers;
-    public IRoleUsersRepository RoleUsers
-    {
-        get
-        {
-            if (_RoleUsers == null)
-                _RoleUsers = new RoleUserRepository(_repoContext, _mapper);
+    private IRolesRepository? _Roles;
+    public IRolesRepository Roles => _Roles ??= new RolesRepository(_repoContext, _mapper);
 
-            return _RoleUsers;
-        }
-    }
+    private IAreaInfosRepository? _AreaInfos;
+    public IAreaInfosRepository AreaInfos => _AreaInfos ??= new AreaInfosRepository(_repoContext, _mapper);
 
-    public IRolesRepository? _Roles;
-    public IRolesRepository Roles
-    {
-        get
-        {
-            if (_Roles == null)
-                _Roles = new RolesRepository(_repoContext, _mapper);
+    private IAreaDepartmentsRepository? _AreaDepartments;
 
-            return _Roles;
-        }
-    }
+    public IAreaDepartmentsRepository AreaDepartments =>
+        _AreaDepartments ??= new AreaDepartmentsRepository(_repoContext, _mapper);
 
-    public IAreaInfosRepository? _AreaInfos;
-    public IAreaInfosRepository AreaInfos
-    {
-        get
-        {
-            if (_AreaInfos == null)
-                _AreaInfos = new AreaInfosRepository(_repoContext, _mapper);
+    private IDepartmentsRepository? _Departments;
+    public IDepartmentsRepository Departments => _Departments ??= new DepartmentsRepository(_repoContext, _mapper);
 
-            return _AreaInfos;
-        }
-    }
+    private IEmployeesRepository? _Employees;
+    public IEmployeesRepository Employees => _Employees ??= new EmployeesRepository(_repoContext, _mapper);
 
-    public IAreaDepartmentsRepository? _AreaDepartments;
-    public IAreaDepartmentsRepository AreaDepartments
-    {
-        get
-        {
-            if (_AreaDepartments == null)
-                _AreaDepartments = new AreaDepartmentsRepository(_repoContext, _mapper);
+    private ILanguagesRepository? _Languages;
+    public ILanguagesRepository Languages => _Languages ??= new LanguagesRepository(_repoContext, _mapper);
 
-            return _AreaDepartments;
-        }
-    }
+    private IServantWorkDaysRepository? _ServantWorkDays;
 
-    public IDepartmentsRepository? _Departments;
-    public IDepartmentsRepository Departments
-    {
-        get
-        {
-            if (_Departments == null)
-                _Departments = new DepartmentsRepository(_repoContext, _mapper);
+    public IServantWorkDaysRepository ServantWorkDays =>
+        _ServantWorkDays ??= new ServantWorkDaysRepository(_repoContext);
 
-            return _Departments;
-        }
-    }
-
-    public IEmployeesRepository? _Employees;
-    public IEmployeesRepository Employees
-    {
-        get
-        {
-            if (_Employees == null)
-                _Employees = new EmployeesRepository(_repoContext, _mapper);
-
-            return _Employees;
-        }
-    }
-
-    public ILanguagesRepository? _Languages;
-    public ILanguagesRepository Languages
-    {
-        get
-        {
-            if (_Languages == null)
-                _Languages = new LanguagesRepository(_repoContext, _mapper);
-
-            return _Languages;
-        }
-    }
-
-    public IServantWorkDaysRepository? _ServantWorkDays;
-    public IServantWorkDaysRepository ServantWorkDays
-    {
-        get
-        {
-            if (_ServantWorkDays == null)
-                _ServantWorkDays = new ServantWorkDaysRepository(_repoContext, _mapper);
-
-            return _ServantWorkDays;
-        }
-    }
-    public IUsagesRepository? _Usages;
-    public IUsagesRepository Usages
-    {
-        get
-        {
-            if (_Usages == null)
-                _Usages = new UsagesRepository(_repoContext, _mapper);
-
-            return _Usages;
-        }
-    }
-
+    private IUsagesRepository? _Usages;
+    public IUsagesRepository Usages => _Usages ??= new UsagesRepository(_repoContext, _mapper);
 
 
     public Task<int> Save() => _repoContext.SaveChangesAsync();
@@ -192,19 +70,21 @@ public class UnitOfWork : IUnitOfWork
     {
         _repoContext.Dispose();
     }
+
     public T? GetException<T>(Exception exception)
-    where T : Exception
+        where T : Exception
     {
-        Exception innerException = exception;
+        var innerException = exception;
         while (innerException != null)
         {
             if (innerException is T result)
             {
                 return result;
             }
+
             innerException = innerException.InnerException ?? null;
         }
+
         return null;
     }
-
 }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class AreaInfo
+    public sealed class AreaInfo
     {
         public AreaInfo()
         {
@@ -29,13 +26,13 @@ namespace Infra.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-        public virtual ICollection<AreaDepartment> AreaDepartments { get; set; }
-        public virtual ICollection<DailyStatistic> DailyStatistics { get; set; }
-        public virtual ICollection<DiscountCode> DiscountCodes { get; set; }
-        public virtual ICollection<Offer> Offers { get; set; }
-        public virtual ICollection<ServiceAreaType> ServiceAreaTypes { get; set; }
-        public virtual ICollection<SupportNumber> SupportNumbers { get; set; }
-        public virtual ICollection<TaskHourlyStatistic> TaskHourlyStatistics { get; set; }
-        public virtual ICollection<UserArea> UserAreas { get; set; }
+        public ICollection<AreaDepartment> AreaDepartments { get; set; }
+        public ICollection<DailyStatistic> DailyStatistics { get; set; }
+        public ICollection<DiscountCode> DiscountCodes { get; set; }
+        public ICollection<Offer> Offers { get; set; }
+        public ICollection<ServiceAreaType> ServiceAreaTypes { get; set; }
+        public ICollection<SupportNumber> SupportNumbers { get; set; }
+        public ICollection<TaskHourlyStatistic> TaskHourlyStatistics { get; set; }
+        public ICollection<UserArea> UserAreas { get; set; }
     }
 }

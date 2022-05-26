@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Usage
+    public sealed class Usage
     {
         public Usage()
         {
@@ -18,8 +15,8 @@ namespace Infra.Entities
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
 
-        public virtual ICollection<ActionUsage> ActionUsages { get; set; }
-        public virtual ICollection<ServiceAreaType> ServiceAreaTypes { get; set; }
-        public virtual ICollection<UsageTranslation> UsageTranslations { get; set; }
+        public ICollection<ActionUsage> ActionUsages { get; set; }
+        public ICollection<ServiceAreaType> ServiceAreaTypes { get; set; }
+        public ICollection<UsageTranslation> UsageTranslations { get; set; }
     }
 }

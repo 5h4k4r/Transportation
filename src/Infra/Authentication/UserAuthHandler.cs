@@ -1,16 +1,13 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using Core.Auth.Models;
 using Core.Interfaces;
-using Infra.Entities;
+using Core.Models.Base;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Transportation.Api.Auth;
-using Task = System.Threading.Tasks.Task;
 
-namespace Core.Helpers;
+namespace Infra.Authentication;
 
 
 public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
@@ -45,9 +42,9 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
 
         try
         {
-            var resp = JsonSerializer.Deserialize<AuthUser>(auth!, _JsonSerializerOptions);
+            var resp = JsonSerializer.Deserialize<AuthUser>(auth, _JsonSerializerOptions);
 
-            if (resp is not AuthUser user)
+            if (resp is not { } user)
                 // return AuthenticateResult.Fail(new GatewayAuthException(GatewayAuthException.ErrorCode.InvalidUserModel, "User ID is empty"));
                 return AuthenticateResult.Fail(new NotImplementedException());
 
@@ -59,7 +56,7 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
             if (databaseUser is null)
                 return AuthenticateResult.Fail("User not found");
 
-            resp.RoleUsers = databaseUser.RoleUsers.Select(x=>x.RoleId);
+            resp.RoleUsers = databaseUser.RoleUsers.Select(x => x.RoleId);
 
             _UserAuthContext.SetAuthUser(resp);
 
@@ -92,18 +89,18 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
     //                                                     Convert.FromBase64String(signature));
 
 
-    private static List<Claim> GenerateClaims(in AuthUser user)
+    private static IEnumerable<Claim> GenerateClaims(in AuthUser user)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.MobilePhone, user.Mobile),
+            new(ClaimTypes.NameIdentifier, user.Id),
+            new(ClaimTypes.MobilePhone, user.Mobile),
 
 
         };
 
         if (user.RoleUsers is not null)
-            claims.Add(new Claim(ClaimTypes.Role, JsonSerializer.Serialize(user.RoleUsers)!));
+            claims.Add(new Claim(ClaimTypes.Role, JsonSerializer.Serialize(user.RoleUsers)));
 
 
         return claims;

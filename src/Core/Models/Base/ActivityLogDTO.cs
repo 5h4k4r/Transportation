@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Core.Models.Base;
 
-namespace Core.Models;
-
-    public partial class ActivityLogDTO
+    public class ActivityLogDto
     {
         public ulong Id { get; set; }
         public ulong ActionBy { get; set; }

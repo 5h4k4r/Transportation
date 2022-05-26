@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models
+﻿namespace Core.Models.Base
 {
-    public partial class OfferUserDTO
+    public class OfferUserDto
     {
         public ulong OfferId { get; set; }
         public ulong UserId { get; set; }

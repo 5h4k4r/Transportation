@@ -1,14 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 using Core.Interfaces;
+using Core.Validations;
 
-namespace Core.Requests;
+namespace Core.Models.Requests;
 
 public class ListServantRequest : IPagingOptions, ISortOptions, IValidatableObject
 {
     /// <summary>
     /// Allowed Values: "Name", "NationalId", "PhoneNumber"
     /// </summary>
-    [AllowedValues("Name", "NationalId", "PhoneNumber")]
+    [AllowedValues("Name", "NationalId", "PhoneNumber", "Id")]
     public string? SearchField { get; set; }
     public string? SearchValue { get; set; }
     public int? Page { get; set; } = 0;

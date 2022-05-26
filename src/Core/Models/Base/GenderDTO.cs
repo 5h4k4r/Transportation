@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class GenderDTO
+﻿namespace Core.Models.Base;
+    public class GenderDto
     {
 
         public byte Id { get; set; }

@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using Core;
-using Core.Common;
 using Core.Interfaces;
+using Core.Models.Common;
+using Core.Validations;
 
-namespace Core.Requests;
+namespace Core.Models.Requests;
 
 
 
@@ -31,10 +31,7 @@ public class ListTasksByClientRequest : IPagingOptions, ISortOptions, IValidatab
     )]
     public string? SortField
     {
-        get
-        {
-            return _SortField;
-        }
+        get => _SortField;
         set
         {
             // if value contains 'Client' then change it to Member to match the database

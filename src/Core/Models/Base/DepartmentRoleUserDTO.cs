@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class DepartmentRoleUserDTO
+﻿namespace Core.Models.Base;
+    public class DepartmentRoleUserDto
     {
         public ulong Id { get; set; }
         public ulong RoleUserId { get; set; }

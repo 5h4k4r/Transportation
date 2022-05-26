@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class TaskMessage
+    public class TaskMessage
     {
         public ulong TaskId { get; set; }
         public string? ChatId { get; set; }

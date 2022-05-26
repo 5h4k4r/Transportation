@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class Log
+    public class Log
     {
         public ulong Id { get; set; }
         public short StatusCode { get; set; }

@@ -1,50 +1,49 @@
-using System.Reflection.Metadata;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Extensions;
 using Core.Interfaces;
-using Core.Models;
-using Core.Requests;
+using Core.Models.Base;
+using Core.Models.Repositories;
+using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Task = System.Threading.Tasks.Task;
 
 namespace Infra.Repositories;
 
 public class ServantsRepository : IServantsRepository
 {
-    protected transportationContext _context;
+    private readonly TransportationContext _Context;
     private readonly IMapper _mapper;
-    public ServantsRepository(transportationContext context, IMapper mapper)
+    public ServantsRepository(TransportationContext context, IMapper mapper)
     {
-        _context = context;
+        _Context = context;
         _mapper = mapper;
     }
-    public Task<ServantDTO?> GetServantByUserId(ulong UserId, ulong AreaId) => _context.Servants
-    .Where(x => x.AreaId == AreaId)
-    .Where(x => x.UserId == (ulong)UserId)
+    public Task<ServantDto?> GetServantByUserId(ulong userId, ulong areaId) => _Context.Servants
+    .Where(x => x.AreaId == areaId)
+    .Where(x => x.UserId == userId)
     .Include(x => x.ServantScores)
-    .ProjectTo<ServantDTO>(_mapper.ConfigurationProvider)
+    .ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
     .FirstOrDefaultAsync();
 
 
-    public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int ServantId, ulong ServantUserId)
+    public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int servantId, ulong servantUserId)
     {
 
-        var (Tasks, DailyStatistics) = await FilterTasksAndStatistics(ServantUserId, model);
-        IEnumerable<double>? Rates = await _context.ServantScores.Where(x => x.ServantId == (ulong)ServantId).Select(x => x.Score).ToListAsync();
+        var (_, dailyStatistics) = await FilterTasksAndStatistics(servantUserId, model);
+        await _Context.ServantScores.Where(x => x.ServantId == (ulong)servantId).Select(x => x.Score).ToListAsync();
 
         ServantPerformance servantPerformance = new()
         {
-            AcceptedRequests = DailyStatistics.Sum(x => x.DeliveredRequest) - DailyStatistics.Sum(x => x.RejectedRequest),
-            DeliveredRequests = DailyStatistics.Sum(x => x.DeliveredRequest),
-            RejectedRequests = DailyStatistics.Sum(x => x.RejectedRequest),
-            SuccessTasks = DailyStatistics.Sum(x => x.SuccessTask),
-            RejectedTasks = DailyStatistics.Sum(x => x.RejectedTask),
-            OnlineDurations = DailyStatistics.Sum(x => (int)x.OnlineDuration),
-            DurationOnTasks = DailyStatistics.Sum(x => (int)x.DurationOnTask),
-            DistanceOnTasks = DailyStatistics.Sum(x => (int)x.DistanceOnTask),
+            AcceptedRequests = dailyStatistics.Sum(x => x.DeliveredRequest) - dailyStatistics.Sum(x => x.RejectedRequest),
+            DeliveredRequests = dailyStatistics.Sum(x => x.DeliveredRequest),
+            RejectedRequests = dailyStatistics.Sum(x => x.RejectedRequest),
+            SuccessTasks = dailyStatistics.Sum(x => x.SuccessTask),
+            RejectedTasks = dailyStatistics.Sum(x => x.RejectedTask),
+            OnlineDurations = dailyStatistics.Sum(x => (int)x.OnlineDuration),
+            DurationOnTasks = dailyStatistics.Sum(x => (int)x.DurationOnTask),
+            DistanceOnTasks = dailyStatistics.Sum(x => (int)x.DistanceOnTask),
         };
 
 
@@ -53,100 +52,101 @@ public class ServantsRepository : IServantsRepository
 
     }
 
-    private async Task<(List<Entities.Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(ulong ServantUserId, ServantPerformanceRequest model)
+    private async Task<(List<Entities.Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(ulong servantUserId, ServantPerformanceRequest model)
     {
-        var tasksQuery = _context.Tasks.Where(x => x.ServantId == ServantUserId);
-        var dailyTasksQuery = _context.ServantDailyStatistics.Where(x => x.ServantId == ServantUserId);
+        var tasksQuery = _Context.Tasks.Where(x => x.ServantId == servantUserId);
+        var dailyTasksQuery = _Context.ServantDailyStatistics.Where(x => x.ServantId == servantUserId);
 
 
-        List<Entities.Task> Tasks = new();
-        List<ServantDailyStatistic> DailyStatistics = new();
+        List<Entities.Task> tasks = new();
+        List<ServantDailyStatistic> dailyStatistics = new();
 
         var today = DateTime.UtcNow;
 
         if (model.StartAt is null)
         {
-            Tasks = await tasksQuery
+            tasks = await tasksQuery
             .Where(x => x.CreatedAt <= today.StartOfDay())
             .Where(x => x.CreatedAt >= today.EndOfDay())
             .ToListAsync();
 
-            DailyStatistics = await dailyTasksQuery
+            dailyStatistics = await dailyTasksQuery
             .Where(x => x.Day != null)
-            .Where(x => x.Day.Date == DateOnly.FromDateTime(today))
+            .Where(x => x.Day!.Date == DateOnly.FromDateTime(today))
             .ToListAsync();
 
         }
         else if (model.StartAt != null && model.EndAt == null)
         {
-            Tasks = await tasksQuery
+            tasks = await tasksQuery
             .Where(x => x.CreatedAt >= model.StartAt)
             .Where(x => x.CreatedAt <= today.EndOfDay())
             .ToListAsync();
 
-            DailyStatistics =
+            dailyStatistics =
                 await dailyTasksQuery
                 .Where(x => x.Day != null)
-                .Where(x => x.Day.Date >= DateOnly.FromDateTime(model.StartAt ?? today.StartOfDay()))
-                .Where(x => x.Day.Date <= DateOnly.FromDateTime(today.EndOfDay()))
+                .Where(x => x.Day!.Date >= DateOnly.FromDateTime(model.StartAt ?? today.StartOfDay()))
+                .Where(x => x.Day!.Date <= DateOnly.FromDateTime(today.EndOfDay()))
                 .ToListAsync()
                 ;
 
         }
         else if (model.StartAt != null && model.EndAt != null)
         {
-            Tasks = await tasksQuery.Where(x => x.CreatedAt >= model.StartAt).Where(x => x.CreatedAt <= model.EndAt).ToListAsync();
+            tasks = await tasksQuery.Where(x => x.CreatedAt >= model.StartAt).Where(x => x.CreatedAt <= model.EndAt).ToListAsync();
 
             var startDate = DateOnly.FromDateTime(model.StartAt ?? today.StartOfDay());
             var endDate = DateOnly.FromDateTime(model.EndAt ?? today.EndOfDay());
 
-            DailyStatistics = await dailyTasksQuery
+            dailyStatistics = await dailyTasksQuery
             .OrderBy(x => x.DayId)
             .Where(x => x.Day != null)
-            .Where(x => x.Day.Date >= startDate)
-            .Where(x => x.Day.Date <= endDate)
+            .Where(x => x.Day!.Date >= startDate)
+            .Where(x => x.Day!.Date <= endDate)
             .ToListAsync();
         }
 
 
-        return (Tasks, DailyStatistics);
+        return (tasks, dailyStatistics);
 
 
     }
-
-    public Task<ServantDTO?> GetServantById(int Id, ulong UserAreaId)
+    public Task<ServantDto?> GetServantById(int id, ulong areaId)
     {
-        return _context.Servants.Where(x => x.AreaId == UserAreaId).Where(x => x.Id == Id).ProjectTo<ServantDTO?>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
+        return _Context.Servants.Where(x => x.AreaId == areaId).Where(x => x.Id == id).ProjectTo<ServantDto?>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
     }
-    public Task<List<ServantDTO>> ListServants(ListServantRequest model, ulong UserAreaId)
+    public Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId)
     {
-        var query = _context.Servants.Where(x => x.AreaId == UserAreaId);
-        if (model.IncompleteOnly)
-        {
-            return query
-            .Where(x =>
-            x.Certificate == null ||
-            x.BankId == null ||
-            x.GenderId == null ||
-            x.Address == null
-            )
-            .Join(
-                _context.Documents.Where(x => x.ModelType == "App\\Models\\Servant"),
-                Servants => (ulong)Servants.Id,
-                Documents => Documents.ModelId,
-                (Servants, Documents) => new { Servants, Documents }
-            )
-            .Select(x => x.Servants)
-            .ProjectTo<ServantDTO>(_mapper.ConfigurationProvider)
-            .ToListAsync();
+        var query = _Context.Servants.Where(x => x.AreaId == userAreaId).ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
 
-        }
-        return query.ProjectTo<ServantDTO>(_mapper.ConfigurationProvider).ToListAsync();
+        query = CheckForSearchField(query, model);
+
+
+        return query
+                    .Select(x => new ServantDto
+                    {
+                        Address = x.Address,
+                        AreaId = x.AreaId,
+                        CreatedAt = x.CreatedAt,
+                        Id = x.Id,
+                        UserId = x.UserId,
+                        BankId = x.BankId,
+                        Certificate = x.Certificate,
+                        NationalId = x.NationalId,
+                        FirstName = x.FirstName,
+                        LastName = x.LastName,
+                        GenderId = x.GenderId,
+                        UpdatedAt = x.UpdatedAt,
+                    })
+                    .ApplySorting(model)
+                    .ApplyPagination(model)
+                    .ToListAsync();
 
     }
-    public Task<int> ListServantsCount(ListServantRequest model, ulong UserAreaId)
+    public Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId)
     {
-        var query = _context.Servants.Where(x => x.AreaId == UserAreaId).ProjectTo<ServantDTO>(_mapper.ConfigurationProvider).AsNoTracking();
+        var query = _Context.Servants.Where(x => x.AreaId == userAreaId).ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
 
         query = CheckForSearchField(query, model);
 
@@ -154,31 +154,26 @@ public class ServantsRepository : IServantsRepository
 
     }
 
-    private static IQueryable<ServantDTO> CheckForSearchField(IQueryable<ServantDTO> query, ListServantRequest model)
+    private IQueryable<ServantDto> CheckForSearchField(IQueryable<ServantDto> query, ListServantRequest model)
     {
 
 
         if (model.SearchField is null || model.SearchValue is null)
             return query;
 
-        if (model.SearchField == "Name")
-            query = query.Where(x => x.FirstName.Contains(model.SearchValue) || x.LastName.Contains(model.SearchValue));
-
-        else if (model.SearchField == "NationalId")
-            query = query.Where(x => x.NationalId.Contains(model.SearchValue));
-
-
-        else if (model.SearchField == "PhoneNumber")
-            query = query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue));
-
-        return query;
-
+        return model.SearchField switch
+        {
+            "Name" => query.Where(
+                x => x.FirstName.Contains(model.SearchValue) || x.LastName.Contains(model.SearchValue)),
+            "NationalId" => query.Where(x => x.NationalId.Contains(model.SearchValue)),
+            "PhoneNumber" => query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue)),
+            _ => query.ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
+        };
     }
 
-    public async void CreateServant(ServantDTO servant)
+    public async void CreateServant(ServantDto servant)
     {
         var newServant = _mapper.Map<Servant>(servant);
-        await _context.Servants.AddAsync(newServant);
+        await _Context.Servants.AddAsync(newServant);
     }
-
 }

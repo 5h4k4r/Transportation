@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Core.Models;
-    public partial class CancelReasonDTO
+﻿namespace Core.Models.Base;
+    public class CancelReasonDto
     {
         public ulong Id { get; set; }
         public byte RoleId { get; set; }

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class PasswordReset
+    public class PasswordReset
     {
         public string Email { get; set; } = null!;
         public string Token { get; set; } = null!;

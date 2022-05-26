@@ -1,18 +1,17 @@
 using System.Net.Mime;
 using AutoMapper;
-using Core.Common;
-using Core.Helpers;
 using Core.Interfaces;
-using Core.Models;
-using Core.Repositories;
-using Core.Requests;
+using Core.Models.Base;
+using Core.Models.Common;
+using Core.Models.Repositories;
+using Core.Models.Requests;
+using Infra.Authentication;
 using Infra.Entities;
-using Infra.Entities.Common;
-using Infra.Repositories;
+using Infra.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers;
+namespace Api.Controllers.V3;
 
 [Authorize]
 [ApiController]
@@ -35,7 +34,7 @@ public class ServantsController : ControllerBase
     /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(PaginatedResponse<ServantDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedResponse<ServantDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListServants([FromQuery] ListServantRequest model, [FromServices] UserAuthContext authContext)
     {
         var authId = authContext.GetAuthUser().Id;
@@ -49,11 +48,8 @@ public class ServantsController : ControllerBase
         var items = await _unitOfWork.Servants.ListServants(model, user.AreaId.Value);
         var count = await _unitOfWork.Servants.ListServantsCount(model, user.AreaId.Value);
 
-        if (items is null)
-            return NotFound(BasicResponse.ResourceNotFound);
 
-
-        return Ok(new PaginatedResponse<ServantDTO>(count, model, items));
+        return Ok(new PaginatedResponse<ServantDto>(count, model, items));
 
 
     }
@@ -63,7 +59,7 @@ public class ServantsController : ControllerBase
     /// </summary>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(PaginatedResponse<ServantDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedResponse<ServantDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetServantById(int id, [FromServices] UserAuthContext authContext)
     {
         var authId = authContext.GetAuthUser().Id;
@@ -105,13 +101,13 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var databaseServant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
+        var databaseServant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
 
         if (databaseServant == null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(ServantPerformed), id));
 
         // The servant we send back as a response
-        ServantPerformed? responseServant = new()
+        ServantPerformed responseServant = new()
         {
             Id = databaseServant.Id,
             UserId = databaseServant.UserId,
@@ -125,7 +121,7 @@ public class ServantsController : ControllerBase
             Rating = databaseServant.ServantScores?.Select(x => x.Score).FirstOrDefault()
         };
 
-        ServantPerformance? servantPerformance = await _unitOfWork.Servants.GetServantPerformance(model, responseServant.Id, (ulong)id);
+        var servantPerformance = await _unitOfWork.Servants.GetServantPerformance(model, responseServant.Id, (ulong)id);
 
         if (servantPerformance == null)
             return NotFound();
@@ -155,17 +151,14 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
+        var servant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
 
         if (servant is null)
-            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), (int)id));
+            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), id));
 
 
         var servantWorkDays = await _unitOfWork.ServantWorkDays.GetServantOnlinePeriods((ulong)id, model);
         var servantWorkDaysCount = await _unitOfWork.ServantWorkDays.GetServantOnlinePeriodsCount((ulong)id, model);
-
-        if (servantWorkDays is null)
-            return NotFound(BasicResponse.ResourceNotFound);
 
 
         return Ok(
@@ -206,11 +199,10 @@ public class ServantsController : ControllerBase
     [HttpPost]
     public IActionResult CreateServant([FromBody] CreateServantRequest request)
     {
-        var servant = _mapper.Map<ServantDTO>(request);
+        var servant = _mapper.Map<ServantDto>(request);
         _unitOfWork.Servants.CreateServant(servant);
 
         return Ok(BasicResponse.Successful);
-
     }
 
 }

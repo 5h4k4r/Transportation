@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Infra.Entities
+﻿namespace Infra.Entities
 {
-    public partial class UserToken
+    public class UserToken
     {
         public ulong UserId { get; set; }
         public string? Environment { get; set; }

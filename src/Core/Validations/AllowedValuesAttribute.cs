@@ -1,4 +1,6 @@
-namespace System.ComponentModel.DataAnnotations
+using System.ComponentModel.DataAnnotations;
+
+namespace Core.Validations
 {
 
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]

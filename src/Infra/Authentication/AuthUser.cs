@@ -1,6 +1,6 @@
-namespace Transportation.Api.Auth;
-
 using System.Text.Json.Serialization;
+
+namespace Infra.Authentication;
 
 // Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
 public class Region

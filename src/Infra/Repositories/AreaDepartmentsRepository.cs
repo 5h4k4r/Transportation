@@ -1,7 +1,7 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
-using Core.Models;
+using Core.Models.Base;
 using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
@@ -10,19 +10,19 @@ namespace Infra.Repositories;
 
 public class AreaDepartmentsRepository : IAreaDepartmentsRepository
 {
-    protected transportationContext _context;
+    protected TransportationContext _Context;
     private readonly IMapper _mapper;
-    public AreaDepartmentsRepository(transportationContext context, IMapper mapper)
+    public AreaDepartmentsRepository(TransportationContext context, IMapper mapper)
     {
-        _context = context;
+        _Context = context;
         _mapper = mapper;
     }
-    public Task<List<AreaDepartmentDTO>> GetAreaDepartmentsByRoleUserId(ulong Id)
+    public Task<List<AreaDepartmentDto>> GetAreaDepartmentsByRoleUserId(ulong id)
     {
-        var database = _context.AreaDepartments.Where(x => x.RoleUserId == Id).ToListAsync();
+        var database = _Context.AreaDepartments.Where(x => x.RoleUserId == id).ToListAsync();
 
-        return Task.FromResult(_mapper.Map<List<AreaDepartmentDTO>>(database));
+        return Task.FromResult(_mapper.Map<List<AreaDepartmentDto>>(database));
 
     }
-    public Task<AreaDepartmentDTO?> GetAreaDepartmentByRoleUserId(ulong id) => Task.FromResult(_context.AreaDepartments.Where(x => x.RoleUserId == id).Include(x => x.Department).ProjectTo<AreaDepartmentDTO?>(_mapper.ConfigurationProvider).FirstOrDefault());
+    public Task<AreaDepartmentDto?> GetAreaDepartmentByRoleUserId(ulong id) => Task.FromResult(_Context.AreaDepartments.Where(x => x.RoleUserId == id).Include(x => x.Department).ProjectTo<AreaDepartmentDto?>(_mapper.ConfigurationProvider).FirstOrDefault());
 }
