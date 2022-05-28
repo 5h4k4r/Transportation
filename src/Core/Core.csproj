@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Interfaces\IExceptionMapper.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Exceptions" />
   </ItemGroup>
 
