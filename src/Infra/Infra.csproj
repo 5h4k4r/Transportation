@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Mapper\ExceptionMapper.cs" />
+  </ItemGroup>
+
 </Project>
