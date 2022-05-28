@@ -5,8 +5,6 @@ using Core.Models.Common;
 using Core.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MySqlConnector;
 
 namespace Api.Controllers.V3;
 
@@ -33,7 +31,7 @@ public class UsagesController : ControllerBase
     {
         var usages = await _unitOfWork.Usages.ListUsages();
 
-      
+
         return Ok(usages);
     }
 
@@ -55,26 +53,10 @@ public class UsagesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateUsage(CreateUsageRequest model)
     {
-        try
-        {
-            await _unitOfWork.Usages.CreateUsage(model);
+        await _unitOfWork.Usages.CreateUsage(model);
 
-            await _unitOfWork.Save();
+        await _unitOfWork.Save();
 
-            return Ok(BasicResponse.Successful);
-        }
-        catch (DbUpdateException ex)
-        {
-            var sqlException = _unitOfWork.GetException<MySqlException>(ex);
-
-            if (sqlException == null)
-                return BadRequest(BasicResponse.Unknown);
-
-            if (sqlException.Number == 1062)
-                return BadRequest(BasicResponse.DuplicateEntry(model.StaticKey));
-
-
-            return BadRequest();
-        }
+        return Ok(BasicResponse.Successful);
     }
 }

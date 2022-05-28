@@ -33,6 +33,12 @@ public class ErrorHandlingMiddleware : IMiddleware
                 context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 await context.Response.WriteAsync(JsonSerializer.Serialize(BasicResponse.ResourceNotFound));
             }
+            catch (DuplicateException exception)
+            {
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                await context.Response.WriteAsync(JsonSerializer.Serialize(BasicResponse.ResourceAlreadyExists));
+            }
             catch (Exception ex)
             {
                 context.Response.ContentType = "application/json";
