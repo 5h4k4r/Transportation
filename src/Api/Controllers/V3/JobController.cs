@@ -38,7 +38,7 @@ public class JobController : ControllerBase
         if (jobRequest.SelectedOptionId != null)
         {
             var activeTask = await _unitOfWork.Tasks.GetActiveTaskByServiceId(userId,
-                (uint)jobRequest.SelectedOptionId);
+                (uint) jobRequest.SelectedOptionId);
             if (activeTask != null)
             {
                 var taskPerformer = activeTask.Task.Request.ServiceAreaType.Usage.StaticKey;
@@ -68,20 +68,22 @@ public class JobController : ControllerBase
         double bearing = 0
     )
     {
-        var servant_position = await _unitOfWork.Cache.GetLastPositionOnTask("onTaskServant" + task.Task);
+        var servant_position = await _unitOfWork.Cache.GetLastPositionOnTask("onTaskServant" + task.Task.Id);
 
         var distanceCalculation = CalculateDistance(task);
-
         var taskModel = new ListTasks();
 
-        taskModel.Distance = distanceCalculation.distance;
-        taskModel.duration = distanceCalculation.duration;
+        if (distanceCalculation != null)
+        {
+            taskModel.TaskDistanceAndDuration = distanceCalculation;
+        }
 
-        var (discount, expense) = await CalculateExpense(taskModel, user, taskModel.requester.user);
+
+        var discountAndExpense = await CalculateExpense(task, User.UserId(), taskModel.Requester);
 
         taskModel.price = discount.DiscountedAmount;
         if (taskModel.active_discount_code != null)
-            taskModel.price -= (int)taskModel.active_discount_code.amount;
+            taskModel.price -= (int) taskModel.active_discount_code.amount;
 
         taskModel.setDestinations();
 
@@ -139,48 +141,71 @@ public class JobController : ControllerBase
         return taskModel;
     }
 
-    public TaskDistance CalculateDistance(TaskWithDistanceMemberTaxiMeter taskDto)
+    public TaskDistance? CalculateDistance(TaskWithDistanceMemberTaxiMeter taskDto)
     {
         var successDestinations = taskDto.DestinationDtos;
 
-        if (successDestinations != null)
-        {
-            var destinations = successDestinations as DestinationDto[] ?? successDestinations.ToArray();
-            var distance = (ulong?)destinations.Sum(x => x.Distance);
-            var duration = (ulong?)destinations.Sum(x => x.Duration);
-            if (taskDto.TaxiMeter == null)
-                return new TaskDistance()
-                {
-                    Distance = distance,
-                    Duration = duration,
-                };
-
+        if (successDestinations == null) return null;
+        var destinations = successDestinations as DestinationDto[] ?? successDestinations.ToArray();
+        var distance = (ulong?) destinations.Sum(x => x.Distance);
+        var duration = (ulong?) destinations.Sum(x => x.Duration);
+        if (taskDto.TaxiMeter == null)
             return new TaskDistance()
             {
-                Distance = distance + taskDto.TaxiMeter.Distance,
-                Duration = duration + taskDto.TaxiMeter.Duration,
+                Distance = distance,
+                Duration = duration,
             };
-        }
 
-        return null;
+        return new TaskDistance()
+        {
+            Distance = distance + taskDto.TaxiMeter.Distance,
+            Duration = duration + taskDto.TaxiMeter.Duration,
+        };
     }
-    
-    void CalculateExpense(TaskWithDistanceMemberTaxiMeter taskDto, User user, requester)
+
+    Task CalculateExpense(TaskWithDistanceMemberTaxiMeter taskDto, ulong user, Requester requester)
     {
-        if ($task->request->user_price) {
-            $price = $task->request->user_price;
-        } else {
-            $price = $task->price;
-        }
+        var price = 0;
+        price = taskDto.Task.Request?.UserPrice ?? taskDto.Task.Price;
 
-        $discount_info = $this->offer->info(0, $price, $task->request->discount);
+        var discount_info = this.offer.info(0, price, task.request.discount);
 
-        $balance = Price::getBalance($task, $this->payment);
+        balance = Price::getBalance(task, this.payment);
 
-        $this->payment->setExpense($task->price, $task->request->discount, (int)optional($task->active_discount_code)->amount, 0, $balance);
-        $expense = $this->payment->getExpense();
+        this.payment.setExpense(task.price, task.request.discount, (int) optional(task.active_discount_code)
+            .amount, 0, balance);
+        expense = this.payment.getExpense();
+        expense = price::expense(user, requester, task, discount_info, expense);
+        return array(discount_info, expense);
+    }
+}
 
-            $expense = price::expense($user, $requester, $task, $discount_info, $expense);
-        return array($discount_info, $expense);
+class DiscountCalculator
+{
+    private string _now;
+
+    public DiscountCalculator()
+    {
+        _now = DateTime.Now.ToString("H:i:s");
+    }
+
+    public double discount(discount, amount)
+    {
+        offer = new OfferDiscount();
+        return offer->calculate(discount, amount);
+    }
+
+    public double info(discount, amount, discountData)
+    {
+        offer = new OfferDiscount(discount, amount);
+        return offer->info(amount, optional(discountData)->DiscountedAmount, optional(discountData)
+            ->Discount, optional(discountData)->Percent, optional(discountData)->Max);
+    }
+
+    public double code(user, string, price, service_area_type_id)
+    {
+        offer = new OfferCode(user);
+        offer->set(string, price, service_area_type_id);
+        return offer->calculate();
     }
 }

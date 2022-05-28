@@ -54,7 +54,7 @@ public class TasksRepository : ITasksRepository
                 Status = x.Task.Status,
                 CreatedAt = x.Task.CreatedAt,
                 UpdatedAt = x.Task.UpdatedAt,
-                Distance = new TaskDistance
+                TaskDistanceAndDuration = new TaskDistance
                 {
                     Distance = x.Destination.Distance,
                     Duration = x.Destination.Duration
