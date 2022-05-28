@@ -1,18 +1,19 @@
 using AutoMapper;
 using Core.Interfaces;
+using Core.Models.Common;
 using Infra.Entities;
-using Microsoft.Extensions.Caching.Distributed;
+using ServiceStack.Redis;
 using Task = System.Threading.Tasks.Task;
 
 namespace Infra.Repositories;
 
 public class RedisCacheRepository : ICacheRepository
 {
-    private readonly IDistributedCache _cache;
+    private readonly IRedisClientsManagerAsync _cache;
     private readonly TransportationContext _context;
     private readonly IMapper _mapper;
 
-    public RedisCacheRepository(TransportationContext context, IMapper mapper, IDistributedCache cache)
+    public RedisCacheRepository(TransportationContext context, IMapper mapper, IRedisClientsManagerAsync cache)
     {
         _context = context;
         _mapper = mapper;
@@ -20,82 +21,116 @@ public class RedisCacheRepository : ICacheRepository
     }
 
 
-    public Task RemoveLocation(string key, string member)
+    public async Task RemoveLocation(string key, string member)
     {
-        throw new NotImplementedException();
+        var client = await _cache.GetClientAsync();
+        await client.RemoveItemFromSortedSetAsync(key, member);
     }
 
-    public Task SetKey(string key, string value, TimeSpan timeToLive)
+    public async Task<bool> SetKey(string key, string value, TimeSpan timeToLive)
     {
         // TODO: Sliding expire time
-        return _cache.SetStringAsync(key, value, new DistributedCacheEntryOptions
+        var client = await _cache.GetClientAsync();
+        return await client.SetAsync(key, value, timeToLive);
+    }
+
+    public async Task<T> GetKey<T>(string key)
+    {
+        var client = await _cache.GetClientAsync();
+
+        return await client.GetAsync<T>(key);
+    }
+
+    public async Task<bool> DeleteKey(string key)
+    {
+        var client = await _cache.GetClientAsync();
+
+        return await client.RemoveAsync(key);
+    }
+
+    public async Task<long> AddLocation(string key, string member, ulong lat, ulong lng)
+    {
+        var client = await _cache.GetClientAsync();
+
+        return await client.AddGeoMemberAsync(key, lng, lat, member);
+    }
+
+    public async Task<double> GetDistance(string key, string member1, string member2, string unit = RedisGeoUnit.Meters)
+    {
+        var client = await _cache.GetClientAsync();
+
+        return await client.CalculateDistanceBetweenGeoMembersAsync(key, member1, member2, unit);
+    }
+
+    public async Task AddList(string listId, string value)
+    {
+        var client = await _cache.GetClientAsync();
+
+        await client.PushItemToListAsync(listId, value);
+    }
+
+    public async Task<long> GetListLen(string listId)
+    {
+        var client = await _cache.GetClientAsync();
+
+        return await client.GetListCountAsync(listId);
+    }
+
+    public async Task<long> Increase(string key, int value = 1)
+    {
+        var client = await _cache.GetClientAsync();
+
+        return await client.IncrementValueByAsync(key, value);
+    }
+
+    public async Task Increment(string key, int value = 1, TimeSpan timeToLive = default)
+    {
+        var client = await _cache.GetClientAsync();
+
+        throw new NotImplementedException();
+    }
+
+    public async Task<IEnumerable<string>> GetList(string listName, int start, int length)
+    {
+        var client = await _cache.GetClientAsync();
+
+        return await client.GetRangeFromListAsync(listName, start, length);
+    }
+
+    public async Task<long> RemoveFromList(string listName, string member)
+    {
+        var client = await _cache.GetClientAsync();
+
+        return await client.RemoveItemFromListAsync(listName, member);
+    }
+
+    public async Task<Position?> GetPosition(string key, string member)
+    {
+        var client = await _cache.GetClientAsync();
+
+        var pos = await client.GetGeoCoordinatesAsync(key, member);
+
+        if (pos == null)
+            return null;
+        return new Position
         {
-            AbsoluteExpirationRelativeToNow = timeToLive
-        });
+            Latitude = pos[0].Latitude,
+            Longitude = pos[0].Longitude
+        };
     }
 
-    public Task<T> GetKey<T>(string key)
+    public async Task<IEnumerable<string>> GetRadius(string key, ulong lat, ulong lng, int radius)
     {
-        throw new NotImplementedException();
+        var client = await _cache.GetClientAsync();
+
+        return await client.FindGeoMembersInRadiusAsync(key, lat, lng, radius, RedisGeoUnit.Meters);
     }
 
-    public Task<T> DeleteKey<T>(string key)
+    public async Task<IEnumerable<string>?> GetLastPositionOnTask(string listName)
     {
-        throw new NotImplementedException();
-    }
+        var client = await _cache.GetClientAsync();
 
-    public Task AddLocation(string key, string member, ulong lat, ulong lng)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<double> GetDistance(string key, string member1, string member2, string unit = "m")
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task AddList(string listName, string value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task GetListLen(string listName)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task Increase(string key, int value = 1)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task Increment(string key, int value = 1, TimeSpan timeToLive = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task GetList(string listName, int start, int length)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task RemoveFromList(string listName, string member)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task GetPosition(string key, string member)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task GetRadius(string key, ulong lat, ulong lng, int radius)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task GetLastPositionOnTask(string listName)
-    {
-        throw new NotImplementedException();
+        var items = await client.GetAllItemsFromListAsync(listName);
+        return items?[0].Split('_');
     }
 }

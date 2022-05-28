@@ -2,12 +2,13 @@ using AutoMapper;
 using Core.Interfaces;
 using Infra.Entities;
 using Microsoft.Extensions.Caching.Distributed;
+using ServiceStack.Redis;
 
 namespace Infra.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly IDistributedCache _cacheService;
+    private readonly IRedisClientsManagerAsync _cacheService;
     private readonly IMapper _mapper;
     private readonly TransportationContext _repoContext;
 
@@ -28,7 +29,7 @@ public class UnitOfWork : IUnitOfWork
     private IUsersRepository? _user;
     private IVehiclesRepository? _vehicles;
 
-    public UnitOfWork(TransportationContext repositoryContext, IMapper mapper, IDistributedCache cacheService)
+    public UnitOfWork(TransportationContext repositoryContext, IMapper mapper, IRedisClientsManagerAsync cacheService)
     {
         _repoContext = repositoryContext;
         _mapper = mapper;

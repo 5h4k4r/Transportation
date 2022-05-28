@@ -11,5 +11,5 @@ public interface ITasksRepository
     Task<List<ListTasksByClient>> ListTasksByClient(ListTasksByClientRequest model);
     Task<int> CountTasks(ListTasksRequest model);
     Task<int> CountClientTasks(ListTasksByClientRequest model);
-    Task<TaskDto?> GetActiveTaskByServiceId(ulong userId, uint serviceTypeId);
+    Task<TaskWithDistanceMemberTaxiMeter?> GetActiveTaskByServiceId(ulong userId, uint serviceTypeId);
 }

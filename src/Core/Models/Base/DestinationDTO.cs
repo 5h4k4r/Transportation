@@ -7,8 +7,8 @@
         public double Lat { get; set; }
         public double Lng { get; set; }
         public int Price { get; set; }
-        public int Distance { get; set; }
-        public int Duration { get; set; }
+        public uint Distance { get; set; }
+        public uint Duration { get; set; }
         public sbyte Status { get; set; }
         public sbyte Step { get; set; }
         public DateTime? CreatedAt { get; set; }

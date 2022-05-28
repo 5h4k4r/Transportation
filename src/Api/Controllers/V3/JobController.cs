@@ -5,6 +5,7 @@ using Core.Constants;
 using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
+using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -40,7 +41,7 @@ public class JobController : ControllerBase
                 (uint)jobRequest.SelectedOptionId);
             if (activeTask != null)
             {
-                var taskPerformer = activeTask.Request.ServiceAreaType.Usage.StaticKey;
+                var taskPerformer = activeTask.Task.Request.ServiceAreaType.Usage.StaticKey;
 
                 switch (taskPerformer)
                 {
@@ -61,19 +62,19 @@ public class JobController : ControllerBase
 
     public async Task<TaskDto> RidingClientPosition(
         string user,
-        TaskDto task,
+        TaskWithDistanceMemberTaxiMeter task,
         double lat,
         double lng,
         double bearing = 0
     )
     {
-        var servant_position = _unitOfWork.Cache.GetLastPositionOnTask("onTaskServant" + task);
+        var servant_position = await _unitOfWork.Cache.GetLastPositionOnTask("onTaskServant" + task.Task);
 
-        var distanceCalculation = await DistanceCalculation(task);
+        var distanceCalculation = CalculateDistance(task);
 
-        var taskModel = await Task.FindAsync(task);
+        var taskModel = new ListTasks();
 
-        taskModel.distance = distanceCalculation.distance;
+        taskModel.Distance = distanceCalculation.distance;
         taskModel.duration = distanceCalculation.duration;
 
         var (discount, expense) = await CalculateExpense(taskModel, user, taskModel.requester.user);
@@ -136,5 +137,50 @@ public class JobController : ControllerBase
         await _unitOfWork.Cache.AddList("onTaskClient" + task, lat + "_" + lng + "_" + bearing);
 
         return taskModel;
+    }
+
+    public TaskDistance CalculateDistance(TaskWithDistanceMemberTaxiMeter taskDto)
+    {
+        var successDestinations = taskDto.DestinationDtos;
+
+        if (successDestinations != null)
+        {
+            var destinations = successDestinations as DestinationDto[] ?? successDestinations.ToArray();
+            var distance = (ulong?)destinations.Sum(x => x.Distance);
+            var duration = (ulong?)destinations.Sum(x => x.Duration);
+            if (taskDto.TaxiMeter == null)
+                return new TaskDistance()
+                {
+                    Distance = distance,
+                    Duration = duration,
+                };
+
+            return new TaskDistance()
+            {
+                Distance = distance + taskDto.TaxiMeter.Distance,
+                Duration = duration + taskDto.TaxiMeter.Duration,
+            };
+        }
+
+        return null;
+    }
+    
+    void CalculateExpense(TaskWithDistanceMemberTaxiMeter taskDto, User user, requester)
+    {
+        if ($task->request->user_price) {
+            $price = $task->request->user_price;
+        } else {
+            $price = $task->price;
+        }
+
+        $discount_info = $this->offer->info(0, $price, $task->request->discount);
+
+        $balance = Price::getBalance($task, $this->payment);
+
+        $this->payment->setExpense($task->price, $task->request->discount, (int)optional($task->active_discount_code)->amount, 0, $balance);
+        $expense = $this->payment->getExpense();
+
+            $expense = price::expense($user, $requester, $task, $discount_info, $expense);
+        return array($discount_info, $expense);
     }
 }

@@ -100,9 +100,9 @@ public class TasksRepository : ITasksRepository
         return ListTasksByClientRequestQuery(model).CountAsync();
     }
 
-    public Task<TaskDto?> GetActiveTaskByServiceId(ulong userId, uint serviceTypeId)
+    public async Task<TaskWithDistanceMemberTaxiMeter?> GetActiveTaskByServiceId(ulong userId, uint serviceTypeId)
     {
-        return _context.Tasks
+        var tasks = await _context.Tasks
             .Where(x => x.Request != null)
             .Where(p => p.Request.ServiceAreaTypeId == serviceTypeId)
             .Join(
@@ -115,12 +115,40 @@ public class TasksRepository : ITasksRepository
                 }
             ).Where(p =>
                 p.task.Status >= (int)JobStatus.TaskStatus.Accept && p.task.Status < (int)JobStatus.TaskStatus.End)
-            .OrderByDescending(p => p.task.CreatedAt).Select(p => p.task)
+            .OrderByDescending(p => p.task.CreatedAt)
+            .Select(p => p.task)
             .Include(p => p.Request)
             .ThenInclude(p => p.ServiceAreaType)
             .ThenInclude(p => p.Usage)
-            .ProjectTo<TaskDto>(_mapper.ConfigurationProvider)
+            .Join(
+                _context.TaxiMeters,
+                task => task.Id,
+                meter => meter.TaskId,
+                (task, meter) => new
+                {
+                    task, meter
+                })
+            .Select(x => new
+                TaskWithDistanceMemberTaxiMeter
+                {
+                    Task = _mapper.Map<TaskDto>(x.task),
+                    TaxiMeter = _mapper.Map<TaxiMeterDto>(x.meter)
+                })
             .FirstOrDefaultAsync();
+        if (tasks == null) return null;
+
+        var ca =
+            await _context.Destinations
+                .Where(x =>
+                    x.Status >= (int)JobStatus.DestinationStatus.Active &&
+                    x.Status <= (int)JobStatus.DestinationStatus.Arrived &&
+                    x.ModelType == @"App\Models\Task" &&
+                    x.ModelId == tasks.Task.Id
+                )
+                .ProjectTo<DestinationDto>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+        tasks.DestinationDtos = ca;
+        return tasks;
     }
 
     #region Private Functions

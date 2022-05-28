@@ -35,6 +35,6 @@ public class Requester
 
 public class TaskDistance
 {
-    public int? Distance { get; set; }
-    public int? Duration { get; set; }
+    public ulong? Distance { get; set; }
+    public ulong? Duration { get; set; }
 }
