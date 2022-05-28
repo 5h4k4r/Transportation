@@ -1,5 +1,4 @@
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Requests;
@@ -7,7 +6,6 @@ using Infra.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Repositories;
-
 
 public class LanguagesRepository : ILanguagesRepository
 {
@@ -32,10 +30,14 @@ public class LanguagesRepository : ILanguagesRepository
         });
     }
 
-    public Task<List<LanguageDto>> ListLanguages() => _context.Languages.ProjectTo<LanguageDto>(_mapper.ConfigurationProvider).ToListAsync();
+    public Task<List<LanguageDto>> ListLanguages()
+    {
+        throw new DbUpdateException();
+        // _context.Languages.ProjectTo<LanguageDto>(_mapper.ConfigurationProvider).ToListAsync();
+    }
 
-    public Task<List<string>> ListLanguagesLocales() => _context.Languages.Select(x => x.Locale).ToListAsync();
-
-
-
+    public Task<List<string>> ListLanguagesLocales()
+    {
+        return _context.Languages.Select(x => x.Locale).ToListAsync();
+    }
 }
