@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Api.Extensions;
+using Api.Middlewares;
 using Api.Swagger;
 using Core.Converters;
 using Core.Helpers;
@@ -21,7 +22,6 @@ services
 
         x.JsonSerializerOptions.PropertyNamingPolicy = SnakeCaseNamingPolicy.Default;
         x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-
     });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -33,6 +33,7 @@ services
     .ConfigureSwaggerGenerator(config)
     .ConfigureCacheService(config)
     .ConfigureRepositoryWrapper()
+    .ConfigureRepositoryWrapper().AddTransient<ErrorHandlingMiddleware>()
     .AddScoped<UserAuthContext>()
     .AddAuthentication(x =>
     {
@@ -56,5 +57,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.Run();

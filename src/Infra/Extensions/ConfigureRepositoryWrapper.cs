@@ -1,4 +1,5 @@
 using Core.Interfaces;
+using Infra.Mapper;
 using Core.Settings;
 using Infra.Entities;
 using Infra.Repositories;
@@ -12,6 +13,7 @@ public static class RepositoryWrapperExtension
 {
     public static IServiceCollection ConfigureRepositoryWrapper(this IServiceCollection services)
     {
+        services.AddTransient<IExceptionMapper, ExceptionMapper>();
         services.AddDbContext<TransportationContext>((serviceProvider, dbContextOptionsBuilder) =>
         {
             var options = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
