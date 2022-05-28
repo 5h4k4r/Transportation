@@ -8,7 +8,7 @@ public class ExceptionMapper : IExceptionMapper
 {
     public void MapException(Exception e)
     {
-        if (e is DbUpdateException)
+        if (e is {Number : 1006})
             throw new NotFoundException();
 
         throw e;
