@@ -11,6 +11,7 @@ public class ExceptionMapper : IExceptionMapper
         if (e is {Number : 1006})
             throw new NotFoundException();
 
+
         throw e;
     }
 }
