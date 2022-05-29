@@ -20,7 +20,7 @@ services:
       - ServiceId
     restart: always
   transportationdotnet-middle:
-    image: reg.kubakgroup.com/auth-middleware/auth-middleware:wip
+    image: reg.kubakgroup.com/transportation_dotnet_middle/transportation-dotnet-middle:wip
     container_name: ${CI_PROJECT_NAME}-middle
     environment:
       - USER_ADDED_ENDPOINT
