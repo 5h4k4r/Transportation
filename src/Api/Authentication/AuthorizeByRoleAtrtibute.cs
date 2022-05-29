@@ -43,13 +43,10 @@ public class AuthorizeByRole : AuthorizeAttribute, IAuthorizationFilter
         var requiredRoles =
             Roles.Split(",")
                 .ToList(); //Multiple permission can be received from controller, delimiter "," is used to get individual values
-        if ((from requiredRole in requiredRoles
-                from y in roles
-                where y == (byte)(Role)Enum.Parse(typeof(Role), requiredRole)
-                select requiredRole).Any())
-        {
-            return; //User Authorized. Without setting any result value and just returning is sufficent for authorizing user
-        }
+        foreach (var requiredRole in requiredRoles)
+        foreach (var y in roles)
+            if (y == (byte)(Role)Enum.Parse(typeof(Role), requiredRole))
+                return; //User Authorized. Without setting any result value and just returning is sufficent for authorizing user
 
         context.Result = new UnauthorizedResult();
     }

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Api.Extensions;
+using Api.Helpers;
 using Api.Settings;
 using Core.Interfaces;
 using Core.Models.Authentication;
@@ -21,16 +22,14 @@ namespace Api.Controllers.V3;
 [Route("v3/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IConfiguration _config;
-    
+    private readonly IUnitOfWork _unitOfWork;
 
 
     public AuthController(IUnitOfWork unitOfWork, IConfiguration config)
     {
         _unitOfWork = unitOfWork;
         _config = config;
-  
     }
 
     [HttpGet("check")]
@@ -38,7 +37,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Check([Required] [FromQuery] AuthCheckRequest model)
     {
-        var phone = PreparePhoneNumber(model.Mobile!);
+        var phone = UserHelper.PreparePhoneNumber(model.Mobile!);
 
         var user = await _unitOfWork.User.GetUserByPhone(phone, true);
 
@@ -65,7 +64,7 @@ public class AuthController : ControllerBase
         // TODO: mobile is nullable
         if (model.Mobile != null)
         {
-            var phone = PreparePhoneNumber(model.Mobile);
+            var phone = UserHelper.PreparePhoneNumber(model.Mobile);
 
             var user = await _unitOfWork.User.GetUserByPhone(phone);
 
@@ -81,7 +80,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Gets the current signed in user.
+    ///     Gets the current signed in user.
     /// </summary>
     [Authorize]
     [HttpGet("info")]
@@ -131,7 +130,7 @@ public class AuthController : ControllerBase
                 Role = new DepartmentRole
                 {
                     Id = currentRole?.Id,
-                    Title = currentRole?.Title,
+                    Title = currentRole?.Title
                 }
             },
             Mobile = user.Mobile,
@@ -143,14 +142,5 @@ public class AuthController : ControllerBase
 
 
         return Ok(authInfoResponse);
-    }
-
-    private static string PreparePhoneNumber([Required] string model)
-    {
-        if (model[0] != '+')
-            model = "+" + model;
-
-
-        return model;
     }
 }
