@@ -10,7 +10,7 @@ public class ListTasks
     public int Status { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public TaskDistance? Distance { get; set; }
+    public TaskDistance? TaskDistanceAndDuration { get; set; }
     public ListTasksServant? Servant { get; set; }
     public Requester? Requester { get; set; }
 }
