@@ -56,8 +56,8 @@ public class TasksRepository : ITasksRepository
                 UpdatedAt = x.Task.UpdatedAt,
                 TaskDistanceAndDuration = new TaskDistance
                 {
-                    Distance = x.Destination.Distance,
-                    Duration = x.Destination.Duration
+                    Distance = (uint)x.Destination.Distance,
+                    Duration = (uint)x.Destination.Duration
                 },
                 Servant = new ListTasksServant
                 {
@@ -85,7 +85,6 @@ public class TasksRepository : ITasksRepository
             .ApplyPagination(model)
             .AsNoTracking()
             .ToListAsync();
-
 
         return tasks;
     }
@@ -137,7 +136,7 @@ public class TasksRepository : ITasksRepository
             .FirstOrDefaultAsync();
         if (tasks == null) return null;
 
-        var ca =
+        var destinationDtos =
             await _context.Destinations
                 .Where(x =>
                     x.Status >= (int)JobStatus.DestinationStatus.Active &&
@@ -147,8 +146,14 @@ public class TasksRepository : ITasksRepository
                 )
                 .ProjectTo<DestinationDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
-        tasks.DestinationDtos = ca;
+        tasks.DestinationDtos = destinationDtos;
         return tasks;
+    }
+
+    public Task<RounderDto?> GetLatestRounder(Currency currency)
+    {
+        return _context.Rounders.Where(x => x.Currency == nameof(currency))
+            .ProjectTo<RounderDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
     }
 
     #region Private Functions

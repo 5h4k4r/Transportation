@@ -5,6 +5,7 @@ using Infra.Entities;
 using Task = Infra.Entities.Task;
 
 namespace Infra.Mapper;
+
 public class MapperProfile : Profile
 {
     public MapperProfile()
@@ -26,6 +27,7 @@ public class MapperProfile : Profile
         CreateMap<RoleUserDto, RoleUser>().ReverseMap();
         CreateMap<ServantWorkDay, ServantWorkDayDto>().ReverseMap();
         CreateMap<Request, RequestDto>().ReverseMap();
+        CreateMap<Rounder, RounderDto>().ReverseMap();
         CreateMap<Member, MemberDto>().ReverseMap();
         CreateMap<AreaInfo, AreaInfoDto>().ReverseMap();
         CreateMap<ServantScoreDto, ServantScore>().ReverseMap();
@@ -33,8 +35,6 @@ public class MapperProfile : Profile
         CreateMap<GenderTranslation, GenderTranslationDto>().ReverseMap();
         CreateMap<VehicleOwner, VehicleOwnerDto>().ReverseMap();
         CreateMap<Task, TaskDto>().ReverseMap();
-
-
+        CreateMap<Destination, DestinationDto>().ReverseMap();
     }
-
 }

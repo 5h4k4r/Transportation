@@ -12,4 +12,5 @@ public interface ITasksRepository
     Task<int> CountTasks(ListTasksRequest model);
     Task<int> CountClientTasks(ListTasksByClientRequest model);
     Task<TaskWithDistanceMemberTaxiMeter?> GetActiveTaskByServiceId(ulong userId, uint serviceTypeId);
+    Task<RounderDto?> GetLatestRounder(Currency currency);
 }
