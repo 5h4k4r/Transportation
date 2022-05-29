@@ -11,6 +11,7 @@ public class ExceptionMapper : IExceptionMapper
         if (e is DbUpdateException)
             throw new NotFoundException();
 
+
         throw e;
     }
 }
