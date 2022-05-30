@@ -14,6 +14,7 @@ public static class RepositoryWrapperExtension
     public static IServiceCollection ConfigureRepositoryWrapper(this IServiceCollection services)
     {
         services.AddTransient<IExceptionMapper, ExceptionMapper>();
+        services.AddTransient<ICurl, Curl>();
         services.AddDbContext<TransportationContext>((serviceProvider, dbContextOptionsBuilder) =>
         {
             var options = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;

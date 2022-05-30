@@ -3,13 +3,13 @@ using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 
-namespace Api.Helpers;
+namespace Api.Helpers.JobController;
 
 internal static class Rounder
 {
     private const string Table = "rounder";
 
-    public static async Task<RounderDto> Get(Currency currency, IUnitOfWork unitOfWork)
+    public static async Task<RounderDto?> Get(Currency currency, IUnitOfWork unitOfWork)
     {
         var rounder =
             JsonSerializer.Deserialize<RounderDto>(await unitOfWork.Cache.GetKey<string>($"{Table}_{currency}"));

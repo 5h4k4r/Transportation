@@ -11,6 +11,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IRedisClientsManagerAsync _cacheService;
     private readonly IMapper _mapper;
     private readonly TransportationContext _repoContext;
+    private readonly ICurl _curl;
 
     private IAreaDepartmentsRepository? _areaDepartments;
     private IAreaInfosRepository? _areaInfos;
@@ -19,6 +20,7 @@ public class UnitOfWork : IUnitOfWork
     private IEmployeesRepository? _employees;
     private IGendersRepository? _gender;
     private IJobRepository? _Jobs;
+    private IPaymentRepository? _Payment;
     private ILanguagesRepository? _languages;
     private IRolesRepository? _roles;
     private IRoleUsersRepository? _roleUsers;
@@ -29,11 +31,12 @@ public class UnitOfWork : IUnitOfWork
     private IUsersRepository? _user;
     private IVehiclesRepository? _vehicles;
 
-    public UnitOfWork(TransportationContext repositoryContext, IMapper mapper, IRedisClientsManagerAsync cacheService)
+    public UnitOfWork(TransportationContext repositoryContext, IMapper mapper, IRedisClientsManagerAsync cacheService, ICurl curl)
     {
         _repoContext = repositoryContext;
         _mapper = mapper;
         _cacheService = cacheService;
+        _curl = curl;
     }
 
     public ICacheRepository Cache => _Cache ??= new RedisCacheRepository(_repoContext, _mapper, _cacheService);
@@ -58,16 +61,14 @@ public class UnitOfWork : IUnitOfWork
 
     public IUsagesRepository Usages => _usages ??= new UsagesRepository(_repoContext, _mapper);
     public IJobRepository Jobs => _Jobs ??= new JobRepository(_repoContext, _mapper);
+    public IPaymentRepository Payment => _Payment ??= new PaymentRepository(_curl);
 
     public Task<int> Save()
     {
         return _repoContext.SaveChangesAsync();
     }
 
-    public void Dispose()
-    {
-        _repoContext.Dispose();
-    }
+    public void Dispose() => _repoContext.Dispose();
 
     public T? GetException<T>(Exception exception)
         where T : Exception

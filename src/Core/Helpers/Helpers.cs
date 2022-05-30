@@ -1,17 +1,24 @@
+using Api.Helpers.JobController;
 using Core.Interfaces;
 using Core.Models.Common;
 
-namespace Api.Helpers;
+namespace Core.Helpers;
 
-public class Helpers
+public static class Helpers
 {
     private const string BASE_CURRENCY = "setting.base_currency";
 
-    //
-    // public static double currencySymbol(currency)
-    // {
-    //     return config('setting.currency_symbol.'.currency);
-    // }
+
+    public static string CurrencySymbol(Currency currency)
+    {
+        return currency switch
+        {
+            Currency.IQD => Models.Common.CurrencySymbol.IQD,
+            Currency.IRT => Models.Common.CurrencySymbol.IRT,
+            _ => throw new ArgumentOutOfRangeException(nameof(currency), currency, null)
+        };
+    }
+
     //
     // public static double currencyBase(amount, currency)
     // {
@@ -36,32 +43,32 @@ public class Helpers
         IUnitOfWork unitOfWork, bool exchange = false)
     {
         var rounder = await Rounder.Get(currency, unitOfWork);
-        if (!rounder)
-            return intval(amount);
+        if (rounder == null)
+            return (int)amount;
         if (exchange)
-            rounderdivisor *= config(self::BASE_CURRENCY. '.'.currency);
-        mod = amount % rounderdivisor;
+            rounder.Divisor *= (int)currency;
+        var mod = amount % rounder.Divisor;
 
-        out_side = intval(amount / rounderdivisor);
-        sub_amount = out_side * rounderdivisor;
+        var outSide = (int)(amount / rounder.Divisor);
+        var subAmount = outSide * rounder.Divisor;
 
-        if (method != '') roundermethod = method;
+        if (method?.Length != 0) rounder.Method = method!;
 
-        if (strcasecmp(roundermethod, 'half') == 0)
+        if (string.Equals(rounder.Method, "half", StringComparison.OrdinalIgnoreCase))
         {
-            if (mod > rounderdivisor / 2)
-                amount = sub_amount + rounderdivisor;
+            if (mod > rounder.Divisor / 2)
+                amount = subAmount + rounder.Divisor;
             else
-                amount = sub_amount;
+                amount = subAmount;
         }
 
-        else if (strcasecmp(roundermethod, 'toUp') == 0)
+        else if (string.Equals(rounder.Method, "toUp", StringComparison.OrdinalIgnoreCase))
         {
-            amount = sub_amount + rounderdivisor;
+            amount = subAmount + rounder.Divisor;
         }
-        else if (strcasecmp(roundermethod, 'toDown') == 0)
+        else if (string.Equals(rounder.Method, "toDown", StringComparison.OrdinalIgnoreCase))
         {
-            amount = sub_amount;
+            amount = subAmount;
         }
 
         return amount;

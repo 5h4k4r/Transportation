@@ -19,6 +19,7 @@ public class MapperProfile : Profile
         CreateMap<ServantDto, CreateServantRequest>().ReverseMap();
         CreateMap<VehicleDetail, VehicleDetailDto>().ReverseMap();
         CreateMap<Member, MemberDto>().ReverseMap();
+        CreateMap<MemberPaymentType, MemberPaymentTypeDto>().ReverseMap();
         CreateMap<AreaDepartmentDto, AreaDepartment>().ReverseMap();
         CreateMap<Department, DepartmentDto>().ReverseMap();
         CreateMap<Employee, EmployeeDto>().ReverseMap();

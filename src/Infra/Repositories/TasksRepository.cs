@@ -115,23 +115,24 @@ public class TasksRepository : ITasksRepository
             ).Where(p =>
                 p.task.Status >= (int)JobStatus.TaskStatus.Accept && p.task.Status < (int)JobStatus.TaskStatus.End)
             .OrderByDescending(p => p.task.CreatedAt)
-            .Select(p => p.task)
-            .Include(p => p.Request)
+            .Include(p => p.task.Request)
             .ThenInclude(p => p.ServiceAreaType)
             .ThenInclude(p => p.Usage)
+            .Include(p => p.member.MemberPaymentTypes)
             .Join(
                 _context.TaxiMeters,
-                task => task.Id,
+                task => task.task.Id,
                 meter => meter.TaskId,
                 (task, meter) => new
                 {
-                    task, meter
+                    task.task, task.member, meter
                 })
             .Select(x => new
                 TaskWithDistanceMemberTaxiMeter
                 {
                     Task = _mapper.Map<TaskDto>(x.task),
-                    TaxiMeter = _mapper.Map<TaxiMeterDto>(x.meter)
+                    TaxiMeter = _mapper.Map<TaxiMeterDto>(x.meter),
+                    Member = _mapper.Map<MemberDto>(x.member)
                 })
             .FirstOrDefaultAsync();
         if (tasks == null) return null;

@@ -10,3 +10,10 @@ public enum Currency
     IRR = 10,
 #pragma warning restore CA1069
 }
+
+public static class CurrencySymbol
+{
+    public static string IRT = "IRR";
+    public static string IQD = "IQD";
+    public static string IRR = "IRT";
+}
