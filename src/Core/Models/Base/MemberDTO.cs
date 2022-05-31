@@ -18,6 +18,7 @@ public class MemberDto
     public ulong ModelId { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public UserDto? User { get; set; }
 
     public ICollection<MemberPaymentTypeDto> MemberPaymentTypes { get; set; }
 }

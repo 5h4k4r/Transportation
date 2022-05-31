@@ -5,7 +5,7 @@ namespace Core.Interfaces;
 public interface ICacheRepository
 {
     Task RemoveLocation(string key, string member);
-    Task<bool> SetKey(string key, string value, TimeSpan timeToLive);
+    Task<bool> SetKey<T>(string key, T value, TimeSpan timeToLive);
     Task<T> GetKey<T>(string key);
     Task<bool> DeleteKey(string key);
     Task<long> AddLocation(string key, string member, ulong lat, ulong lng);

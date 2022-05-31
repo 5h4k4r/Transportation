@@ -14,13 +14,13 @@ public static class RepositoryWrapperExtension
     public static IServiceCollection ConfigureRepositoryWrapper(this IServiceCollection services)
     {
         services.AddTransient<IExceptionMapper, ExceptionMapper>();
-        services.AddTransient<ICurl, Curl>();
+        services.AddSingleton<ICurl, Curl>();
         services.AddDbContext<TransportationContext>((serviceProvider, dbContextOptionsBuilder) =>
         {
             var options = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
             dbContextOptionsBuilder.UseMySql(options.ConnectionString, ServerVersion.Parse(options.ServerVersion));
         });
-
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddTransient<IUnitOfWork, UnitOfWork>();
 
         return services;

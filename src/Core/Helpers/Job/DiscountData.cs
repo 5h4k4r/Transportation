@@ -1,4 +1,4 @@
-namespace Api.Helpers;
+namespace Core.Helpers.Job;
 
 public class DiscountData
 {

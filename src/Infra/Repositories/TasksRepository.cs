@@ -10,6 +10,7 @@ using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
 using Microsoft.EntityFrameworkCore;
+using ServiceStack;
 using Task = Infra.Entities.Task;
 
 namespace Infra.Repositories;
@@ -115,24 +116,28 @@ public class TasksRepository : ITasksRepository
             ).Where(p =>
                 p.task.Status >= (int)JobStatus.TaskStatus.Accept && p.task.Status < (int)JobStatus.TaskStatus.End)
             .OrderByDescending(p => p.task.CreatedAt)
+            .Include(p => p.member.User)
             .Include(p => p.task.Request)
             .ThenInclude(p => p.ServiceAreaType)
             .ThenInclude(p => p.Usage)
             .Include(p => p.member.MemberPaymentTypes)
             .Join(
                 _context.TaxiMeters,
-                task => task.task.Id,
+                all => all.task.Id,
                 meter => meter.TaskId,
-                (task, meter) => new
+                (all, meter) => new
                 {
-                    task.task, task.member, meter
+                    all.task, all.member, meter
                 })
-            .Select(x => new
-                TaskWithDistanceMemberTaxiMeter
+            .Join(_context.DiscountCodeUsers.Where(x => x.ModelType == @"App\Models\Task" && x.UserId == userId && !x.Used),
+                all => all.task.Id,
+                discountCodeUser => discountCodeUser.ModelId,
+                (all, discountCodeUser) => new TaskWithDistanceMemberTaxiMeter
                 {
-                    Task = _mapper.Map<TaskDto>(x.task),
-                    TaxiMeter = _mapper.Map<TaxiMeterDto>(x.meter),
-                    Member = _mapper.Map<MemberDto>(x.member)
+                    Task = _mapper.Map<TaskDto>(all.task),
+                    TaxiMeter = _mapper.Map<TaxiMeterDto>(all.meter),
+                    Member = _mapper.Map<MemberDto>(all.member),
+                    DiscountCodeUser = _mapper.Map<DiscountCodeUserDto>(discountCodeUser)
                 })
             .FirstOrDefaultAsync();
         if (tasks == null) return null;
@@ -147,6 +152,7 @@ public class TasksRepository : ITasksRepository
                 )
                 .ProjectTo<DestinationDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+
         tasks.DestinationDtos = destinationDtos;
         return tasks;
     }

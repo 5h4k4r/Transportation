@@ -19,7 +19,6 @@ public interface IUnitOfWork : IDisposable
 
     IGendersRepository Genders { get; }
     IJobRepository Jobs { get; }
-    IPaymentRepository Payment { get; }
     ICacheRepository Cache { get; }
     Task<int> Save();
     T? GetException<T>(Exception e) where T : Exception;

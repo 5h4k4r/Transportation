@@ -1,6 +1,8 @@
 using System.Text.Json;
 using Core.Interfaces;
+using Core.Models.Base;
 using Core.Models.Common;
+using Core.Models.Repositories;
 
 namespace Api.Helpers.JobController;
 
@@ -14,8 +16,8 @@ public class Price
     private const int CashAccount = 0;
     private const int DefaultSystemAccount = 100;
 
-    public static async Task<object> getBalance(TaskWithDistanceMemberTaxiMeter taskDto, Payment payment,
-        IUnitOfWork unitOfWork)
+    public static async Task<object> getBalance(TaskWithDistanceMemberTaxiMeter taskDto,
+        IUnitOfWork unitOfWork, IPaymentRepository payment)
     {
         var member = taskDto.Member;
         long balance = 0;
@@ -35,17 +37,19 @@ public class Price
             {
                 if (member.MemberPaymentTypes.First().Type == DefaultSystemAccount.ToString())
                 {
-                    var account = unitOfWork.Cache.GetKey("user_default_account_" + member.UserId);
-                    if (!account)
+                    var account = await unitOfWork.Cache.GetKey<string?>("user_default_account_" + member.UserId);
+                    if (account == null)
                     {
-                        account =  payment.defaultAccount(task.requester.user, task.request.service_area_type.currency);
-                        if (account)
+                        account = await payment.DefaultAccount(taskDto.Member.User,
+                            taskDto.Task.Request.ServiceAreaType.Currency);
+                        if (account != null)
                         {
-                            RedisManager::setKey("user_default_account_".member.user_id, account, 600);
+                            await unitOfWork.Cache.SetKey("user_default_account_" + member.UserId, account,
+                                TimeSpan.FromSeconds(600));
                         }
                     }
 
-                    member.payment_type.type = account;
+                    member.MemberPaymentTypes.First().Type = account;
                 }
 
                 balance = payment.getBalance(member.payment_type.type);
@@ -59,5 +63,20 @@ public class Price
         }
 
         return balance;
+    }
+
+    public static Expense Expense(ulong servant, Requester client, TaskWithDistanceMemberTaxiMeter taskDto,
+        object discountInfo, Expense expense)
+    {
+        var gift_amount = 0;
+        var currency = taskDto.Task.Request.ServiceAreaType.Currency;
+        var servant_expense = servantExpense(taskDto, servant, currency, expense);
+        var client_expense = clientExpense(client, taskDto, currency, discountInfo, expense);
+
+        return new Expense()
+        {
+            client_expense = client_expense,
+            servant_expense = servant_expense,
+        };
     }
 }
