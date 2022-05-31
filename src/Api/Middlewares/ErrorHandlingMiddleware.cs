@@ -27,13 +27,13 @@ public class ErrorHandlingMiddleware : IMiddleware
             {
                 _mapper.MapException(e);
             }
-            catch (NotFoundException exception)
+            catch (NotFoundException)
             {
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 await context.Response.WriteAsync(JsonSerializer.Serialize(BasicResponse.ResourceNotFound));
             }
-            catch (DuplicateException exception)
+            catch (DuplicateException)
             {
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -43,7 +43,7 @@ public class ErrorHandlingMiddleware : IMiddleware
             {
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                await context.Response.WriteAsync(JsonSerializer.Serialize(BasicResponse.Unknown));
+                await context.Response.WriteAsync(JsonSerializer.Serialize(ex.InnerException?.Message ?? ex.Message));
             }
         }
     }

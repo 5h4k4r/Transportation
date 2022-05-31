@@ -6,6 +6,7 @@ using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Task = System.Threading.Tasks.Task;
 
 namespace Infra.Repositories;
 
@@ -25,7 +26,6 @@ public class VehiclesRepository : IVehiclesRepository
         var query = _context.Vehicles.Include(v => v.VehicleDetails).AsQueryable();
 
         if (model.FilterField != null && model.FilterValue != null)
-        {
             switch (model.FilterField)
             {
                 case ListVehicleRequestFilterField.Id:
@@ -34,7 +34,8 @@ public class VehiclesRepository : IVehiclesRepository
                     break;
 
                 case ListVehicleRequestFilterField.PlateNumber:
-                    query = query.Where(v => v.VehicleDetails.Any(vd => vd.Plaque != null && vd.Plaque.Contains(model.FilterValue)));
+                    query = query.Where(v =>
+                        v.VehicleDetails.Any(vd => vd.Plaque != null && vd.Plaque.Contains(model.FilterValue)));
                     break;
 
                 case ListVehicleRequestFilterField.Title:
@@ -42,10 +43,10 @@ public class VehiclesRepository : IVehiclesRepository
                     break;
 
                 case ListVehicleRequestFilterField.Vin:
-                    query = query.Where(v => v.VehicleDetails.Any(vd => vd.Vin != null && vd.Vin.Contains(model.FilterValue)));
+                    query = query.Where(v =>
+                        v.VehicleDetails.Any(vd => vd.Vin != null && vd.Vin.Contains(model.FilterValue)));
                     break;
             }
-        }
 
         return query.ProjectTo<VehicleDto>(_mapper.ConfigurationProvider).ApplyPagination(model).ToListAsync();
     }
@@ -57,7 +58,6 @@ public class VehiclesRepository : IVehiclesRepository
         var query = _context.Vehicles.Include(v => v.VehicleDetails).AsQueryable();
 
         if (model.FilterField != null && model.FilterValue != null)
-        {
             switch (model.FilterField)
             {
                 case ListVehicleRequestFilterField.Id:
@@ -66,7 +66,8 @@ public class VehiclesRepository : IVehiclesRepository
                     break;
 
                 case ListVehicleRequestFilterField.PlateNumber:
-                    query = query.Where(v => v.VehicleDetails.Any(vd => vd.Plaque != null && vd.Plaque.Contains(model.FilterValue)));
+                    query = query.Where(v =>
+                        v.VehicleDetails.Any(vd => vd.Plaque != null && vd.Plaque.Contains(model.FilterValue)));
                     break;
 
                 case ListVehicleRequestFilterField.Title:
@@ -74,10 +75,10 @@ public class VehiclesRepository : IVehiclesRepository
                     break;
 
                 case ListVehicleRequestFilterField.Vin:
-                    query = query.Where(v => v.VehicleDetails.Any(vd => vd.Vin != null && vd.Vin.Contains(model.FilterValue)));
+                    query = query.Where(v =>
+                        v.VehicleDetails.Any(vd => vd.Vin != null && vd.Vin.Contains(model.FilterValue)));
                     break;
             }
-        }
 
         return query.ProjectTo<VehicleDto>(_mapper.ConfigurationProvider).CountAsync();
     }
@@ -94,27 +95,41 @@ public class VehiclesRepository : IVehiclesRepository
         await _context.VehicleDetails.AddAsync(newVehicleDetail);
     }
 
-    public Task<VehicleDto?> GetVehicleById(ulong id) =>
-        _context.Vehicles.Where(v => v.Id == id).ProjectTo<VehicleDto>(_mapper.ConfigurationProvider)
+    public Task<VehicleDto?> GetVehicleById(ulong id)
+    {
+        return _context.Vehicles.Where(v => v.Id == id).ProjectTo<VehicleDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
+    }
 
 
-    public Task<List<UserDto>> GetVehicleOwners(ulong id) =>
-        _context.VehicleOwners
+    public Task<List<UserDto>> GetVehicleOwners(ulong id)
+    {
+        return _context.VehicleOwners
             .Where(v => v.VehicleId == id)
             .Include(v => v.User)
             .Select(x => x.User)
             .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
+    }
 
-    public Task<List<UserDto>> GetVehicleUsers(ulong id) =>
-        _context.VehicleUsers
+    public Task<List<UserDto>> GetVehicleUsers(ulong id)
+    {
+        return _context.VehicleUsers
             .Where(v => v.VehicleId == id)
             .Include(v => v.User)
             .Select(x => x.User)
             .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
+    }
+
+    public Task UpdateVehicle(VehicleDto vehicle)
+    {
+        var vehicleToUpdate = _mapper.Map<Vehicle>(vehicle);
+        _context.Vehicles.Update(vehicleToUpdate);
+        return Task.CompletedTask;
+    }
 }
+
 
 //     {
 //     "title": "Toyota",

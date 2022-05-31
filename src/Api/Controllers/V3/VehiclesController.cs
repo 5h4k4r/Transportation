@@ -3,6 +3,7 @@ using AutoMapper;
 using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
+using Core.Models.Exceptions;
 using Core.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,8 +18,8 @@ namespace Api.Controllers.V3;
 [Authorize]
 public class VehiclesController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
     public VehiclesController(IUnitOfWork unitOfWork, IMapper mapper)
     {
@@ -46,7 +47,6 @@ public class VehiclesController : ControllerBase
             return NotFound(BasicResponse.ResourceNotFound);
 
         return Ok(vehicle);
-
     }
 
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
@@ -86,5 +86,39 @@ public class VehiclesController : ControllerBase
         return Ok(newVehicleDetail);
     }
 
+    [ProducesResponseType(typeof(VehicleDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateVehicle(ulong id, [FromBody] UpdateVehicleRequest request)
+    {
+        var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
 
+        if (vehicle is null)
+            throw new NotFoundException();
+
+
+        var newVehicle = _mapper.Map<VehicleDto>(request);
+        newVehicle.CreatedAt = vehicle.CreatedAt;
+        newVehicle.UpdatedAt = DateTime.UtcNow;
+        newVehicle.Id = id;
+        if (newVehicle.VehicleDetails != null && newVehicle.VehicleDetails.Count > 0)
+        {
+            var vehicleDetailDto = vehicle.VehicleDetails.First();
+            var newVehicleDetailDto = newVehicle.VehicleDetails.First();
+            newVehicleDetailDto.VehicleId = id;
+            newVehicleDetailDto.Id = vehicleDetailDto.Id;
+            newVehicleDetailDto.CreatedAt = vehicleDetailDto.CreatedAt;
+            newVehicleDetailDto.UpdatedAt = DateTime.UtcNow;
+            newVehicle.VehicleDetails = new List<VehicleDetailDto> { newVehicleDetailDto };
+        }
+
+        await _unitOfWork.Vehicles.UpdateVehicle(newVehicle);
+
+
+        await _unitOfWork.Save();
+
+        var response = await _unitOfWork.Vehicles.GetVehicleById(id);
+
+        return Ok(response);
+    }
 }

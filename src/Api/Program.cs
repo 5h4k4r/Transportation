@@ -12,13 +12,13 @@ var services = builder.Services;
 var config = builder.Configuration;
 // Add services to the container.
 services
-    .AddControllers()
+    .AddControllers(opt => opt.UseDateOnlyTimeOnlyStringConverters())
     .AddJsonOptions(x =>
     {
         x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         x.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
         x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
+        x.UseDateOnlyTimeOnlyStringConverters();
         x.JsonSerializerOptions.PropertyNamingPolicy = SnakeCaseNamingPolicy.Default;
         x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });

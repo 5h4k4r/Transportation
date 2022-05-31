@@ -5,7 +5,6 @@ namespace Core.Interfaces;
 
 public interface IVehiclesRepository
 {
-
     Task<List<VehicleDto>> ListVehicle(ListVehiclesRequest model);
     Task<int> ListVehicleCount(ListVehiclesRequest model);
 
@@ -18,8 +17,5 @@ public interface IVehiclesRepository
     public Task<List<UserDto>> GetVehicleOwners(ulong id);
 
     public Task<List<UserDto>> GetVehicleUsers(ulong id);
-
-
-
-
+    public Task UpdateVehicle(VehicleDto vehicle);
 }
