@@ -8,7 +8,8 @@ using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Task = Infra.Entities.Task;
+using Task = System.Threading.Tasks.Task;
+using TaskModel = Infra.Entities.Task;
 
 namespace Infra.Repositories;
 
@@ -55,8 +56,37 @@ public class ServantsRepository : IServantsRepository
 
     public Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId)
     {
-        var query = _context.Servants.Where(x => x.AreaId == userAreaId)
+        var query = _context.Servants
+            // .Where(x => x.AreaId == userAreaId)
             .ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
+        if (model.IncompleteOnly)
+            return Task.FromResult(
+                query
+                    .Where(x =>
+                        x.FirstName == null ||
+                        x.LastName == null ||
+                        x.NationalId == null ||
+                        x.Certificate == null ||
+                        x.BankId == null ||
+                        x.GenderId == null ||
+                        x.Address == ""
+                    )
+                    .Join(
+                        _context.Documents.Where(x => x.ModelType == "App\\Models\\Servant"),
+                        Servant => Servant.Id,
+                        Document => (int)Document.ModelId,
+                        (Servant, Documents) => new
+                        {
+                            Servant
+                        })
+                    .GroupBy(x => x.Servant.Id)
+                    .Select(x => x.ToList())
+                    .ApplyPagination(model)
+                    .ToList()
+                    .Where(x => x.Count < 5)
+                    .Select(x => x.First().Servant)
+                    .ToList()
+            );
 
         query = CheckForSearchField(query, model);
 
@@ -84,8 +114,38 @@ public class ServantsRepository : IServantsRepository
 
     public Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId)
     {
-        var query = _context.Servants.Where(x => x.AreaId == userAreaId)
+        var query = _context.Servants
+            // .Where(x => x.AreaId == userAreaId)
             .ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
+
+        if (model.IncompleteOnly)
+            return Task.FromResult(
+                query
+                    .Where(x =>
+                        x.FirstName == null ||
+                        x.LastName == null ||
+                        x.NationalId == null ||
+                        x.Certificate == null ||
+                        x.BankId == null ||
+                        x.GenderId == null ||
+                        x.Address == ""
+                    )
+                    .Join(
+                        _context.Documents.Where(x => x.ModelType == "App\\Models\\Servant"),
+                        Servant => Servant.UserId,
+                        Document => Document.ModelId,
+                        (Servant, Documents) => new
+                        {
+                            Servant
+                        })
+                    .GroupBy(x => x.Servant.Id)
+                    .OrderBy(x => x.Key)
+                    .Select(x => x.ToList())
+                    .ToList()
+                    .Where(x => x.Count < 5)
+                    .Select(x => x.First().Servant)
+                    .Count()
+            );
 
         query = CheckForSearchField(query, model);
 
@@ -108,14 +168,14 @@ public class ServantsRepository : IServantsRepository
             .FirstOrDefaultAsync();
     }
 
-    private async Task<(List<Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(
+    private async Task<(List<TaskModel> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(
         ulong servantUserId, ServantPerformanceRequest model)
     {
         var tasksQuery = _context.Tasks.Where(x => x.ServantId == servantUserId);
         var dailyTasksQuery = _context.ServantDailyStatistics.Where(x => x.ServantId == servantUserId);
 
 
-        List<Task> tasks = new();
+        List<TaskModel> tasks = new();
         List<ServantDailyStatistic> dailyStatistics = new();
 
         var today = DateTime.UtcNow;
