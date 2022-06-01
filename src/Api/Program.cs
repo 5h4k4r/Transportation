@@ -54,6 +54,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseMiddleware<ErrorHandlingMiddleware>();
+
+if (app.Environment.IsProduction()) app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.Run();
