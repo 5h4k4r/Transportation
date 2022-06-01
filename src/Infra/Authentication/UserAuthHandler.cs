@@ -45,16 +45,14 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
                 // return AuthenticateResult.Fail(new GatewayAuthException(GatewayAuthException.ErrorCode.InvalidUserModel, "User ID is empty"));
                 return AuthenticateResult.Fail(new NotImplementedException());
 
-            //     await _UserService.UpsertAsync(user);
-
-            //     // TODO: Add fake accounting unit
-            //     resp.Data.Attributes.AccountingUnit = new AccountingUnit { Id = "YsrbjgBLha1aUYV4svFR8" };
             var databaseUser = await _unitOfWork.User.GetUserByAuthId(resp.Id);
             if (databaseUser is null)
                 return AuthenticateResult.Fail("User not found");
 
             resp.RoleUsers = databaseUser.RoleUsers.Select(x=>x.RoleId);
-
+            resp.AreaId = databaseUser.AreaId;
+            resp.LanguageId = databaseUser.LanguageId;
+            resp.MySqlId = databaseUser.Id;
             _userAuthContext.SetAuthUser(resp);
 
             var claimsIdentity = new ClaimsIdentity(GenerateClaims(user), nameof(UserAuthHandler));
@@ -98,7 +96,15 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
 
         if (user.RoleUsers is not null)
             claims.Add(new Claim(ClaimTypes.Role, JsonSerializer.Serialize(user.RoleUsers)));
-
+        
+        if(user.AreaId is not null)
+            claims.Add(new Claim(ClaimTypes.Country, user.AreaId.ToString()));
+    
+        if(user.LanguageId is not null)
+            claims.Add(new Claim(ClaimTypes.Locality, user.LanguageId.ToString()));
+        
+        if(user.MySqlId is not null)
+            claims.Add(new Claim(ClaimTypes.Sid, user.MySqlId.ToString()));
 
         return claims;
     }

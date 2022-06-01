@@ -5,8 +5,6 @@ using Core.Models.Common;
 using Core.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MySqlConnector;
 
 namespace Api.Controllers.V3;
 
@@ -37,8 +35,9 @@ public class LanguagesController : ControllerBase
 
             return Ok(locales);
         }
+
         var languages = await _unitOfWork.Languages.ListLanguages();
-        
+
         return Ok(languages);
     }
 
@@ -48,25 +47,11 @@ public class LanguagesController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> CreateLanguage([FromBody] CreateLanguageRequest language)
     {
-        try
-        {
-            _unitOfWork.Languages.CreateLanguage(language);
+        _unitOfWork.Languages.CreateLanguage(language);
 
-            await _unitOfWork.Save();
+        await _unitOfWork.Save();
 
 
-            return Ok(BasicResponse.Successful);
-        }
-        catch (DbUpdateException ex)
-        {
-            var sqlException = _unitOfWork.GetException<MySqlException>(ex);
-
-            if (sqlException != null
-                && (sqlException.Number == 1062))
-                return BadRequest(BasicResponse.DuplicateEntry(language.Locale));
-
-
-            return BadRequest();
-        }
+        return Ok(BasicResponse.Successful);
     }
 }

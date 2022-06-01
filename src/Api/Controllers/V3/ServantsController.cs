@@ -20,8 +20,8 @@ namespace Api.Controllers.V3;
 [Route("v3/servants")]
 public class ServantsController : ControllerBase
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
     public ServantsController(IUnitOfWork unitOfWork, IMapper mapper)
     {
@@ -30,12 +30,13 @@ public class ServantsController : ControllerBase
     }
 
     /// <summary>
-    /// List Servants
+    ///     List Servants
     /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PaginatedResponse<ServantDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListServants([FromQuery] ListServantRequest model, [FromServices] UserAuthContext authContext)
+    public async Task<IActionResult> ListServants([FromQuery] ListServantRequest model,
+        [FromServices] UserAuthContext authContext)
     {
         var authId = authContext.GetAuthUser().Id;
         var user = await _unitOfWork.User.GetUserByAuthId(authId);
@@ -50,17 +51,15 @@ public class ServantsController : ControllerBase
 
 
         return Ok(new PaginatedResponse<ServantDto>(count, model, items));
-
-
     }
 
     /// <summary>
-    /// List Servants
+    ///     List Servants
     /// </summary>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PaginatedResponse<ServantDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetServantById(int id, [FromServices] UserAuthContext authContext)
+    public async Task<IActionResult> GetServantByUserId(int id, [FromServices] UserAuthContext authContext)
     {
         var authId = authContext.GetAuthUser().Id;
         var user = await _unitOfWork.User.GetUserByAuthId(authId);
@@ -70,29 +69,25 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
+        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
         return Ok(servant);
-
-
     }
 
 
     /// <summary>
-    /// Gets a servant's performance
+    ///     Gets a servant's performance
     /// </summary>
     [HttpGet("{id}/performance")]
     [ProducesResponseType(typeof(ServantPerformanceWithUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-
-
-    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model, [FromServices] UserAuthContext authContext)
+    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model,
+        [FromServices] UserAuthContext authContext)
     {
-
         var authId = authContext.GetAuthUser().Id;
         var user = await _unitOfWork.User.GetUserByAuthId(authId);
 
@@ -101,7 +96,7 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var databaseServant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
+        var databaseServant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
 
         if (databaseServant == null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(ServantPerformed), id));
@@ -133,7 +128,6 @@ public class ServantsController : ControllerBase
         };
 
         return Ok(response);
-
     }
 
 
@@ -141,7 +135,8 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(PaginatedResponse<ListTasks>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetServantOnlinePeriods(int id, [FromQuery] GetServantOnlinePeriodsRequest model, [FromServices] UserAuthContext authContext)
+    public async Task<IActionResult> GetServantOnlinePeriods(int id, [FromQuery] GetServantOnlinePeriodsRequest model,
+        [FromServices] UserAuthContext authContext)
     {
         var authId = authContext.GetAuthUser().Id;
         var user = await _unitOfWork.User.GetUserByAuthId(authId);
@@ -151,7 +146,7 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
+        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), id));
@@ -171,7 +166,7 @@ public class ServantsController : ControllerBase
                     TotalOnlineTimeInSecond = servantWorkDays.TotalTimeInSeconds,
                     TotalOnlineTime = servantWorkDays.TotalTime
                 }
-        ));
+            ));
     }
 
 
@@ -181,14 +176,11 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(PaginatedResponse<ListServantsOnlineHistory>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListServantsOnlineHistory([FromQuery] GetServantOnlinePeriodsRequest model)
     {
-
-
         var items = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistory(model);
         var count = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistoryCount(model);
 
         if (items is null)
             return NotFound(BasicResponse.ResourceNotFound);
-
 
 
         return Ok(new PaginatedResponse<ListServantsOnlineHistory>(count, model, items));
@@ -202,7 +194,8 @@ public class ServantsController : ControllerBase
         var servant = _mapper.Map<ServantDto>(request);
         _unitOfWork.Servants.CreateServant(servant);
 
+        _unitOfWork.Save();
+
         return Ok(BasicResponse.Successful);
     }
-
 }

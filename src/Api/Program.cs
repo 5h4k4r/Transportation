@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Api.Extensions;
+using Api.Middlewares;
 using Api.Swagger;
 using Core.Converters;
 using Core.Helpers;
@@ -11,16 +12,15 @@ var services = builder.Services;
 var config = builder.Configuration;
 // Add services to the container.
 services
-    .AddControllers()
+    .AddControllers(opt => opt.UseDateOnlyTimeOnlyStringConverters())
     .AddJsonOptions(x =>
     {
         x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         x.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
         x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
+        x.UseDateOnlyTimeOnlyStringConverters();
         x.JsonSerializerOptions.PropertyNamingPolicy = SnakeCaseNamingPolicy.Default;
         x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-
     });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -30,7 +30,7 @@ services
     .ConfigureDatabase(config)
     .AddEndpointsApiExplorer()
     .ConfigureSwaggerGenerator(config)
-    .ConfigureRepositoryWrapper()
+    .ConfigureRepositoryWrapper().AddTransient<ErrorHandlingMiddleware>()
     .AddScoped<UserAuthContext>()
     .AddAuthentication(x =>
     {
@@ -54,5 +54,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+if (app.Environment.IsProduction()) app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.Run();

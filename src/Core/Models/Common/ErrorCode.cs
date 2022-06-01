@@ -10,23 +10,12 @@ public enum ErrorCode
     CouldNotCreateResource,
     CouldNotUpdateResource,
     CouldNotDeleteResource,
-    DateRangeTooLong,
-
-    // Authentication
     AuthenticationFailed,
     UsernameAlreadyExists,
     PhoneNumberAlreadyExists,
-    PassswordTooShort,
-    UserDeactivated,
     UserNotVerified,
     UserAlreadyVerified,
-    InvalidUserRole,
-    WrongOtpCode,
-    InvalidToken,
-    TooManyPasswordResetRequests,
     OldPasswordIncorrect,
     NewPasswordEqualsOldPassword,
     PermissionDenied
-
 }
-

@@ -79,7 +79,7 @@ public class TasksRepository : ITasksRepository
     }
     public async Task<List<ListTasksByClient>> ListTasksByClient(ListTasksByClientRequest model)
     {
-        var tasks = await GetListTasksByClientRequestQuery(model)
+        var tasks = await ListTasksByClientRequestQuery(model)
         .ApplySorting(model)
         .ApplyPagination(model)
         .AsNoTracking()
@@ -95,7 +95,7 @@ public class TasksRepository : ITasksRepository
     }
     public Task<int> CountClientTasks(ListTasksByClientRequest model)
     {
-        return GetListTasksByClientRequestQuery(model).CountAsync();
+        return ListTasksByClientRequestQuery(model).CountAsync();
     }
 
 
@@ -121,7 +121,7 @@ public class TasksRepository : ITasksRepository
         return query;
     }
 
-    private IQueryable<ListTasksByClient> GetListTasksByClientRequestQuery(ListTasksByClientRequest model)
+    private IQueryable<ListTasksByClient> ListTasksByClientRequestQuery(ListTasksByClientRequest model)
     {
         var tasksQuery = _context.Tasks;
 

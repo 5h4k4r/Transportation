@@ -84,5 +84,8 @@ public class AuthUser
     public TokenObject? Token { get; set; }
     [JsonIgnore]
     public IEnumerable<byte>? RoleUsers { get; set; }
+    public ulong? AreaId { get; set; }
+    public ulong? LanguageId { get; set; }
+    public ulong? MySqlId { get; set; }
 }
 
