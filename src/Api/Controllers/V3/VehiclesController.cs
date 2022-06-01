@@ -121,4 +121,22 @@ public class VehiclesController : ControllerBase
 
         return Ok(response);
     }
+
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [HttpPost("servant")]
+    public async Task<IActionResult> AddSeravntToVehicle([FromBody] AddServantToVehicleRequest request)
+    {
+        var vehicle = await _unitOfWork.Vehicles.GetVehicleById(request.VehicleId);
+        var servant = await _unitOfWork.Servants.GetServantByUserId(request.UserId);
+        if (vehicle is null)
+            throw new NotFoundException("Vehicle not found");
+
+        if (servant is null)
+            throw new NotFoundException("Servant not found");
+        await _unitOfWork.Vehicles.AddServantToVehicle(request.VehicleId, (ulong)request.UserId);
+        await _unitOfWork.Save();
+
+        return Ok(BasicResponse.Successful);
+    }
 }
