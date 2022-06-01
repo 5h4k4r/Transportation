@@ -59,7 +59,7 @@ public class ServantsController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PaginatedResponse<ServantDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetServantById(int id, [FromServices] UserAuthContext authContext)
+    public async Task<IActionResult> GetServantByUserId(int id, [FromServices] UserAuthContext authContext)
     {
         var authId = authContext.GetAuthUser().Id;
         var user = await _unitOfWork.User.GetUserByAuthId(authId);
@@ -69,7 +69,7 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
+        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceNotFound);
@@ -96,7 +96,7 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var databaseServant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
+        var databaseServant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
 
         if (databaseServant == null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(ServantPerformed), id));
@@ -146,7 +146,7 @@ public class ServantsController : ControllerBase
 
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantById(id, user.AreaId.Value);
+        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), id));
