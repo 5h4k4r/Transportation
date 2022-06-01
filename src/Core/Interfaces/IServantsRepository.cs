@@ -6,9 +6,7 @@ namespace Core.Interfaces;
 
 public interface IServantsRepository
 {
-    Task<ServantDto?> GetServantById(int id, ulong areaId = 0);
-
-    Task<ServantDto?> GetServantByUserId(int id, ulong areaId = 0);
+    Task<ServantDto?> GetServantByUserId(ulong userId, ulong areaId = 0);
 
     Task<ServantPerformance?>
         GetServantPerformance(ServantPerformanceRequest model, int servantId, ulong servantUserId);

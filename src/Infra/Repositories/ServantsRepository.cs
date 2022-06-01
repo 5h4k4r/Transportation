@@ -8,6 +8,7 @@ using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Task = Infra.Entities.Task;
 
 namespace Infra.Repositories;
 
@@ -21,18 +22,11 @@ public class ServantsRepository : IServantsRepository
         _context = context;
         _mapper = mapper;
     }
-    public Task<ServantDto?> GetServantByUserId(ulong userId, ulong areaId) => _context.Servants
-    .Where(x => x.AreaId == areaId)
-    .Where(x => x.UserId == userId)
-    .Include(x => x.ServantScores)
-    .ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
-    .FirstOrDefaultAsync();
 
 
     public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int servantId,
         ulong servantUserId)
     {
-
         var (_, dailyStatistics) = await FilterTasksAndStatistics(servantUserId, model);
         await _context.ServantScores.Where(x => x.ServantId == (ulong)servantId).Select(x => x.Score).ToListAsync();
 
@@ -51,7 +45,7 @@ public class ServantsRepository : IServantsRepository
 
 
         return servantPerformance;
-
+    }
 
     public Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId)
     {
@@ -79,7 +73,7 @@ public class ServantsRepository : IServantsRepository
                          .Any(d => d.ModelId == x.UserId)
                     ) && x.DeletedAt == null
                 );
-        
+
 
         return query
             .ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
@@ -153,14 +147,14 @@ public class ServantsRepository : IServantsRepository
             .FirstOrDefaultAsync();
     }
 
-    private async Task<(List<TaskModel> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(
+    private async Task<(List<Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(
         ulong servantUserId, ServantPerformanceRequest model)
     {
         var tasksQuery = _context.Tasks.Where(x => x.ServantId == servantUserId);
         var dailyTasksQuery = _context.ServantDailyStatistics.Where(x => x.ServantId == servantUserId);
 
 
-        List<TaskModel> tasks = new();
+        List<Task> tasks = new();
         List<ServantDailyStatistic> dailyStatistics = new();
 
         var today = DateTime.UtcNow;
@@ -191,7 +185,6 @@ public class ServantsRepository : IServantsRepository
                     .Where(x => x.Day!.Date <= DateOnly.FromDateTime(today.EndOfDay()))
                     .ToListAsync()
                 ;
-
         }
         else if (model.StartAt != null && model.EndAt != null)
         {
@@ -215,8 +208,6 @@ public class ServantsRepository : IServantsRepository
 
     private IQueryable<Servant> CheckForSearchField(IQueryable<Servant> query, ListServantRequest model)
     {
-
-
         if (model.SearchField is null || model.SearchValue is null)
             return query;
 
@@ -225,14 +216,7 @@ public class ServantsRepository : IServantsRepository
             "Name" => query.Where(
                 x => x.FirstName.Contains(model.SearchValue) || x.LastName.Contains(model.SearchValue)),
             "NationalId" => query.Where(x => x.NationalId.Contains(model.SearchValue)),
-            "PhoneNumber" => query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue)),
-            _ => query.ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
+            "PhoneNumber" => query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue))
         };
-    }
-
-    public async void CreateServant(ServantDto servant)
-    {
-        var newServant = _mapper.Map<Servant>(servant);
-        await _context.Servants.AddAsync(newServant);
     }
 }

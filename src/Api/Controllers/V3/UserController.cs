@@ -3,6 +3,7 @@ using Api.Helpers;
 using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
+using Core.Models.Exceptions;
 using Core.Models.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,27 +30,24 @@ public class UserController : Controller
     [HttpGet("{phone}/exists")]
     public async Task<IActionResult> IsUserExist(string phone)
     {
-        var response = new IsUserExistResponse();
-        response.IsUser = false;
-        response.User = null;
-        response.IsServant = false;
+        var response = new IsUserExistResponse
+        {
+            IsUser = false,
+            User = null,
+            IsServant = false
+        };
 
         var user = await _unitOfWork.User.GetUserByPhone(UserHelper.PreparePhoneNumber(phone));
-        var servant = null as ServantDto;
-        if (user is not null && user.AreaId.HasValue)
-        {
-            servant = await _unitOfWork.Servants.GetServantByUserId((int)user.Id, (ulong)user.AreaId);
-            response.IsUser = true;
-        }
-        else if (user is { AreaId: null })
-        {
-            servant = await _unitOfWork.Servants.GetServantByUserId((int)user.Id);
-            response.IsUser = true;
-        }
-
+        if(user is null)
+        throw new NotFoundException();
+            
+        ServantDto servant = null;
+     
+            servant = await _unitOfWork.Servants.GetServantByUserId(user.Id, (ulong)(user.AreaId ?? 0));
+      
         if (servant is not null)
             response.IsServant = true;
-
+        else 
         response.IsUser = true;
         response.User = user;
 
