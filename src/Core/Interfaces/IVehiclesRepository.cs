@@ -18,4 +18,6 @@ public interface IVehiclesRepository
 
     public Task<List<UserDto>> GetVehicleUsers(ulong id);
     public Task UpdateVehicle(VehicleDto vehicle);
+
+    public Task AddServantToVehicle(ulong vehicleId, ulong servantId);
 }
