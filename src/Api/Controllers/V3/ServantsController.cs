@@ -1,8 +1,10 @@
 using System.Net.Mime;
+using Api.Extensions;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
+using Core.Models.Exceptions;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Authentication;
@@ -38,16 +40,13 @@ public class ServantsController : ControllerBase
     public async Task<IActionResult> ListServants([FromQuery] ListServantRequest model,
         [FromServices] UserAuthContext authContext)
     {
-        var authId = authContext.GetAuthUser().Id;
-        var user = await _unitOfWork.User.GetUserByAuthId(authId);
-
-        if (user is null || !user.AreaId.HasValue)
-            return Unauthorized(BasicResponse.AuthenticationFailed);
+        if (User.GetAreaId() == null)
+            throw new UnauthorizedException();
 
 
         // The servant we get from database
-        var items = await _unitOfWork.Servants.ListServants(model, user.AreaId.Value);
-        var count = await _unitOfWork.Servants.ListServantsCount(model, user.AreaId.Value);
+        var items = await _unitOfWork.Servants.ListServants(model, User.GetAreaId().Value);
+        var count = await _unitOfWork.Servants.ListServantsCount(model, User.GetAreaId().Value);
 
 
         return Ok(new PaginatedResponse<ServantDto>(count, model, items));
@@ -88,15 +87,12 @@ public class ServantsController : ControllerBase
     public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model,
         [FromServices] UserAuthContext authContext)
     {
-        var authId = authContext.GetAuthUser().Id;
-        var user = await _unitOfWork.User.GetUserByAuthId(authId);
-
-        if (user is null || !user.AreaId.HasValue)
-            return Unauthorized(BasicResponse.AuthenticationFailed);
+        if (User.GetAreaId() == null)
+            throw new UnauthorizedException();
 
 
         // The servant we get from database
-        var databaseServant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
+        var databaseServant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, User.GetAreaId().Value);
 
         if (databaseServant == null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(ServantPerformed), id));
@@ -131,22 +127,18 @@ public class ServantsController : ControllerBase
     }
 
 
-    [HttpGet("{id}/online")]
+    [HttpGet("{id}/online-history")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(PaginatedResponse<ListTasks>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetServantOnlinePeriods(int id, [FromQuery] GetServantOnlinePeriodsRequest model,
         [FromServices] UserAuthContext authContext)
     {
-        var authId = authContext.GetAuthUser().Id;
-        var user = await _unitOfWork.User.GetUserByAuthId(authId);
-
-        if (user is null || !user.AreaId.HasValue)
-            return Unauthorized(BasicResponse.AuthenticationFailed);
-
+        if (User.GetAreaId() == null)
+            throw new UnauthorizedException();
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
+        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, User.GetAreaId().Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), id));
@@ -160,12 +152,7 @@ public class ServantsController : ControllerBase
             new PaginatedResponse<ServantOnlinePeriod>(
                 servantWorkDaysCount,
                 model,
-                servantWorkDays.Items.ToList(),
-                new
-                {
-                    TotalOnlineTimeInSecond = servantWorkDays.TotalTimeInSeconds,
-                    TotalOnlineTime = servantWorkDays.TotalTime
-                }
+                servantWorkDays
             ));
     }
 
@@ -176,6 +163,11 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(PaginatedResponse<ListServantsOnlineHistory>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListServantsOnlineHistory([FromQuery] GetServantOnlinePeriodsRequest model)
     {
+        if (User.GetAreaId() == null)
+            throw new UnauthorizedException();
+
+        model.AreaId = User.GetAreaId().Value;
+
         var items = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistory(model);
         var count = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistoryCount(model);
 
