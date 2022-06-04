@@ -27,7 +27,6 @@ public static class SwaggerExtensions
             //c.UseAllOfToExtendReferenceSchemas();
             c.SupportNonNullableReferenceTypes();
             c.UseDateOnlyTimeOnlyStringConverters();
-            c.OperationFilter<JsonIgnoreQueryOperationFilter>();
             AddSecurity(c);
             AddXmlComments(c);
             AddOperationFilters(c);
@@ -59,6 +58,7 @@ public static class SwaggerExtensions
 
         static void AddOperationFilters(SwaggerGenOptions c)
         {
+            c.OperationFilter<JsonIgnoreQueryOperationFilter>();
             c.OperationFilter<SwaggerSecurityRequirementsOperationFilter>();
         }
     }
