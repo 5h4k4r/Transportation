@@ -6,8 +6,8 @@ public class UpdateVehicleRequest
 {
     public string Title { get; set; } = null!;
     public ulong? UsageId { get; set; }
+    public IEnumerable<ulong> ServiceAreaTypes { get; set; } = null!;
     [JsonIgnore] public DateTime? CreatedAt { get; set; }
-
     [JsonIgnore] public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
     // public VehicleDetailDTO? VehicleDetail { get; set; }

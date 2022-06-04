@@ -10,9 +10,9 @@ public interface IVehiclesRepository
 
     public Task<VehicleDto?> GetVehicleById(ulong id);
 
-    public void AddVehicle(VehicleDto vehicle);
+    public Task<VehicleDto> AddVehicle(VehicleDto vehicle);
 
-    public void AddVehicleDetail(VehicleDetailDto vehicleDetail);
+    public Task<VehicleDetailDto> AddVehicleDetail(VehicleDetailDto vehicleDetail);
 
     public Task<List<UserDto>> GetVehicleOwners(ulong id);
 
@@ -20,4 +20,8 @@ public interface IVehiclesRepository
     public Task UpdateVehicle(VehicleDto vehicle);
 
     public Task AddServantToVehicle(ulong vehicleId, ulong servantId);
+
+    public Task DeleteVehicle(ulong id);
+
+    public Task SubscribeVehicleToService(ulong vehicleId, ICollection<ulong> serviceIds);
 }

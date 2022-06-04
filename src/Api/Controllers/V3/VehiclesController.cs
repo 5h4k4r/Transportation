@@ -79,9 +79,14 @@ public class VehiclesController : ControllerBase
         var newVehicleDetail = _mapper.Map<VehicleDetailDto>(request);
         newVehicleDetail.Vehicle = newVehicle;
 
-        _unitOfWork.Vehicles.AddVehicleDetail(newVehicleDetail);
+        var newAdded = await _unitOfWork.Vehicles.AddVehicleDetail(newVehicleDetail);
+        
+        //TODO: get id of new vehicle
+        if (request.ServiceAreaTypes != null)
+            // await _unitOfWork.Vehicles.SubscribeVehicleToService(newVehicle.Id, request.ServiceAreaTypes);
+            //TODO: Add vehicle documents
 
-        await _unitOfWork.Save();
+            await _unitOfWork.Save();
 
         return Ok(newVehicleDetail);
     }
@@ -134,7 +139,23 @@ public class VehiclesController : ControllerBase
 
         if (servant is null)
             throw new NotFoundException("Servant not found");
-        await _unitOfWork.Vehicles.AddServantToVehicle(request.VehicleId, (ulong)request.UserId);
+        await _unitOfWork.Vehicles.AddServantToVehicle(request.VehicleId, request.UserId);
+        await _unitOfWork.Save();
+
+        return Ok(BasicResponse.Successful);
+    }
+
+    //:TODO add delete vehicle Endpoint
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteVehicle(ulong id)
+    {
+        var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
+        if (vehicle is null)
+            throw new NotFoundException();
+
+        await _unitOfWork.Vehicles.DeleteVehicle(id);
         await _unitOfWork.Save();
 
         return Ok(BasicResponse.Successful);
