@@ -12,6 +12,7 @@ using Infra.Entities;
 using Infra.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Role = Core.Models.Authentication.Role;
 
 namespace Api.Controllers.V3;
 
@@ -40,9 +41,8 @@ public class ServantsController : ControllerBase
     public async Task<IActionResult> ListServants([FromQuery] ListServantRequest model,
         [FromServices] UserAuthContext authContext)
     {
-        if (User.GetAreaId() == null)
+        if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
-
 
         // The servant we get from database
         var items = await _unitOfWork.Servants.ListServants(model, User.GetAreaId().Value);
@@ -60,15 +60,11 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(PaginatedResponse<ServantDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetServantByUserId(int id, [FromServices] UserAuthContext authContext)
     {
-        var authId = authContext.GetAuthUser().Id;
-        var user = await _unitOfWork.User.GetUserByAuthId(authId);
-
-        if (user is null || !user.AreaId.HasValue)
-            return Unauthorized(BasicResponse.AuthenticationFailed);
-
+        if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
+            throw new UnauthorizedException();
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, user.AreaId.Value);
+        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, User.GetAreaId().Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceNotFound);
@@ -87,9 +83,8 @@ public class ServantsController : ControllerBase
     public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model,
         [FromServices] UserAuthContext authContext)
     {
-        if (User.GetAreaId() == null)
+        if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
-
 
         // The servant we get from database
         var databaseServant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, User.GetAreaId().Value);
@@ -130,52 +125,49 @@ public class ServantsController : ControllerBase
     [HttpGet("{id}/online-history")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(PaginatedResponse<ListTasks>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetServantOnlinePeriods(int id, [FromQuery] GetServantOnlinePeriodsRequest model,
+    [ProducesResponseType(typeof(List<ServantOnlinePeriod>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetServantOnlineHistory(int id, [FromQuery] GetServantOnlineHistoryRequest model,
         [FromServices] UserAuthContext authContext)
     {
-        if (User.GetAreaId() == null)
+        if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
 
+        model.AreaId = User.GetAreaId().Value;
+
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, User.GetAreaId().Value);
+        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, model.AreaId.Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), id));
 
 
-        var servantWorkDays = await _unitOfWork.ServantWorkDays.GetServantOnlinePeriods((ulong)id, model);
-        var servantWorkDaysCount = await _unitOfWork.ServantWorkDays.GetServantOnlinePeriodsCount((ulong)id, model);
+        var servantOnlineHistory = await _unitOfWork.ServantWorkDays.GetServantOnlineHistory((ulong)id, model);
+        var servantOnlineHistoryCount =
+            await _unitOfWork.ServantWorkDays.GetServantOnlineHistoryCount((ulong)id, model);
 
 
-        return Ok(
-            new PaginatedResponse<ServantOnlinePeriod>(
-                servantWorkDaysCount,
-                model,
-                servantWorkDays
-            ));
+        return Ok(new PaginatedResponse<ServantOnlinePeriod>(servantOnlineHistoryCount, model, servantOnlineHistory));
     }
 
 
     [HttpGet("online-history")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(PaginatedResponse<ListServantsOnlineHistory>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListServantsOnlineHistory([FromQuery] GetServantOnlinePeriodsRequest model)
+    [ProducesResponseType(typeof(List<ListServantsOnlineHistory>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ListServantsOnlineHistory([FromQuery] ListServantsOnlineHistoryRequest model)
     {
-        if (User.GetAreaId() == null)
+        if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
 
         model.AreaId = User.GetAreaId().Value;
 
         var items = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistory(model);
-        var count = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistoryCount(model);
 
         if (items is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
 
-        return Ok(new PaginatedResponse<ListServantsOnlineHistory>(count, model, items));
+        return Ok(items);
     }
 
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]

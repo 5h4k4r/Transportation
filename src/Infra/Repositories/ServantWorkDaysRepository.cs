@@ -18,17 +18,17 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         _context = repositoryContext;
     }
 
-    public async Task<List<ServantOnlinePeriod>> GetServantOnlinePeriods(ulong servantId,
-        GetServantOnlinePeriodsRequest model)
+    public async Task<List<ServantOnlinePeriod>> GetServantOnlineHistory(ulong servantId,
+        GetServantOnlineHistoryRequest model)
     {
         var excludeStartHour = model.ExcludeStartHour;
         var excludeEndHour = model.ExcludeEndHour;
 
-        var dailyStats = await GetServantOnlinePeriodsQuery(model, servantId)
+        var dailyStats = await GetServantOnlineHistoryQuery(model, servantId)
             .OrderByDescending(x => x.StartAt)
             .GroupBy(x => x.ServantDailyStatistic.DayId)
             .Select(x => x.ToList())
-            // .ApplyPagination(model)
+            .ApplyPagination(model)
             .ToListAsync();
 
 
@@ -39,8 +39,7 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
                 var startAt = workingPeriod.StartAt;
                 var endAt = workingPeriod.EndAt;
 
-                // if (excludeStartHour != null && excludeEndHour != null)
-                // {
+
                 var startOfExcludedTime =
                     new DateTime(startAt.Year, startAt.Month, startAt.Day, excludeStartHour ?? 0, 0, 0, 0);
 
@@ -48,22 +47,6 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
                     new DateTime(startAt.Year, startAt.Month, startAt.Day, excludeEndHour ?? 0, 0, 0, 0);
 
 
-                //  var dateDiff = startAt.Day - startOfExcludedTime.Day;
-                //  var dateDiff2 = endAt.Day - endOfExcludedTime.Day;
-                //
-                // startOfExcludedTime =  startOfExcludedTime.AddDays(dateDiff);
-                // endOfExcludedTime = endOfExcludedTime.AddDays(dateDiff2+1);
-                //
-                //  if (startAt < endOfExcludedTime && startAt > startOfExcludedTime)
-                //  startAt =  new DateTime(startAt.Year, startAt.Month, startAt.Day, 0, 0, 0, 0)
-                //      .ToUniversalTime().AddSeconds(endOfExcludedTime.TimeOfDay.TotalSeconds);
-                //
-                //
-                //  if (endAt > startOfExcludedTime && endAt < endOfExcludedTime)
-                //      endAt =  new DateTime(endAt.Year, endAt.Month, endAt.Day, 0, 0, 0, 0)
-                //          .ToUniversalTime().AddSeconds(startOfExcludedTime.TimeOfDay.TotalSeconds);
-
-                // }
                 var totalDiffInSeconds = DateIntervalHelpers.CalculateHoursExcludingRange(startAt, endAt,
                     startOfExcludedTime, endOfExcludedTime) * 3600;
 
@@ -94,9 +77,63 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         return servantWorkDayPeriods;
     }
 
-    public Task<int> GetServantOnlinePeriodsCount(ulong servantId, GetServantOnlinePeriodsRequest model)
+
+    public async Task<List<ListServantsOnlineHistory>?> ListServantsOnlineHistory(
+        ListServantsOnlineHistoryRequest model)
     {
-        var query = GetServantOnlinePeriodsQuery(model, servantId);
+        var excludeStartHour = model.ExcludeStartHour ?? null;
+        var excludeEndHour = model.ExcludeEndHour ?? null;
+
+        var query = GetServantOnlineHistoryQuery(model);
+
+        var onlineHistory = await query
+            .OrderByDescending(x => x.StartAt)
+            .GroupBy(x => x.ServantDailyStatistic.ServantId)
+            .Select(x => x.ToList())
+            .ToListAsync();
+
+        var response = onlineHistory.Select(day =>
+            {
+                var onlineSecondsOfDriver = day.Select(x =>
+                {
+                    var startAt = x.StartAt;
+                    var endAt = x.EndAt;
+
+                    var startOfExcludedTime =
+                        new DateTime(startAt.Year, startAt.Month, startAt.Day, excludeStartHour ?? 0, 0, 0, 0);
+                    var endOfExcludedTime =
+                        new DateTime(startAt.Year, startAt.Month, startAt.Day, excludeEndHour ?? 0, 0, 0, 0);
+
+
+                    var totalDiffInSeconds = DateIntervalHelpers.CalculateHoursExcludingRange(startAt, endAt,
+                        startOfExcludedTime, endOfExcludedTime) * 3600;
+
+                    return totalDiffInSeconds;
+                });
+
+                var totalTimeInSeconds = onlineSecondsOfDriver.Sum(x => x);
+                var time = TimeSpan.FromSeconds(totalTimeInSeconds);
+                var onlineHours = $"{time.Hours + time.Days * 24:D2}:{time.Minutes:D2}:{time.Seconds:D2}";
+
+                return new ListServantsOnlineHistory
+                (
+                    day.FirstOrDefault()?.ServantDailyStatistic.Servant?.FirstName,
+                    day.FirstOrDefault()?.ServantDailyStatistic.Servant?.LastName,
+                    day.FirstOrDefault()?.ServantDailyStatistic.ServantId ?? 0,
+                    onlineHours,
+                    totalTimeInSeconds
+                );
+            })
+            .OrderByDescending(x => x.TotalTimeInSeconds);
+
+        return response
+            .Where(x => x.TotalTimeInSeconds / 3600 > model.MinHours)
+            .ToList();
+    }
+
+    public Task<int> GetServantOnlineHistoryCount(ulong servantId, GetServantOnlineHistoryRequest model)
+    {
+        var query = GetServantOnlineHistoryQuery(model, servantId);
 
         var count = query
             .OrderByDescending(x => x.StartAt)
@@ -107,73 +144,7 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         return count;
     }
 
-    public async Task<List<ListServantsOnlineHistory>?> ListServantsOnlineHistory(GetServantOnlinePeriodsRequest model)
-    {
-        var excludeStartHour = model.ExcludeStartHour ?? null;
-        var excludeEndHour = model.ExcludeEndHour ?? null;
-
-        var query = GetServantOnlinePeriodsQuery(model);
-
-        var onlineHistory = await query
-            .OrderByDescending(x => x.StartAt)
-            .GroupBy(x => x.ServantDailyStatistic.ServantId)
-            .ApplyPagination(model)
-            .Select(x => x.ToList())
-            .ToListAsync();
-
-        var response = onlineHistory.Select(day =>
-        {
-            var onlineSecondsOfDriver = day.Select(x =>
-            {
-                var startAt = x.StartAt;
-                var endAt = x.EndAt;
-
-                var startOfExcludedTime =
-                    new DateTime(startAt.Year, startAt.Month, startAt.Day, excludeStartHour ?? 0, 0, 0, 0);
-                var endOfExcludedTime =
-                    new DateTime(startAt.Year, startAt.Month, startAt.Day, excludeEndHour ?? 0, 0, 0, 0);
-
-
-                var totalDiffInSeconds = DateIntervalHelpers.CalculateHoursExcludingRange(startAt, endAt,
-                    startOfExcludedTime, endOfExcludedTime) * 3600;
-
-                return totalDiffInSeconds;
-            });
-
-            var totalTimeInSeconds = onlineSecondsOfDriver.Sum(x => x);
-            var time = TimeSpan.FromSeconds(totalTimeInSeconds);
-            var onlineHours = string.Format("{0:D2}:{1:D2}:{2:D2}",
-                time.Hours + time.Days * 24,
-                time.Minutes,
-                time.Seconds);
-
-            return new ListServantsOnlineHistory
-            (
-                day.FirstOrDefault()?.ServantDailyStatistic.Servant?.FirstName,
-                day.FirstOrDefault()?.ServantDailyStatistic.Servant?.LastName,
-                day.FirstOrDefault()?.ServantDailyStatistic.ServantId ?? 0,
-                onlineHours,
-                totalTimeInSeconds
-            );
-        }).OrderByDescending(x => x.OnlineHours);
-
-        return response.OrderByDescending(x => x.TotalTimeInSeconds).ToList();
-    }
-
-    public async Task<int> ListServantsOnlineHistoryCount(GetServantOnlinePeriodsRequest model)
-    {
-        var query = GetServantOnlinePeriodsQuery(model);
-
-
-        var onlineHistory = await query
-            .OrderByDescending(x => x.StartAt)
-            .GroupBy(x => x.ServantDailyStatistic.ServantId)
-            .CountAsync();
-
-        return onlineHistory;
-    }
-
-    private IQueryable<ServantDailyOnlinePeriod> GetServantOnlinePeriodsQuery(GetServantOnlinePeriodsRequest request,
+    private IQueryable<ServantDailyOnlinePeriod> GetServantOnlineHistoryQuery(ListServantsOnlineHistoryRequest request,
         ulong? servantId = null)
     {
         var excludeStartHour = request.ExcludeStartHour ?? null;
@@ -191,7 +162,6 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
             .Include(x => x.ServantDailyStatistic)
             .ThenInclude(x => x.Servant)
             .ThenInclude(x => x.User)
-            .Where(x => x.ServantDailyStatistic.Servant.User.AreaId == request.AreaId)
             .Where(x => x.StartAt <= request.EndDate)
             .Where(x => x.StartAt >= request.StartDate)
             .Where(x => x.EndAt <= request.EndDate)
@@ -199,9 +169,13 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
             .Where(x => x.EndAt != x.StartAt)
             .AsNoTracking();
 
+        if (request.AreaId.HasValue)
+            query = query
+                .Where(x => x.ServantDailyStatistic.Servant.User.AreaId == request.AreaId);
+
+
         if (servantId.HasValue)
             query = query.Where(x => x.ServantDailyStatistic.ServantId == servantId);
-
 
         // Below query is to exclude the time span between ExcludeStartHour and ExcludeEndHour-(if they are set)
         if (excludeStartHour is not null && excludeEndHour is not null)
