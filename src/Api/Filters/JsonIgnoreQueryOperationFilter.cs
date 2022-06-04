@@ -5,7 +5,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Api.Filters;
 
-public abstract class JsonIgnoreQueryOperationFilter : IOperationFilter
+public class JsonIgnoreQueryOperationFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
