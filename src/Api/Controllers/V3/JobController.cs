@@ -18,10 +18,12 @@ namespace Api.Controllers.V3;
 public class JobController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IPaymentRepository _payment;
 
-    public JobController(IUnitOfWork unitOfWork)
+    public JobController(IUnitOfWork unitOfWork, IPaymentRepository payment)
     {
         _unitOfWork = unitOfWork;
+        _payment = payment;
     }
 
 
@@ -49,7 +51,8 @@ public class JobController : ControllerBase
                                     User.UserId(), activeTask,
                                     jobRequest.Origin.Latitude,
                                     jobRequest.Origin.Longitude,
-                                    _unitOfWork
+                                    _unitOfWork,
+                                    _payment
                                 )
                             );
 

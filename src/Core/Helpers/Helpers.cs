@@ -9,15 +9,15 @@ public static class Helpers
     private const string BASE_CURRENCY = "setting.base_currency";
 
 
-    public static string CurrencySymbol(Currency currency)
-    {
-        return currency switch
-        {
-            Currency.IQD => Models.Common.CurrencySymbol.IQD,
-            Currency.IRT => Models.Common.CurrencySymbol.IRT,
-            _ => throw new ArgumentOutOfRangeException(nameof(currency), currency, null)
-        };
-    }
+    // public static string CurrencySymbol(Currency currency)
+    // {
+    //     return currency switch
+    //     {
+    //         Currency.IQD => Models.Common.CurrencySymbol.IQD,
+    //         Currency.IRT => Models.Common.CurrencySymbol.IRT,
+    //         _ => throw new ArgumentOutOfRangeException(nameof(currency), currency, null)
+    //     };
+    // }
 
     //
     // public static double currencyBase(amount, currency)
@@ -26,45 +26,46 @@ public static class Helpers
     //     return amount * currency_base;
     // }
     //
-    // public static double exchange(amount, currency)
-    // {
-    //     currency_base = config(self::BASE_CURRENCY. '.'.currency);
-    //     if (amount > 0)
-    //         return (int)(amount / currency_base);
-    //     return amount;
-    // }
+    public static long Exchange(long amount, Currency currency)
+    {
+        var currencyBase = (long)currency;
+        if (amount > 0)
+            return (long)(amount / currencyBase);
+        return amount;
+    }
+
     //
     // public static double base64(data)
     // {
     //     return rtrim(strtr(base64_encode(json_encode(data)), '+/', '-_'), '=');
     // }
     //
-    public static async Task<double> RoundPrice(double amount, Currency currency, string? method,
+    public static async Task<long> RoundPrice(long amount, Currency currency, string? method,
         IUnitOfWork unitOfWork, bool exchange = false)
     {
         var rounder = await Rounder.Get(currency, unitOfWork);
         if (rounder == null)
-            return (int)amount;
+            return amount;
         if (exchange)
-            rounder.Divisor *= (int)currency;
+            rounder.Divisor *= (long)currency;
         var mod = amount % rounder.Divisor;
 
-        var outSide = (int)(amount / rounder.Divisor);
-        var subAmount = outSide * rounder.Divisor;
+        var outSide = (long)(amount / rounder.Divisor);
+        var subAmount = outSide * (long)rounder.Divisor;
 
         if (method?.Length != 0) rounder.Method = method!;
 
         if (string.Equals(rounder.Method, "half", StringComparison.OrdinalIgnoreCase))
         {
             if (mod > rounder.Divisor / 2)
-                amount = subAmount + rounder.Divisor;
+                amount = (long)(subAmount + rounder.Divisor);
             else
                 amount = subAmount;
         }
 
         else if (string.Equals(rounder.Method, "toUp", StringComparison.OrdinalIgnoreCase))
         {
-            amount = subAmount + rounder.Divisor;
+            amount = (long)(subAmount + rounder.Divisor);
         }
         else if (string.Equals(rounder.Method, "toDown", StringComparison.OrdinalIgnoreCase))
         {
@@ -75,7 +76,7 @@ public static class Helpers
     }
 
     //
-    // public static double plaque(plaque)
+    // public static long plaque(plaque)
     // {
     //     if (is_null(plaque))
     //         return null;
@@ -171,10 +172,11 @@ public static class Helpers
     //         return FALSE;
     // }
     //
-    public static double percentage(double amount, double percent)
+    public static long percentage(long amount, double percent)
     {
-        return amount * percent;
+        return (long)(amount * percent);
     }
+
     //
     // public static double stringPoints(points)
     // {

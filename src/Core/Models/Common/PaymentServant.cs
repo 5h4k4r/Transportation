@@ -2,6 +2,6 @@ namespace Infra.Repositories;
 
 public class PaymentServant
 {
-    public double? cash { get; set; }
-    public double? credit { get; set; }
+    public long? cash { get; set; }
+    public long? credit { get; set; }
 }

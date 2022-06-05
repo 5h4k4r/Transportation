@@ -27,10 +27,23 @@ public class ListTasksServant
 
 public class Requester
 {
+    public Requester()
+    {
+    }
+
+    public Requester(ulong? id, string? mobile, string? name, int? status)
+    {
+        Id = id;
+        Mobile = mobile;
+        Name = name;
+        Status = status;
+    }
+
     public ulong? Id { get; set; }
     public int? Status { get; set; }
     public string? Name { get; set; } = string.Empty;
     public string? Mobile { get; set; } = string.Empty;
+    public string? PaymentType { get; set; }
 }
 
 public class TaskDistance

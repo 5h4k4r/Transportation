@@ -9,7 +9,7 @@ namespace Api.Helpers.JobController;
 internal class OfferDiscount
 {
     private readonly TimeOnly _Now;
-    private double _Amount;
+    private long _Amount;
     private DiscountDto? _Discount;
 
     public OfferDiscount()
@@ -17,7 +17,7 @@ internal class OfferDiscount
         _Now = TimeOnly.FromDateTime(DateTime.Now);
     }
 
-    public OfferDiscount(double discount, double amount)
+    public OfferDiscount(double discount, long amount)
     {
         _Now = TimeOnly.FromDateTime(DateTime.Now);
         // _Discount = discount;
@@ -25,7 +25,7 @@ internal class OfferDiscount
     }
 
 
-    public async Task<object> Calculate(DiscountDto discount, double amount, IUnitOfWork unitOfWork)
+    public async Task<object> Calculate(DiscountDto discount, long amount, IUnitOfWork unitOfWork)
     {
         _Discount = discount;
         _Amount = amount;
@@ -44,7 +44,7 @@ internal class OfferDiscount
             if (amountOfDiscount > _Discount.Max)
                 amountOfDiscount = _Discount.Max;
 
-            discountedAmount = _Amount - amountOfDiscount;
+            discountedAmount = (long)(_Amount - amountOfDiscount);
 
             percent = _Discount.Value * 100;
         }

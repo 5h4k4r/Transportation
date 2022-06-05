@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Core.Constants;
 using Core.Helpers.Job;
 using Core.Interfaces;
 using Core.Models.Base;
@@ -23,18 +24,21 @@ public class Riding
         var servantPosition = await unitOfWork.Cache.GetLastPositionOnTask("onTaskServant" + task.Task.Id);
 
         var distanceCalculation = CalculateDistance(task);
-        var taskModel = new ListTasks();
 
-        if (distanceCalculation != null) taskModel.TaskDistanceAndDuration = distanceCalculation;
+        if (distanceCalculation != null)
+        {
+            task.Distance = distanceCalculation.Distance;
+            task.Duration = distanceCalculation.Duration;
+        }
 
 
-        var discountAndExpense = await CalculateExpense(task, userId, taskModel.Requester, unitOfWork, payment);
+        var (discount, expense) = await CalculateExpense(task, unitOfWork, payment);
 
-        taskModel.price = discount.DiscountedAmount;
-        if (taskModel.active_discount_code != null)
-            taskModel.price -= (int)taskModel.active_discount_code.amount;
+        task.Task.Price = (discount as dynamic).DiscountedAmount;
+        if (task.DiscountCodeUser != null)
+            task.Task.Price -= task.DiscountCodeUser.Amount;
 
-        taskModel.setDestinations();
+        task.DestinationDtos.setDestinations();
 
         taskModel.setMember(user, servant_position.latitude, servant_position.longitude);
 
@@ -112,8 +116,7 @@ public class Riding
         };
     }
 
-    private static async Task<Tuple<object, Expense>> CalculateExpense(TaskWithDistanceMemberTaxiMeter taskDto,
-        ulong user, Requester requester,
+    private static async Task<(object, Expense)> CalculateExpense(TaskWithDistanceMemberTaxiMeter taskDto,
         IUnitOfWork unitOfWork, IPaymentRepository payment)
     {
         var price = 0;
@@ -126,8 +129,7 @@ public class Riding
         var disc = JsonSerializer.Deserialize<DiscountData>(taskDto.Task.Request.Discount ?? "");
         payment.SetExpense(taskDto.Task.Price, disc, taskDto.DiscountCodeUser.Amount, 0);
         var expense = await payment.GetExpense(null);
-        expense = Price.Expense(user, requester, taskDto, discountInfo, expense);
-        return new Tuple<object, Expense>(discountInfo, expense);
-        return null;
+        expense = await Price.Expense(taskDto, expense, unitOfWork);
+        return (discountInfo, expense);
     }
 }

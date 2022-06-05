@@ -12,4 +12,7 @@ public interface IPaymentRepository
         int balance = 0);
 
     public Task<Expense> GetExpense(IEnumerable<string>? toAccounts);
+
+    public Task<long> GetBalance(string account_number);
+
 }

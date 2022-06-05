@@ -86,14 +86,15 @@ public class PaymentRepository : IPaymentRepository
     {
         var priceWithDiscount = price - (requestDiscount.Discount + discount_code + gifts_to_pay);
         var clientPriceWithDiscount = requestDiscount.DiscountedAmount - (discount_code + gifts_to_pay);
-        _PaymentAmount.Client.cash = clientPriceWithDiscount >= balance ? clientPriceWithDiscount - balance : 0;
-        _PaymentAmount.Client.credit = clientPriceWithDiscount >= balance ? balance : clientPriceWithDiscount;
-        _PaymentAmount.Servant.cash = priceWithDiscount >= balance ? priceWithDiscount - balance : 0;
-        _PaymentAmount.Servant.credit = priceWithDiscount >= balance ? balance : priceWithDiscount;
-        _PaymentAmount.cash = priceWithDiscount >= balance ? priceWithDiscount - balance : 0;
-        _PaymentAmount.credit = requestDiscount.Discount + discount_code + gifts_to_pay + (priceWithDiscount >= balance
-            ? balance
-            : priceWithDiscount);
+        _PaymentAmount.Client.cash = (long)(clientPriceWithDiscount >= balance ? clientPriceWithDiscount - balance : 0);
+        _PaymentAmount.Client.credit = (long?)(clientPriceWithDiscount >= balance ? balance : clientPriceWithDiscount);
+        _PaymentAmount.Servant.cash = (long)(priceWithDiscount >= balance ? priceWithDiscount - balance : 0);
+        _PaymentAmount.Servant.credit = (long?)(priceWithDiscount >= balance ? balance : priceWithDiscount);
+        _PaymentAmount.cash = (long)(priceWithDiscount >= balance ? priceWithDiscount - balance : 0);
+        _PaymentAmount.credit = (long?)(requestDiscount.Discount + discount_code + gifts_to_pay +
+                                        (priceWithDiscount >= balance
+                                            ? balance
+                                            : priceWithDiscount));
 
         _PaymentTip.Client.cash = 0;
         _PaymentTip.Client.credit = 0;
@@ -174,5 +175,23 @@ public class PaymentRepository : IPaymentRepository
             Amount = _PaymentAmount,
             Tip = _PaymentTip
         };
+    }
+
+    public async Task<long> GetBalance(string account_number)
+    {
+        var url = payment_url + "/service/accounts/amount";
+        var headers = new List<KeyValuePair<string, string>> { new("api-token:", api_token) };
+
+        var fields = new List<KeyValuePair<string, string>>
+        {
+            new("account_number", account_number)
+        };
+
+        var data = await _curl.Send<dynamic>(url, true, true, fields, headers);
+
+        if (data?.code != null && data?.code == 200)
+            return data?.data.account.account > 0 ? data?.data.account.account : 0;
+
+        return 0;
     }
 }

@@ -11,9 +11,9 @@ public enum Currency
 #pragma warning restore CA1069
 }
 
-public static class CurrencySymbol
-{
-    public static string IRT = "IRR";
-    public static string IQD = "IQD";
-    public static string IRR = "IRT";
-}
+// public static class CurrencySymbol
+// {
+//     public static string IRT = "IRR";
+//     public static string IQD = "IQD";
+//     public static string IRR = "IRT";
+// }

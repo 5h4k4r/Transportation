@@ -10,7 +10,11 @@ public class TaskWithDistanceMemberTaxiMeter
     public TaxiMeterDto? TaxiMeter { get; set; }
     public MemberDto? Member { get; set; }
 
-    // public Requester? Requester { get; set; }
+    public Requester? Requester { get; set; }
 
-    public DiscountCodeUserDto DiscountCodeUser { get; set; }
+    public DiscountCodeUserDto? DiscountCodeUser { get; set; }
+
+    public double? Distance { get; set; }
+    public double? Duration { get; set; }
+    
 }

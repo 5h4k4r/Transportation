@@ -129,7 +129,9 @@ public class TasksRepository : ITasksRepository
                 {
                     all.task, all.member, meter
                 })
-            .Join(_context.DiscountCodeUsers.Where(x => x.ModelType == @"App\Models\Task" && x.UserId == userId && !x.Used),
+            .Join(
+                _context.DiscountCodeUsers.Where(
+                    x => x.ModelType == @"App\Models\Task" && x.UserId == userId && !x.Used),
                 all => all.task.Id,
                 discountCodeUser => discountCodeUser.ModelId,
                 (all, discountCodeUser) => new TaskWithDistanceMemberTaxiMeter
@@ -137,7 +139,15 @@ public class TasksRepository : ITasksRepository
                     Task = _mapper.Map<TaskDto>(all.task),
                     TaxiMeter = _mapper.Map<TaxiMeterDto>(all.meter),
                     Member = _mapper.Map<MemberDto>(all.member),
-                    DiscountCodeUser = _mapper.Map<DiscountCodeUserDto>(discountCodeUser)
+                    DiscountCodeUser = _mapper.Map<DiscountCodeUserDto>(discountCodeUser),
+                    Requester = new Requester()
+                    {
+                        Id = all.task.MemberPaymentTypes.First().Member.Id,
+                        Mobile = all.task.MemberPaymentTypes.First().Member.User.Mobile,
+                        Name = all.task.MemberPaymentTypes.First().Member.User.Name,
+                        Status = all.task.MemberPaymentTypes.First().Member.Status,
+                        PaymentType = all.task.MemberPaymentTypes.First().Type
+                    }
                 })
             .FirstOrDefaultAsync();
         if (tasks == null) return null;

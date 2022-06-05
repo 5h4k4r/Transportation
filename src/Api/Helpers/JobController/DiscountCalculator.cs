@@ -14,7 +14,7 @@ internal class DiscountCalculator
         _now = DateTime.Now.ToString("H:i:s");
     }
 
-    public Task<object> Discount(DiscountDto discount, double amount, IUnitOfWork unitOfWork)
+    public Task<object> Discount(DiscountDto discount, long amount, IUnitOfWork unitOfWork)
     {
         var offer = new OfferDiscount();
         return offer.Calculate(discount, amount,unitOfWork);

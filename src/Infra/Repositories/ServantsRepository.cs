@@ -173,7 +173,7 @@ public class ServantsRepository : IServantsRepository
 
     public async void CreateServant(ServantDto servant)
     {
-        var newServant = _mapper.Map<PaymentServant>(servant);
+        var newServant = _mapper.Map<Servant>(servant);
         await _context.Servants.AddAsync(newServant);
     }
 }
