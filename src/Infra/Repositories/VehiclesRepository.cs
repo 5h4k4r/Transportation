@@ -2,6 +2,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
 using Core.Models.Base;
+using Core.Models.Exceptions;
 using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
@@ -127,6 +128,36 @@ public class VehiclesRepository : IVehiclesRepository
         var vehicleToUpdate = _mapper.Map<Vehicle>(vehicle);
         _context.Vehicles.Update(vehicleToUpdate);
         return Task.CompletedTask;
+    }
+
+    public async Task AddServantToVehicle(ulong vehicleId, ulong servantUserId)
+    {
+        var dbVehicleUser = new VehicleUser
+        {
+            VehicleId = vehicleId,
+            UserId = servantUserId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        var dbVehicleOwner = new VehicleOwner
+        {
+            VehicleId = vehicleId,
+            UserId = servantUserId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        var vehicleUser =
+            _context.VehicleUsers.Where(v => v.VehicleId == vehicleId && v.UserId == servantUserId)
+                .SingleOrDefault();
+        if (vehicleUser is null)
+        {
+            await _context.VehicleUsers.AddAsync(dbVehicleUser);
+            await _context.VehicleOwners.AddAsync(dbVehicleOwner);
+        }
+        else
+        {
+            throw new DuplicateException("Record Already Exists");
+        }
     }
 }
 

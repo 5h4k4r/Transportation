@@ -1,4 +1,5 @@
 using System.Reflection;
+using Api.Filters;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -26,7 +27,6 @@ public static class SwaggerExtensions
             //c.UseAllOfToExtendReferenceSchemas();
             c.SupportNonNullableReferenceTypes();
             c.UseDateOnlyTimeOnlyStringConverters();
-
             AddSecurity(c);
             AddXmlComments(c);
             AddOperationFilters(c);
@@ -58,6 +58,7 @@ public static class SwaggerExtensions
 
         static void AddOperationFilters(SwaggerGenOptions c)
         {
+            c.OperationFilter<JsonIgnoreQueryOperationFilter>();
             c.OperationFilter<SwaggerSecurityRequirementsOperationFilter>();
         }
     }
