@@ -18,6 +18,7 @@ public static class SwaggerExtensions
                     Title = "Transportation Api",
                     Version = "v3"
                 });
+
             if (configuration.GetValue<string?>("BasePath", null) is { } serverUrl && !string.IsNullOrEmpty(serverUrl))
                 c.AddServer(new OpenApiServer
                 {
@@ -38,11 +39,13 @@ public static class SwaggerExtensions
 
         static void AddSecurity(SwaggerGenOptions c)
         {
-            c.AddSecurityDefinition("user", new OpenApiSecurityScheme
+            var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+
+            c.AddSecurityDefinition(isDevelopment ? "user" : "auth", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.ApiKey,
                 In = ParameterLocation.Header,
-                Name = "user"
+                Name = isDevelopment ? "user" : "auth"
             });
         }
 
