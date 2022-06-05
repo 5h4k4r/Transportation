@@ -8,12 +8,11 @@ using Microsoft.Extensions.Options;
 
 namespace Infra.Authentication;
 
-
 public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
 {
     private readonly JsonSerializerOptions _jsonSerializerOptions;
-    private readonly UserAuthContext _userAuthContext;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly UserAuthContext _userAuthContext;
 
     public UserAuthHandler(
         UrlEncoder encoder,
@@ -22,7 +21,7 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
         ILoggerFactory logger,
         ISystemClock clock,
         IUnitOfWork unitOfWork
-        ) : base(options, logger, encoder, clock)
+    ) : base(options, logger, encoder, clock)
     {
         _userAuthContext = authContext;
         _unitOfWork = unitOfWork;
@@ -31,15 +30,18 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var auth = Request.Headers["user"].FirstOrDefault();
+        var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+        // if(isDevelopment)
+
+        var authHeader = Request.Headers[isDevelopment ? "user" : "auth"].FirstOrDefault();
 
         //  TODO: when the header is empty the returned result is empty
-        if (string.IsNullOrEmpty(auth))
+        if (string.IsNullOrEmpty(authHeader))
             return AuthenticateResult.Fail("No Header is found");
 
         try
         {
-            var resp = JsonSerializer.Deserialize<AuthUser>(auth, _jsonSerializerOptions);
+            var resp = JsonSerializer.Deserialize<AuthUser>(authHeader, _jsonSerializerOptions);
 
             if (resp is not { } user)
                 // return AuthenticateResult.Fail(new GatewayAuthException(GatewayAuthException.ErrorCode.InvalidUserModel, "User ID is empty"));
@@ -49,7 +51,7 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
             if (databaseUser is null)
                 return AuthenticateResult.Fail("User not found");
 
-            resp.RoleUsers = databaseUser.RoleUsers.Select(x=>x.RoleId);
+            resp.RoleUsers = databaseUser.RoleUsers.Select(x => x.RoleId);
             resp.AreaId = databaseUser.AreaId;
             resp.LanguageId = databaseUser.LanguageId;
             resp.MySqlId = databaseUser.Id;
@@ -61,49 +63,28 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
         }
         catch (JsonException e)
         {
-            //     var authException = new GatewayAuthException(GatewayAuthException.ErrorCode.InvalidUserModel, e.Message);
-            // return AuthenticateResult.Fail(authException);
             return AuthenticateResult.Fail(e);
         }
-
     }
-
-    // protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
-    // {
-    //     var result = await HandleAuthenticateOnceSafeAsync();
-    //     if (result.Failure is not GatewayAuthException e)
-    //         return;
-
-    //     Response.StatusCode = StatusCodes.Status403Forbidden;
-    //     await Response.WriteAsJsonAsync(e.ToJsonApiError().ToJsonApiErrorResponse(), _JsonSerializerOptions);
-    // }
-
-    // private bool HasValidSignature(in string user, in string signature)
-    //     => _Options.CurrentValue.RsaProvider.VerifyData(Encoding.UTF8.GetBytes(user),
-    //                                                     "SHA256",
-    //                                                     Convert.FromBase64String(signature));
-
 
     private static IEnumerable<Claim> GenerateClaims(in AuthUser user)
     {
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id),
-            new(ClaimTypes.MobilePhone, user.Mobile),
-
-
+            new(ClaimTypes.MobilePhone, user.Mobile)
         };
 
         if (user.RoleUsers is not null)
             claims.Add(new Claim(ClaimTypes.Role, JsonSerializer.Serialize(user.RoleUsers)));
-        
-        if(user.AreaId is not null)
+
+        if (user.AreaId is not null)
             claims.Add(new Claim(ClaimTypes.Country, user.AreaId.ToString()));
-    
-        if(user.LanguageId is not null)
+
+        if (user.LanguageId is not null)
             claims.Add(new Claim(ClaimTypes.Locality, user.LanguageId.ToString()));
-        
-        if(user.MySqlId is not null)
+
+        if (user.MySqlId is not null)
             claims.Add(new Claim(ClaimTypes.Sid, user.MySqlId.ToString()));
 
         return claims;
