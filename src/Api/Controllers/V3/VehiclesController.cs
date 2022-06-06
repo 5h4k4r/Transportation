@@ -189,7 +189,7 @@ public class VehiclesController : ControllerBase
         return Ok(BasicResponse.Successful);
     }
 
-    //:TODO add delete vehicle Endpoint
+
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]
@@ -199,6 +199,7 @@ public class VehiclesController : ControllerBase
         if (vehicle is null)
             throw new NotFoundException();
 
+        //:TODO add delete vehicle in Repository
         await _unitOfWork.Vehicles.DeleteVehicle(id);
         await _unitOfWork.Save();
 
