@@ -30,10 +30,7 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-        // if(isDevelopment)
-
-        var authHeader = Request.Headers[isDevelopment ? "user" : "auth"].FirstOrDefault();
+        var authHeader = Request.Headers["user"].FirstOrDefault();
 
         //  TODO: when the header is empty the returned result is empty
         if (string.IsNullOrEmpty(authHeader))
