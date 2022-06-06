@@ -1,6 +1,10 @@
 using System.Net.Mime;
+using Api.Extensions;
 using Core.Interfaces;
+using Core.Models.Authentication;
+using Core.Models.Base;
 using Core.Models.Common;
+using Core.Models.Exceptions;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Authentication;
@@ -33,15 +37,11 @@ public class TasksController : ControllerBase
     [ProducesResponseType(typeof(PaginatedResponse<ListTasks>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListTasks([FromQuery] ListTasksRequest model, [FromServices] UserAuthContext authContext)
     {
-        var authId = authContext.GetAuthUser().Id;
 
-        var user = await _unitOfWork.User.GetUserByAuthId(authId);
-
-        if (user is null || !user.AreaId.HasValue)
-            return NotFound();
-
-        if ((await _unitOfWork.RoleUsers.GetRoleUserByUserId(user.Id))?.RoleId < 5)
-            model.AreaId = user.AreaId.Value;
+        if (!User.HasRole(Role.SuperAdmin) && !User.GetAreaId().HasValue)
+            throw new UnauthorizedException();
+        
+        model.AreaId = User.GetAreaId().Value;
 
         var items = await _unitOfWork.Tasks.ListTasks(model);
         var count = await _unitOfWork.Tasks.CountTasks(model);
