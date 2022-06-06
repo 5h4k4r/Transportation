@@ -1,4 +1,4 @@
-namespace Core.Interfaces;
+namespace Infra.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {

@@ -1,8 +1,8 @@
 using System.Net.Mime;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 using Infra.Authentication;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,12 +15,11 @@ namespace Api.Controllers.V3;
 [Route("v3/genders")]
 public class GendersController : ControllerBase
 {
-
     private readonly IUnitOfWork _unitOfWork;
+
     public GendersController(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-     
     }
 
     [ProducesResponseType(typeof(List<GenderTranslationDto>), StatusCodes.Status200OK)]
@@ -28,7 +27,6 @@ public class GendersController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> ListGenders([FromServices] UserAuthContext authContext)
     {
-
         var authUser = authContext.GetAuthUser();
 
 
@@ -43,11 +41,9 @@ public class GendersController : ControllerBase
         var gender = await _unitOfWork.Genders.ListGenders(user.LanguageId.Value);
 
         if (gender.Count == 0)
-            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(gender), (int)user.LanguageId, nameof(user.LanguageId)));
+            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(gender), (int)user.LanguageId,
+                nameof(user.LanguageId)));
 
         return Ok(gender);
     }
-
-
-
 }

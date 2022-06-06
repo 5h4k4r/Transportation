@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core.Interfaces;
 using Core.Models.Base;
 using Infra.Entities;
 using Infra.Extensions;
+using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Repositories;

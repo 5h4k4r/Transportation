@@ -36,6 +36,14 @@ public class VehicleDtoResponse
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
+    
+    public ICollection<Service> Services { get; set; } = null!;
 
     public virtual ICollection<VehicleDetailDtoResponse>? VehicleDetails { get; set; }
+}
+
+public class Service
+{
+    public ulong Id { get; set; }
+    public string Title { get; set; } = null!;
 }

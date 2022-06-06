@@ -1,12 +1,12 @@
 using AutoMapper;
 using Core.Extensions;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
+using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Task = Infra.Entities.Task;
 
@@ -88,6 +88,7 @@ public class TasksRepository : ITasksRepository
             .ToListAsync();
 
 
+
         return tasks;
     }
 
@@ -100,6 +101,7 @@ public class TasksRepository : ITasksRepository
     {
         return ListTasksByClientRequestQuery(model).CountAsync();
     }
+
 
 
     #region Private Functions

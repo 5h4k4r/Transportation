@@ -1,8 +1,8 @@
 using System.Net.Mime;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Requests;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

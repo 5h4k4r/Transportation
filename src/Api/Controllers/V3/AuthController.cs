@@ -3,16 +3,15 @@ using System.Net.Mime;
 using Api.Extensions;
 using Api.Helpers;
 using Api.Settings;
-using Core.Interfaces;
 using Core.Models.Authentication;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Requests;
 using Infra.Authentication;
+using Infra.Interfaces;
 using Infra.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Department = Core.Models.Authentication.Department;
 
 namespace Api.Controllers.V3;
 

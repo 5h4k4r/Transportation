@@ -1,13 +1,9 @@
 using System.Net.Mime;
-using Api.Extensions;
-using Core.Interfaces;
-using Core.Models.Authentication;
-using Core.Models.Base;
 using Core.Models.Common;
-using Core.Models.Exceptions;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Authentication;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,6 +38,9 @@ public class TasksController : ControllerBase
             throw new UnauthorizedException();
         
         model.AreaId = User.GetAreaId().Value;
+
+        if ((await _unitOfWork.RoleUsers.GetRoleUserByUserId(user.Id))?.RoleId < 5)
+            model.AreaId = user.AreaId.Value;
 
         var items = await _unitOfWork.Tasks.ListTasks(model);
         var count = await _unitOfWork.Tasks.CountTasks(model);

@@ -1,11 +1,11 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Exceptions;
 using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
+using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
 
@@ -49,12 +49,11 @@ public class VehiclesRepository : IVehiclesRepository
                     break;
             }
 
-        return query.ProjectTo<VehicleDto>(_mapper.ConfigurationProvider).ApplyPagination(model).ToListAsync();
+        return query
+            .ProjectTo<VehicleDto>(_mapper.ConfigurationProvider).ApplyPagination(model).ToListAsync();
     }
 
     public Task<int> ListVehicleCount(ListVehiclesRequest model)
-
-
     {
         var query = _context.Vehicles.Include(v => v.VehicleDetails).AsQueryable();
 
@@ -84,16 +83,23 @@ public class VehiclesRepository : IVehiclesRepository
         return query.ProjectTo<VehicleDto>(_mapper.ConfigurationProvider).CountAsync();
     }
 
-    public async void AddVehicle(VehicleDto vehicle)
+    public async Task<Vehicle> AddVehicle(VehicleDto vehicle)
     {
         var newVehicle = _mapper.Map<Vehicle>(vehicle);
-        await _context.Vehicles.AddAsync(newVehicle);
+        var dbVehicle = (await _context.Vehicles.AddAsync(newVehicle)).Entity;
+
+
+        return dbVehicle;
     }
 
-    public async void AddVehicleDetail(VehicleDetailDto vehicleDetail)
+    public async Task<VehicleDetail> AddVehicleDetail(VehicleDetailDto vehicleDetail)
     {
         var newVehicleDetail = _mapper.Map<VehicleDetail>(vehicleDetail);
+
         await _context.VehicleDetails.AddAsync(newVehicleDetail);
+
+
+        return newVehicleDetail;
     }
 
     public Task<VehicleDto?> GetVehicleById(ulong id)
@@ -160,14 +166,30 @@ public class VehiclesRepository : IVehiclesRepository
         }
     }
 
-    public Task DeleteVehicle(ulong id)
+    public async Task DeleteVehicle(ulong id)
     {
-        throw new NotImplementedException();
+        var dbVehicle = _context.Vehicles.SingleOrDefaultAsync(v => v.Id == id).Result;
+        if (dbVehicle is null)
+            throw new NotFoundException("Record Not Found");
+
+        dbVehicle.DeletedAt = DateTime.UtcNow;
     }
 
-    public Task SubscribeVehicleToService(ulong vehicleId, ICollection<ulong> serviceIds)
+    public async Task SubscribeVehicleToService(ulong vehicleId, ICollection<ulong> serviceIds)
     {
-        throw new NotImplementedException();
+        foreach (var serviceId in serviceIds)
+        {
+            var vehicleService = new ServiceSubscriber
+            {
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                IsSubscribed = true,
+                ModelType = "App\\Models\\Vehicle",
+                ModelId = vehicleId,
+                ServiceAreaTypeId = serviceId
+            };
+            await _context.ServiceSubscribers.AddAsync(vehicleService);
+        }
     }
 }
 

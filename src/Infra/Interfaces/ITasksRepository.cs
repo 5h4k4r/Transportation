@@ -2,7 +2,7 @@ using Core.Models.Common;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 
-namespace Core.Interfaces;
+namespace Infra.Interfaces;
 
 public interface ITasksRepository
 {
@@ -10,5 +10,4 @@ public interface ITasksRepository
     Task<List<ListTasksByClient>> ListTasksByClient(ListTasksByClientRequest model);
     Task<int> CountTasks(ListTasksRequest model);
     Task<int> CountClientTasks(ListTasksByClientRequest model);
-
 }

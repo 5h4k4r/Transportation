@@ -2,7 +2,7 @@ using Core.Models.Base;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 
-namespace Core.Interfaces;
+namespace Infra.Interfaces;
 
 public interface IServantsRepository
 {

@@ -1,6 +1,6 @@
 using Core.Models.Base;
 
-namespace Core.Interfaces;
+namespace Infra.Interfaces;
 
 public interface IRolesRepository
 {
