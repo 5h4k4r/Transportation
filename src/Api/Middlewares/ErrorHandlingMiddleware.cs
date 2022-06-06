@@ -43,7 +43,7 @@ public class ErrorHandlingMiddleware : IMiddleware
             {
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                await context.Response.WriteAsync(JsonSerializer.Serialize(ex.InnerException?.Message ?? ex.Message));
+                await context.Response.WriteAsync(JsonSerializer.Serialize(ex));
             }
         }
     }
