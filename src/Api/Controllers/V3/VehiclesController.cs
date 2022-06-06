@@ -56,9 +56,7 @@ public class VehiclesController : ControllerBase
             var plaque = vehicleDetail?.Plaque;
             PlaqueDtoResponse? plaqueJson = null;
             if (plaque != null)
-            {
-                var plaqueJsons = PreparePlaque(plaque);
-            }
+                plaqueJson = PreparePlaque(plaque);
 
 
             var vehicleDetailsResponse = new VehicleDetailDtoResponse
@@ -150,13 +148,16 @@ public class VehiclesController : ControllerBase
         newVehicle.Id = id;
         if (newVehicle.VehicleDetails != null && newVehicle.VehicleDetails.Count > 0)
         {
-            var vehicleDetailDto = vehicle.VehicleDetails.First();
-            var newVehicleDetailDto = newVehicle.VehicleDetails.First();
-            newVehicleDetailDto.VehicleId = id;
-            newVehicleDetailDto.Id = vehicleDetailDto.Id;
-            newVehicleDetailDto.CreatedAt = vehicleDetailDto.CreatedAt;
-            newVehicleDetailDto.UpdatedAt = DateTime.UtcNow;
-            newVehicle.VehicleDetails = new List<VehicleDetailDto> { newVehicleDetailDto };
+            if (vehicle.VehicleDetails != null)
+            {
+                var vehicleDetailDto = vehicle.VehicleDetails.First();
+                var newVehicleDetailDto = newVehicle.VehicleDetails.First();
+                newVehicleDetailDto.VehicleId = id;
+                newVehicleDetailDto.Id = vehicleDetailDto.Id;
+                newVehicleDetailDto.CreatedAt = vehicleDetailDto.CreatedAt;
+                newVehicleDetailDto.UpdatedAt = DateTime.UtcNow;
+                newVehicle.VehicleDetails = new List<VehicleDetailDto> { newVehicleDetailDto };
+            }
         }
 
         await _unitOfWork.Vehicles.UpdateVehicle(newVehicle);
