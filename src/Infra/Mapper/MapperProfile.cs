@@ -1,5 +1,6 @@
 using AutoMapper;
 using Core.Models.Base;
+using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Entities;
 
@@ -16,6 +17,9 @@ public class MapperProfile : Profile
         CreateMap<VehicleDetailDto, CreateVehicleRequest>().ReverseMap();
         CreateMap<VehicleDto, CreateVehicleRequest>().ReverseMap();
         CreateMap<VehicleDto, UpdateVehicleRequest>().ReverseMap();
+        CreateMap<VehicleDto, VehicleDtoResponse>().ReverseMap();
+        CreateMap<VehicleDetailDto, VehicleDetailDtoResponse>().ReverseMap();
+        CreateMap<ServiceSubscriberDto, ServiceSubscriber>().ReverseMap();
         CreateMap<VehicleDetailDto, UpdateVehicleDetailRequest>().ReverseMap();
         CreateMap<ServantDto, CreateServantRequest>().ReverseMap();
         CreateMap<VehicleDetail, VehicleDetailDto>().ReverseMap();

@@ -159,6 +159,16 @@ public class VehiclesRepository : IVehiclesRepository
             throw new DuplicateException("Record Already Exists");
         }
     }
+
+    public Task DeleteVehicle(ulong id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SubscribeVehicleToService(ulong vehicleId, ICollection<ulong> serviceIds)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 

@@ -20,4 +20,8 @@ public interface IVehiclesRepository
     public Task UpdateVehicle(VehicleDto vehicle);
 
     public Task AddServantToVehicle(ulong vehicleId, ulong servantId);
+
+    public Task DeleteVehicle(ulong id);
+
+    public Task SubscribeVehicleToService(ulong vehicleId, ICollection<ulong> serviceIds);
 }

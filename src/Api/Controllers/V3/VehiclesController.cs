@@ -1,9 +1,11 @@
 using System.Net.Mime;
+using System.Text.Json;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
+using Core.Models.Repositories;
 using Core.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,16 +39,58 @@ public class VehiclesController : ControllerBase
         return Ok(new PaginatedResponse<VehicleDto>(vehicelsCount, model, vehicle));
     }
 
-    [ProducesResponseType(typeof(VehicleDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VehicleDtoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetVehicle(ulong id)
     {
+        VehicleDtoResponse? vehicleResponse = null;
+        PlaqueDtoResponse? plaqueResponse = null;
         var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
         if (vehicle is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
-        return Ok(vehicle);
+        if (vehicle.VehicleDetails != null && vehicle.VehicleDetails.Count > 0)
+        {
+            var deserialization = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var vehicleDetail = vehicle.VehicleDetails.FirstOrDefault();
+            var plaque = vehicleDetail?.Plaque;
+            PlaqueDtoResponse? plaqueJson = null;
+            if (plaque != null)
+                plaqueJson = JsonSerializer.Deserialize<PlaqueDtoResponse>(plaque, deserialization);
+
+            var vehicleDetailsResponse = new VehicleDetailDtoResponse
+            {
+                Id = vehicleDetail?.Id,
+                VehicleId = vehicleDetail?.VehicleId,
+                Plaque = plaqueJson,
+                Color = vehicleDetail?.Color,
+                Model = vehicleDetail?.Model,
+                Tip = vehicleDetail?.Tip,
+                InsuranceNo = vehicleDetail?.InsuranceNo,
+                InsuranceExpire = vehicleDetail?.InsuranceExpire,
+                Vin = vehicleDetail?.Vin,
+                CreatedAt = vehicleDetail?.CreatedAt,
+                UpdatedAt = vehicleDetail?.UpdatedAt,
+                DeletedAt = vehicleDetail?.DeletedAt
+            };
+
+            vehicleResponse = new VehicleDtoResponse
+            {
+                Id = vehicle.Id,
+                Title = vehicle.Title,
+                UsageId = vehicle.UsageId,
+                CreatedAt = vehicle.CreatedAt,
+                UpdatedAt = vehicle.UpdatedAt,
+                DeletedAt = vehicle.DeletedAt,
+                VehicleDetails = new List<VehicleDetailDtoResponse> { vehicleDetailsResponse }
+            };
+        }
+
+        return Ok(vehicleResponse);
     }
 
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
@@ -81,7 +125,12 @@ public class VehiclesController : ControllerBase
 
         _unitOfWork.Vehicles.AddVehicleDetail(newVehicleDetail);
 
-        await _unitOfWork.Save();
+        //TODO: get id of new vehicle
+        if (request.ServiceAreaTypes != null)
+            //await _unitOfWork.Vehicles.SubscribeVehicleToService(newVehicle.Id, request.ServiceAreaTypes);
+            //TODO: Add vehicle documents
+
+            await _unitOfWork.Save();
 
         return Ok(newVehicleDetail);
     }
@@ -134,7 +183,24 @@ public class VehiclesController : ControllerBase
 
         if (servant is null)
             throw new NotFoundException("Servant not found");
-        await _unitOfWork.Vehicles.AddServantToVehicle(request.VehicleId, (ulong)request.UserId);
+        await _unitOfWork.Vehicles.AddServantToVehicle(request.VehicleId, request.UserId);
+        await _unitOfWork.Save();
+
+        return Ok(BasicResponse.Successful);
+    }
+
+
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteVehicle(ulong id)
+    {
+        var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
+        if (vehicle is null)
+            throw new NotFoundException();
+
+        //:TODO add delete vehicle in Repository
+        await _unitOfWork.Vehicles.DeleteVehicle(id);
         await _unitOfWork.Save();
 
         return Ok(BasicResponse.Successful);
