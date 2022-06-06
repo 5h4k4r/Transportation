@@ -1,9 +1,11 @@
 using System.Net.Mime;
+using System.Text.Json;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
+using Core.Models.Repositories;
 using Core.Models.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,16 +39,58 @@ public class VehiclesController : ControllerBase
         return Ok(new PaginatedResponse<VehicleDto>(vehicelsCount, model, vehicle));
     }
 
-    [ProducesResponseType(typeof(VehicleDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VehicleDtoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetVehicle(ulong id)
     {
+        VehicleDtoResponse? vehicleResponse = null;
+        PlaqueDtoResponse? plaqueResponse = null;
         var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
         if (vehicle is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
-        return Ok(vehicle);
+        if (vehicle.VehicleDetails != null && vehicle.VehicleDetails.Count > 0)
+        {
+            var deserialization = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var vehicleDetail = vehicle.VehicleDetails.FirstOrDefault();
+            var plaque = vehicleDetail?.Plaque;
+            PlaqueDtoResponse? plaqueJson = null;
+            if (plaque != null)
+                plaqueJson = JsonSerializer.Deserialize<PlaqueDtoResponse>(plaque, deserialization);
+
+            var vehicleDetailsResponse = new VehicleDetailDtoResponse
+            {
+                Id = vehicleDetail?.Id,
+                VehicleId = vehicleDetail?.VehicleId,
+                Plaque = plaqueJson,
+                Color = vehicleDetail?.Color,
+                Model = vehicleDetail?.Model,
+                Tip = vehicleDetail?.Tip,
+                InsuranceNo = vehicleDetail?.InsuranceNo,
+                InsuranceExpire = vehicleDetail?.InsuranceExpire,
+                Vin = vehicleDetail?.Vin,
+                CreatedAt = vehicleDetail?.CreatedAt,
+                UpdatedAt = vehicleDetail?.UpdatedAt,
+                DeletedAt = vehicleDetail?.DeletedAt
+            };
+
+            vehicleResponse = new VehicleDtoResponse
+            {
+                Id = vehicle.Id,
+                Title = vehicle.Title,
+                UsageId = vehicle.UsageId,
+                CreatedAt = vehicle.CreatedAt,
+                UpdatedAt = vehicle.UpdatedAt,
+                DeletedAt = vehicle.DeletedAt,
+                VehicleDetails = new List<VehicleDetailDtoResponse> { vehicleDetailsResponse }
+            };
+        }
+
+        return Ok(vehicleResponse);
     }
 
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
@@ -79,11 +123,11 @@ public class VehiclesController : ControllerBase
         var newVehicleDetail = _mapper.Map<VehicleDetailDto>(request);
         newVehicleDetail.Vehicle = newVehicle;
 
-        var newAdded = await _unitOfWork.Vehicles.AddVehicleDetail(newVehicleDetail);
-        
+        _unitOfWork.Vehicles.AddVehicleDetail(newVehicleDetail);
+
         //TODO: get id of new vehicle
         if (request.ServiceAreaTypes != null)
-            // await _unitOfWork.Vehicles.SubscribeVehicleToService(newVehicle.Id, request.ServiceAreaTypes);
+            //await _unitOfWork.Vehicles.SubscribeVehicleToService(newVehicle.Id, request.ServiceAreaTypes);
             //TODO: Add vehicle documents
 
             await _unitOfWork.Save();
