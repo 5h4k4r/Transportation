@@ -1,4 +1,3 @@
-
 version : '3'
 
 services:
@@ -39,7 +38,7 @@ services:
       - RETRY_TIMES
     restart: always
     depends_on:
-      - transportation_dotnet
+      - transportation_dotnet-beta
 
 networks:
   default:
