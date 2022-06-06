@@ -1,10 +1,10 @@
 using System.Net.Mime;
 using Api.Helpers;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
 using Core.Models.Repositories;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,17 +38,17 @@ public class UserController : Controller
         };
 
         var user = await _unitOfWork.User.GetUserByPhone(UserHelper.PreparePhoneNumber(phone));
-        if(user is null)
-        throw new NotFoundException();
-            
+        if (user is null)
+            throw new NotFoundException();
+
         ServantDto servant = null;
-     
-            servant = await _unitOfWork.Servants.GetServantByUserId(user.Id, (ulong)(user.AreaId ?? 0));
-      
+
+        servant = await _unitOfWork.Servants.GetServantByUserId(user.Id, user.AreaId ?? 0);
+
         if (servant is not null)
             response.IsServant = true;
-        else 
-        response.IsUser = true;
+        else
+            response.IsUser = true;
         response.User = user;
 
         return Ok(response);

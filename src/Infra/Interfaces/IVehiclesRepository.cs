@@ -1,7 +1,9 @@
 using Core.Models.Base;
 using Core.Models.Requests;
+using Infra.Entities;
+using Task = System.Threading.Tasks.Task;
 
-namespace Core.Interfaces;
+namespace Infra.Interfaces;
 
 public interface IVehiclesRepository
 {
@@ -10,9 +12,9 @@ public interface IVehiclesRepository
 
     public Task<VehicleDto?> GetVehicleById(ulong id);
 
-    public void AddVehicle(VehicleDto vehicle);
+    public Task<Vehicle> AddVehicle(VehicleDto vehicle);
 
-    public void AddVehicleDetail(VehicleDetailDto vehicleDetail);
+    public Task<VehicleDetail> AddVehicleDetail(VehicleDetailDto vehicleDetail);
 
     public Task<List<UserDto>> GetVehicleOwners(ulong id);
 

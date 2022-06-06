@@ -1,4 +1,5 @@
 using Core.Interfaces;
+using Infra.Interfaces;
 using Infra.Mapper;
 using Infra.Repositories;
 using Microsoft.Extensions.DependencyInjection;

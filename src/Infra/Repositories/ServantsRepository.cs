@@ -1,12 +1,12 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Extensions;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
+using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Task = Infra.Entities.Task;
 
@@ -94,8 +94,7 @@ public class ServantsRepository : IServantsRepository
             })
             .AsNoTracking()
             .ApplySorting(model)
-            .ApplyPagination(model)
-            .ToListAsync();
+            .ApplyPagination(model).ToListAsync();
     }
 
     public Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId)

@@ -1,12 +1,12 @@
 using System.Net.Mime;
 using System.Text.Json;
 using AutoMapper;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
 using Core.Models.Repositories;
 using Core.Models.Requests;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,22 +45,21 @@ public class VehiclesController : ControllerBase
     public async Task<IActionResult> GetVehicle(ulong id)
     {
         VehicleDtoResponse? vehicleResponse = null;
-        PlaqueDtoResponse? plaqueResponse = null;
+
         var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
         if (vehicle is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
         if (vehicle.VehicleDetails != null && vehicle.VehicleDetails.Count > 0)
         {
-            var deserialization = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
             var vehicleDetail = vehicle.VehicleDetails.FirstOrDefault();
             var plaque = vehicleDetail?.Plaque;
             PlaqueDtoResponse? plaqueJson = null;
             if (plaque != null)
-                plaqueJson = JsonSerializer.Deserialize<PlaqueDtoResponse>(plaque, deserialization);
+            {
+                var plaqueJsons = PreparePlaque(plaque);
+            }
+
 
             var vehicleDetailsResponse = new VehicleDetailDtoResponse
             {
@@ -97,7 +96,6 @@ public class VehiclesController : ControllerBase
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet("crews/{id}")]
     public async Task<IActionResult> GetVehicleCrew(ulong id, [FromQuery] GetVehicleCrewRequest request)
-
     {
         List<UserDto> crew;
         if (request.VehicleCrew.Equals(VehicleCrew.Owner))
@@ -123,16 +121,16 @@ public class VehiclesController : ControllerBase
         var newVehicleDetail = _mapper.Map<VehicleDetailDto>(request);
         newVehicleDetail.Vehicle = newVehicle;
 
-        _unitOfWork.Vehicles.AddVehicleDetail(newVehicleDetail);
+        var addedVehicle = await _unitOfWork.Vehicles.AddVehicleDetail(newVehicleDetail);
 
-        //TODO: get id of new vehicle
-        if (request.ServiceAreaTypes != null)
-            //await _unitOfWork.Vehicles.SubscribeVehicleToService(newVehicle.Id, request.ServiceAreaTypes);
-            //TODO: Add vehicle documents
+        //TODO: Add vehicle documents
 
-            await _unitOfWork.Save();
+        await _unitOfWork.Save();
+        if (request.ServiceAreaTypes != null && request.ServiceAreaTypes.Count > 0)
+            await _unitOfWork.Vehicles.SubscribeVehicleToService(addedVehicle.VehicleId, request.ServiceAreaTypes);
 
-        return Ok(newVehicleDetail);
+        await _unitOfWork.Save();
+        return Ok(addedVehicle);
     }
 
     [ProducesResponseType(typeof(VehicleDto), StatusCodes.Status200OK)]
@@ -199,10 +197,19 @@ public class VehiclesController : ControllerBase
         if (vehicle is null)
             throw new NotFoundException();
 
-        //:TODO add delete vehicle in Repository
         await _unitOfWork.Vehicles.DeleteVehicle(id);
         await _unitOfWork.Save();
 
         return Ok(BasicResponse.Successful);
+    }
+
+    private PlaqueDtoResponse? PreparePlaque(string plaque)
+    {
+        var deserializationOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+        var plaqueJson = JsonSerializer.Deserialize<PlaqueDtoResponse>(plaque, deserializationOptions);
+        return plaqueJson;
     }
 }

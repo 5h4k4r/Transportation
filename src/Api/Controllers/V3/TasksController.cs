@@ -1,14 +1,13 @@
 using System.Net.Mime;
-using Core.Interfaces;
 using Core.Models.Common;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Authentication;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.V3;
-
 
 [Authorize]
 [ApiController]
@@ -25,13 +24,13 @@ public class TasksController : ControllerBase
     }
 
     /// <summary>
-    /// Lists all the tasks.
+    ///     Lists all the tasks.
     /// </summary>
-
     [HttpGet]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PaginatedResponse<ListTasks>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListTasks([FromQuery] ListTasksRequest model, [FromServices] UserAuthContext authContext)
+    public async Task<IActionResult> ListTasks([FromQuery] ListTasksRequest model,
+        [FromServices] UserAuthContext authContext)
     {
         var authId = authContext.GetAuthUser().Id;
 
@@ -48,10 +47,10 @@ public class TasksController : ControllerBase
 
         return Ok(new PaginatedResponse<ListTasks>(count, model, items));
     }
-    /// <summary>
-    /// Lists all tasks by a client.
-    /// </summary>
 
+    /// <summary>
+    ///     Lists all tasks by a client.
+    /// </summary>
     [HttpGet("client")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PaginatedResponse<ListTasksByClient>), StatusCodes.Status200OK)]

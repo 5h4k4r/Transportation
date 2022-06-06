@@ -1,10 +1,8 @@
 using Core.Models.Base;
 
-namespace Core.Interfaces;
+namespace Infra.Interfaces;
 
 public interface IDepartmentsRepository
 {
-
     Task<DepartmentDto?> GetDepartmentById(ulong id);
-
 }

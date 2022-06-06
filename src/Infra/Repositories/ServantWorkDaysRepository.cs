@@ -1,9 +1,9 @@
 using Core.Helpers;
-using Core.Interfaces;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
+using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Repositories;
@@ -28,8 +28,7 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
             .OrderByDescending(x => x.StartAt)
             .GroupBy(x => x.ServantDailyStatistic.DayId)
             .Select(x => x.ToList())
-            .ApplyPagination(model)
-            .ToListAsync();
+            .ApplyPagination(model).ToListAsync();
 
 
         var servantWorkDayPeriods = dailyStats.Select(workDay =>

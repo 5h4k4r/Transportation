@@ -1,8 +1,8 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core.Interfaces;
 using Core.Models.Base;
 using Infra.Entities;
+using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Repositories;
@@ -20,8 +20,8 @@ public class GendersRepository : IGendersRepository
 
     public Task<List<GenderTranslationDto>> ListGenders(uint languageId)
     {
-        var gender = _context.GenderTranslations.Where(x => x.LanguageId == languageId).ProjectTo<GenderTranslationDto>(_mapper.ConfigurationProvider).ToListAsync();
+        var gender = _context.GenderTranslations.Where(x => x.LanguageId == languageId)
+            .ProjectTo<GenderTranslationDto>(_mapper.ConfigurationProvider).ToListAsync();
         return gender;
     }
-
 }

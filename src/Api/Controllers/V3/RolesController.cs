@@ -1,12 +1,11 @@
 using System.Net.Mime;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.V3;
-
 
 [Authorize]
 [ApiController]
@@ -33,7 +32,4 @@ public class RolesController : ControllerBase
 
         return Ok(roles);
     }
-
-
-
 }
