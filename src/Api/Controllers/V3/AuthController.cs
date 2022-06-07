@@ -6,6 +6,7 @@ using Api.Settings;
 using Core.Models.Authentication;
 using Core.Models.Base;
 using Core.Models.Common;
+using Core.Models.Exceptions;
 using Core.Models.Requests;
 using Infra.Authentication;
 using Infra.Interfaces;
@@ -41,10 +42,10 @@ public class AuthController : ControllerBase
         var user = await _unitOfWork.User.GetUserByPhone(phone, true);
 
         if (user is null)
-            return NotFound(BasicResponse.ResourceNotFound);
+            throw new NotFoundException();
 
         if (!user.HasRole("superadmin") && !user.HasRole("admin"))
-            return Forbid();
+            throw new UnauthorizedException();
 
         var settings = _config.GetSection(SettingsConfig.Config).Get<SettingsConfig>();
 
