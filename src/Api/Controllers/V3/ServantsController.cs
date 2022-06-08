@@ -49,7 +49,7 @@ public class ServantsController : ControllerBase
         var count = await _unitOfWork.Servants.ListServantsCount(model, user.AreaId.Value);
 
 
-        return Ok(new PaginatedResponse<ServantDto>(count, model, items));
+        return Ok(new PaginatedResponse<ListServants>(count, model, items));
 
 
     }

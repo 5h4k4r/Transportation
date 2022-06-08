@@ -116,28 +116,57 @@ public class ServantsRepository : IServantsRepository
     {
         return _Context.Servants.Where(x => x.AreaId == areaId).Where(x => x.Id == id).ProjectTo<ServantDto?>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
     }
-    public Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId)
+    public Task<List<ListServants>> ListServants(ListServantRequest model, ulong userAreaId)
     {
-        var query = _Context.Servants.Where(x => x.AreaId == userAreaId).ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
+        var query = _Context.Servants
+            .Where(x => x.AreaId == userAreaId)
+            .Include(x => x.User)
+            .ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
+            
+            .AsNoTracking();
 
         query = CheckForSearchField(query, model);
 
 
         return query
-                    .Select(x => new ServantDto
+            .Join(
+                _Context.ServantStatuses,
+                servant => (ulong)servant.Id,
+                status => status.ServantId,
+                (servant, status) => new
+                {
+                    servant, status
+                })
+            .Select(x => new ListServants
                     {
-                        Address = x.Address,
-                        AreaId = x.AreaId,
-                        CreatedAt = x.CreatedAt,
-                        Id = x.Id,
-                        UserId = x.UserId,
-                        BankId = x.BankId,
-                        Certificate = x.Certificate,
-                        NationalId = x.NationalId,
-                        FirstName = x.FirstName,
-                        LastName = x.LastName,
-                        GenderId = x.GenderId,
-                        UpdatedAt = x.UpdatedAt,
+                        servant = new ServantDto
+                        {
+                            Address = x.servant.Address,
+                            AreaId = x.servant.AreaId,
+                            CreatedAt = x.servant.CreatedAt,
+                            Id = x.servant.Id,
+                            UserId = x.servant.UserId,
+                            BankId = x.servant.BankId,
+                            Certificate = x.servant.Certificate,
+                            NationalId = x.servant.NationalId,
+                            FirstName = x.servant.FirstName,
+                            LastName = x.servant.LastName,
+                            GenderId = x.servant.GenderId,
+                            UpdatedAt = x.servant.UpdatedAt,
+                            
+                            User = new UserDto
+                            {
+                                Id = x.servant.User.Id,
+                                Mobile = x.servant.User.Mobile,
+                                
+                            },
+                            
+                        },
+                        servantStatus = new ServantStatusDto
+                        {
+                            Id = x.status.Id,
+                            Status = x.status.Status,
+                        },
                     })
                     .ApplySorting(model)
                     .ApplyPagination(model)
@@ -146,7 +175,11 @@ public class ServantsRepository : IServantsRepository
     }
     public Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId)
     {
-        var query = _Context.Servants.Where(x => x.AreaId == userAreaId).ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
+        var query = _Context.Servants
+            .Where(x => x.AreaId == userAreaId)
+           
+            .ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
+            .AsNoTracking();
 
         query = CheckForSearchField(query, model);
 
