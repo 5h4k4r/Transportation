@@ -30,8 +30,11 @@ public class MapperProfile : Profile
         CreateMap<UsageDto, Usage>().ReverseMap();
         CreateMap<GenderTranslation, GenderTranslationDto>().ReverseMap();
         CreateMap<VehicleOwner, VehicleOwnerDto>().ReverseMap();
-
-
+        CreateMap<DiscountCode, DiscountCodeDto>().ReverseMap();
+        CreateMap<DiscountCodeUser, DiscountCodeUserDto>().ReverseMap();
+        CreateMap<DiscountCodeDto,CreateDiscountCodeRequest>().ReverseMap();
+        CreateMap<DiscountCodeDto,UpdateDiscountCodeRequest>().ReverseMap();
+        CreateMap<ServantStatusDto, ServantDto>().ReverseMap();
     }
 
 }

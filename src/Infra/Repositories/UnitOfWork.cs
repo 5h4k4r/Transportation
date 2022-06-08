@@ -32,7 +32,11 @@ public class UnitOfWork : IUnitOfWork
     private ITasksRepository? _Tasks;
     public ITasksRepository Tasks => _Tasks ??= new TasksRepository(_repoContext, _mapper);
     private IRoleUsersRepository? _RoleUsers;
+
     public IRoleUsersRepository RoleUsers => _RoleUsers ??= new RoleUserRepository(_repoContext, _mapper);
+    private IDiscountCodeRepository? _DiscountCode;
+
+    public IDiscountCodeRepository DiscountCode => _DiscountCode ?? new DiscountCodesRepository(_repoContext, _mapper);
 
     private IRolesRepository? _Roles;
     public IRolesRepository Roles => _Roles ??= new RolesRepository(_repoContext, _mapper);
