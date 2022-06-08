@@ -44,43 +44,9 @@ public class VehiclesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetVehicle(ulong id)
     {
-        VehicleDtoResponse? vehicleResponse = null;
-
         var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
         if (vehicle is null)
             return NotFound(BasicResponse.ResourceNotFound);
-
-        if (vehicle.VehicleDetails != null)
-        {
-            var vehicleDetail = vehicle.VehicleDetails;
-
-            var vehicleDetailsResponse = new VehicleDetailDtoResponse
-            {
-                Id = vehicleDetail?.Id,
-                VehicleId = vehicleDetail?.VehicleId,
-                Plaque = vehicleDetail?.Plaque,
-                Color = vehicleDetail?.Color,
-                Model = vehicleDetail?.Model,
-                Tip = vehicleDetail?.Tip,
-                InsuranceNo = vehicleDetail?.InsuranceNo,
-                InsuranceExpire = vehicleDetail?.InsuranceExpire,
-                Vin = vehicleDetail?.Vin,
-                CreatedAt = vehicleDetail?.CreatedAt,
-                UpdatedAt = vehicleDetail?.UpdatedAt,
-                DeletedAt = vehicleDetail?.DeletedAt
-            };
-
-            vehicleResponse = new VehicleDtoResponse
-            {
-                Id = vehicle.Id,
-                Title = vehicle.Title,
-                UsageId = vehicle.UsageId,
-                CreatedAt = vehicle.CreatedAt,
-                UpdatedAt = vehicle.UpdatedAt,
-                DeletedAt = vehicle.DeletedAt,
-                VehicleDetails = vehicleDetailsResponse
-            };
-        }
 
         return Ok(vehicle);
     }
@@ -111,9 +77,10 @@ public class VehiclesController : ControllerBase
     {
         var newVehicle = _mapper.Map<VehicleDto>(request);
 
-        var PlaqueString = VehicleHelper.PlaqueToString(request.Plaque);
+
+        var plaqueString = VehicleHelper.PlaqueToString(request.Plaque);
         var newVehicleDetail = _mapper.Map<VehicleDetailDto>(request);
-        newVehicleDetail.Plaque = PlaqueString;
+        newVehicleDetail.Plaque = plaqueString!;
 
         newVehicleDetail.Vehicle = newVehicle;
 
@@ -145,10 +112,10 @@ public class VehiclesController : ControllerBase
         newVehicle.UpdatedAt = DateTime.UtcNow;
         newVehicle.Id = id;
         if (newVehicle.VehicleDetails != null && newVehicle.VehicleDetails.Count > 0)
-            if (vehicle.VehicleDetails != null)
+            if (vehicle.VehicleDetail != null)
             {
                 var plaqueString = VehicleHelper.PlaqueToString(request.VehicleDetails.First().Plaque);
-                var vehicleDetailDto = vehicle.VehicleDetails;
+                var vehicleDetailDto = vehicle.VehicleDetail;
 
 
                 var newVehicleDetailDto = newVehicle.VehicleDetails.First();
@@ -176,13 +143,6 @@ public class VehiclesController : ControllerBase
     [HttpPost("servant")]
     public async Task<IActionResult> AddSeravntToVehicle([FromBody] AddServantToVehicleRequest request)
     {
-        var vehicle = await _unitOfWork.Vehicles.GetVehicleById(request.VehicleId);
-        var servant = await _unitOfWork.Servants.GetServantByUserId(request.UserId);
-        if (vehicle is null)
-            throw new NotFoundException("Vehicle not found");
-
-        if (servant is null)
-            throw new NotFoundException("Servant not found");
         await _unitOfWork.Vehicles.AddServantToVehicle(request.VehicleId, request.UserId);
         await _unitOfWork.Save();
 
@@ -195,10 +155,6 @@ public class VehiclesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteVehicle(ulong id)
     {
-        var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
-        if (vehicle is null)
-            throw new NotFoundException();
-
         await _unitOfWork.Vehicles.DeleteVehicle(id);
         await _unitOfWork.Save();
 

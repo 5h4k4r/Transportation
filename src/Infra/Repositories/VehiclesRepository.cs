@@ -104,7 +104,7 @@ public class VehiclesRepository : IVehiclesRepository
         return newVehicleDetail;
     }
 
-    public async Task<VehicleDtoResponse?> GetVehicleById(ulong id)
+    public Task<VehicleDtoResponse?> GetVehicleById(ulong id)
     {
         var query = _context.Vehicles.Where(v => v.Id == id)
             .ProjectTo<VehicleDto>(_mapper.ConfigurationProvider)
@@ -140,7 +140,7 @@ public class VehiclesRepository : IVehiclesRepository
                     UsageId = x.vsa.vs.vehicle.UsageId,
                     CreatedAt = x.vsa.vs.vehicle.CreatedAt,
                     UpdatedAt = x.vsa.vs.vehicle.UpdatedAt,
-                    VehicleDetails = new VehicleDetailDtoResponse
+                    VehicleDetail = new VehicleDetailDtoResponse
                     {
                         Id = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().Id,
                         VehicleId = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().VehicleId,
@@ -166,8 +166,7 @@ public class VehiclesRepository : IVehiclesRepository
                 }
             ).FirstOrDefault();
 
-        return query;
-        
+        return Task.FromResult(query);
     }
 
 
@@ -191,15 +190,21 @@ public class VehiclesRepository : IVehiclesRepository
             .ToListAsync();
     }
 
-    public async Task<Vehicle> UpdateVehicle(VehicleDto vehicle)
+    public Task<Vehicle> UpdateVehicle(VehicleDto vehicle)
     {
         var vehicleToUpdate = _mapper.Map<Vehicle>(vehicle);
         _context.Vehicles.Update(vehicleToUpdate);
-        return vehicleToUpdate;
+        return Task.FromResult(vehicleToUpdate);
     }
 
     public async Task AddServantToVehicle(ulong vehicleId, ulong servantUserId)
     {
+        var vehicle = _context.Vehicles.SingleOrDefault(v => v.Id == vehicleId);
+        var servant = _context.Servants.SingleOrDefault(s => s.UserId == servantUserId);
+
+        if (vehicle is null || servant is null)
+            throw new NotFoundException("Vehicle or Servant not found");
+
         var dbVehicleUser = new VehicleUser
         {
             VehicleId = vehicleId,
@@ -215,8 +220,9 @@ public class VehiclesRepository : IVehiclesRepository
             UpdatedAt = DateTime.UtcNow
         };
         var vehicleUser =
-            _context.VehicleUsers.Where(v => v.VehicleId == vehicleId && v.UserId == servantUserId)
-                .SingleOrDefault();
+            _context.VehicleUsers
+                .SingleOrDefault(v => v.VehicleId == vehicleId && v.UserId == servantUserId);
+
         if (vehicleUser is null)
         {
             await _context.VehicleUsers.AddAsync(dbVehicleUser);
@@ -228,13 +234,14 @@ public class VehiclesRepository : IVehiclesRepository
         }
     }
 
-    public async Task DeleteVehicle(ulong id)
+    public Task DeleteVehicle(ulong id)
     {
         var dbVehicle = _context.Vehicles.SingleOrDefaultAsync(v => v.Id == id).Result;
         if (dbVehicle is null)
             throw new NotFoundException("Record Not Found");
 
         dbVehicle.DeletedAt = DateTime.UtcNow;
+        return Task.CompletedTask;
     }
 
     public async Task SubscribeVehicleToService(ulong vehicleId, ICollection<ulong> serviceIds)

@@ -83,7 +83,7 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         var excludeStartHour = model.ExcludeStartHour ?? null;
         var excludeEndHour = model.ExcludeEndHour ?? null;
 
-        var query = GetServantOnlineHistoryQuery(model);
+        var query = GetServantOnlineHistoryQuery(model, model.ServantId);
 
         var onlineHistory = await query
             .OrderByDescending(x => x.StartAt)

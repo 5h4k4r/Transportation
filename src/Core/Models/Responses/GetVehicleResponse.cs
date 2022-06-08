@@ -39,7 +39,7 @@ public class VehicleDtoResponse
 
     public ICollection<ServiceResponse> Services { get; set; } = null!;
 
-    public virtual VehicleDetailDtoResponse VehicleDetails { get; set; }
+    public virtual VehicleDetailDtoResponse VehicleDetail { get; set; }
 }
 
 public class ServiceResponse
