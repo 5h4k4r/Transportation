@@ -58,7 +58,7 @@ public class DiscountCodesRepository : IDiscountCodeRepository
         return discountCodesQuery.CountAsync();
     }
 
-    public Task<DiscountCodeDto?> DiscountCodeDetail(uint id)
+    public Task<DiscountCodeDto?> GetDiscountCodeDetails(uint id)
     {
         var discountCodeDetail = _context.DiscountCodes
             .Where(x => x.Id == id)
@@ -127,7 +127,7 @@ public class DiscountCodesRepository : IDiscountCodeRepository
         return query.CountAsync();
     }
 
-    public async Task<DiscountCodeUserRepositoryDto> ListTasksByUser(ListDiscountCodesRequest model,
+    public async Task<DiscountCodeUserRepositoryDto> ListUserTasksByDiscountCode(ListDiscountCodesRequest model,
         uint discountCodeId,
         uint userId)
     {
