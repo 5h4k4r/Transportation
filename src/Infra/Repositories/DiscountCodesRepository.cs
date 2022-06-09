@@ -1,18 +1,12 @@
-﻿
-
-using System.Text.Json;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Interfaces;
 using Core.Models.Base;
-using Core.Models.Common;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Task = System.Threading.Tasks.Task;
 
 namespace Infra.Repositories;
 
@@ -28,27 +22,15 @@ public class DiscountCodesRepository : IDiscountCodeRepository
     }
 
 
-    public  Task<List<DiscountCodeDto>> ListDiscountCodes(DiscountCodeRequest model)
+    public Task<List<DiscountCodeDto>> ListDiscountCodes(ListDiscountCodesRequest model)
     {
-
-        IQueryable<DiscountCodeDto> discountCodes ;
-        if (model.ActiveCodesOnly == false)
-        {
-            
-           discountCodes = _context.DiscountCodes
+        var discountCodes = _context.DiscountCodes
             .ProjectTo<DiscountCodeDto>(_mapper.ConfigurationProvider)
             .AsNoTracking();
-        }
-        else 
-        {
-            discountCodes = _context.DiscountCodes
-                .Where(x => x.Status ==1)
-                .ProjectTo<DiscountCodeDto>(_mapper.ConfigurationProvider)
-                .AsNoTracking();
-        }
-        discountCodes=CheckForSearchField(discountCodes, model);
+
+        discountCodes = GetDiscountCodesQuery(discountCodes, model);
+
         return discountCodes
-            
             .Select(d => new DiscountCodeDto
             {
                 Id = d.Id,
@@ -60,10 +42,20 @@ public class DiscountCodesRepository : IDiscountCodeRepository
                 Status = d.Status,
                 AreaId = d.AreaId
             })
-           
             .ApplyPagination(model)
             .ApplySorting(model)
-            .ToListAsync();;
+            .ToListAsync();
+    }
+
+    public Task<int> ListDiscountCodesCount(ListDiscountCodesRequest model)
+    {
+        var discountCodesQuery = _context.DiscountCodes
+            .ProjectTo<DiscountCodeDto>(_mapper.ConfigurationProvider)
+            .AsNoTracking();
+
+        discountCodesQuery = GetDiscountCodesQuery(discountCodesQuery, model);
+
+        return discountCodesQuery.CountAsync();
     }
 
     public Task<DiscountCodeDto?> DiscountCodeDetail(uint id)
@@ -76,24 +68,15 @@ public class DiscountCodesRepository : IDiscountCodeRepository
         return discountCodeDetail;
     }
 
-    public Task<int> ListDiscountCodeCount(DiscountCodeRequest model)
-    {
-        var query = _context.DiscountCodes
-            .ProjectTo<DiscountCodeDto>(_mapper.ConfigurationProvider)
-            .AsNoTracking();
 
-        query = CheckForSearchField(query, model);
-        return query.CountAsync();
-    }
-
-    public async Task<DiscountCodeUserRepositoryDto> ListUsers(DiscountCodeRequest model, uint codeId)
+    public async Task<DiscountCodeUserRepositoryDto> ListDiscountCodeUsers(ListDiscountCodesRequest model, uint codeId)
     {
         var users = await _context.DiscountCodeUsers
             .Where(x => x.DiscountCodeId == codeId)
             .Where(u => u.Used)
             .Where(m => m.ModelType == "App\\Models\\Task")
-            .GroupBy(x=>x.UserId)
-            .Select(x=>new DiscountCodeUserDto
+            .GroupBy(x => x.UserId)
+            .Select(x => new DiscountCodeUserDto
             {
                 Amount = x.Sum(t => t.Amount),
                 Id = x.FirstOrDefault()!.Id,
@@ -101,58 +84,52 @@ public class DiscountCodesRepository : IDiscountCodeRepository
                 ModelId = x.FirstOrDefault()!.ModelId,
                 ModelType = x.FirstOrDefault()!.ModelType,
                 count = x.Count()
-                
-                 
             })
-            .OrderBy(x=>x.UserId)
+            .OrderBy(x => x.UserId)
             .ApplyPagination(model)
             .ApplySorting(model)
             .ToListAsync();
 
-        var totalAmount =  _context.DiscountCodeUsers
+        var totalAmount = _context.DiscountCodeUsers
             .Where(x => x.DiscountCodeId == codeId)
             .Where(u => u.Used)
             .Where(m => m.ModelType == "App\\Models\\Task")
             .Where(u => u.Used)
             .Sum(u => u.Amount);
-        
-        
-        var totalCount =  _context.DiscountCodeUsers
+
+
+        var totalCount = _context.DiscountCodeUsers
             .Where(x => x.DiscountCodeId == codeId)
             .Where(u => u.Used)
             .Where(m => m.ModelType == "App\\Models\\Task")
             .Count(u => u.Used);
-        
-        
+
 
         var totalResult = new DiscountCodeUserRepositoryDto
         {
             TotalAmount = totalAmount,
             TotalCount = totalCount,
             DiscountCodeUser = users
-
         };
-        
+
         return totalResult;
     }
 
-    public  Task<int> ListDiscountCodeUsersCount(DiscountCodeRequest model , uint codeId)
+    public Task<int> ListDiscountCodeUsersCount(ListDiscountCodesRequest model, uint codeId)
     {
-        var query =  _context.DiscountCodeUsers
+        var query = _context.DiscountCodeUsers
             .Where(x => x.DiscountCodeId == codeId)
             .Where(u => u.Used)
             .Where(m => m.ModelType == "App\\Models\\Task")
-            .GroupBy(x=>x.UserId)
-            .Select(x => new DiscountCodeUserDto
-            {
-                Id = x.Key
-            })
+            .GroupBy(x => x.UserId)
             .AsNoTracking();
 
-        // query = CheckForusersSearchField(query, model);
         return query.CountAsync();
     }
-    public async Task<DiscountCodeUserRepositoryDto> ListTasksByUser(DiscountCodeRequest model, uint discountCodeId, uint userId)
+
+    public async Task<DiscountCodeUserRepositoryDto> ListTasksByUser(ListDiscountCodesRequest model,
+        uint discountCodeId,
+        uint userId)
     {
         var users = await _context.DiscountCodeUsers
             .Where(x => x.DiscountCodeId == discountCodeId)
@@ -165,9 +142,9 @@ public class DiscountCodesRepository : IDiscountCodeRepository
                 ModelId = x.ModelId,
                 ModelType = x.ModelType,
                 Amount = x.Amount,
-                UserId = x.UserId,
+                UserId = x.UserId
             })
-            .OrderBy(x=>x.UserId)
+            .OrderBy(x => x.UserId)
             .ApplyPagination(model)
             .ApplySorting(model)
             .ToListAsync();
@@ -179,15 +156,13 @@ public class DiscountCodesRepository : IDiscountCodeRepository
                 Code = x.Code,
                 Id = x.Id,
                 Status = x.Status,
-                Type = x.Type,
-
+                Type = x.Type
             })
             .FirstOrDefault();
         var totalResult = new DiscountCodeUserRepositoryDto
         {
             DiscountCodeUser = users,
             DiscountCode = discountCode
-
         };
         return totalResult;
     }
@@ -199,21 +174,21 @@ public class DiscountCodesRepository : IDiscountCodeRepository
     }
 
 
-    private IQueryable<DiscountCodeDto> CheckForSearchField(IQueryable<DiscountCodeDto> query, DiscountCodeRequest model)
+    private IQueryable<DiscountCodeDto> GetDiscountCodesQuery(IQueryable<DiscountCodeDto> query,
+        ListDiscountCodesRequest model)
     {
-        
-        if (model.SearchField is null || model.SearchValue is null )
+        if (model.ActiveCodesOnly.HasValue && model.ActiveCodesOnly.Value)
+            query = query
+                .Where(x => x.Status == 1);
+
+        if (model.SearchField is null || model.SearchValue is null)
             return query;
         return model.SearchField switch
         {
-             "Code" => query.Where(
+            "Code" => query.Where(
                 x => x.Code.Contains(model.SearchValue)),
             "Type" => query.Where(
-                x => x.Type.Contains(model.SearchValue)),
-
-            _ => query.ProjectTo<DiscountCodeDto>(_mapper.ConfigurationProvider)
+                x => x.Type.Contains(model.SearchValue))
         };
     }
-    
-    
 }
