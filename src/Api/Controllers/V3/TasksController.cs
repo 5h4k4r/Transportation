@@ -52,11 +52,14 @@ public class TasksController : ControllerBase
     /// <summary>
     ///     Lists all tasks by a client.
     /// </summary>
-    [HttpGet("client")]
+    [HttpGet("client/{clientId}")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PaginatedResponse<ListTasksByClient>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListTasksByClient([FromQuery] ListTasksByClientRequest model)
+    public async Task<IActionResult> ListTasksByClient(ulong clientId, [FromQuery] ListTasksByClientRequest model)
     {
+        // TODO: Fix this(remove clientId from model)
+        model.ClientId = clientId;
+
         var items = await _unitOfWork.Tasks.ListTasksByClient(model);
         var count = await _unitOfWork.Tasks.CountClientTasks(model);
 
