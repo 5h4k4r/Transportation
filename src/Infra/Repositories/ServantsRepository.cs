@@ -215,7 +215,8 @@ public class ServantsRepository : IServantsRepository
             "Name" => query.Where(
                 x => x.FirstName.Contains(model.SearchValue) || x.LastName.Contains(model.SearchValue)),
             "NationalId" => query.Where(x => x.NationalId.Contains(model.SearchValue)),
-            "PhoneNumber" => query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue))
+            "PhoneNumber" => query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue)),
+            _ => throw new ArgumentOutOfRangeException()
         };
     }
 }

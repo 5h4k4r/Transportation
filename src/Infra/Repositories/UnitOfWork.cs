@@ -22,11 +22,14 @@ public class UnitOfWork : IUnitOfWork
     private ILanguagesRepository? _languages;
 
     private IRolesRepository? _roles;
+
     private IRoleUsersRepository? _roleUsers;
 
     private IServantsRepository? _servants;
 
     private IServantWorkDaysRepository? _servantWorkDays;
+
+    private IServiceRepository? _services;
 
     private ITasksRepository? _tasks;
 
@@ -41,6 +44,8 @@ public class UnitOfWork : IUnitOfWork
         _repoContext = repositoryContext;
         _mapper = mapper;
     }
+
+    public IServiceRepository Services => _services ??= new ServicesRepository(_repoContext, _mapper);
 
     public IServantsRepository Servants => _servants ??= new ServantsRepository(_repoContext, _mapper);
     public IVehiclesRepository Vehicles => _vehicles ??= new VehiclesRepository(_repoContext, _mapper);
