@@ -1,6 +1,6 @@
-using Core.Helpers.Job;
 using Core.Models.Base;
 using Core.Models.Common;
+using Infra.Helpers.Job;
 
 namespace Infra.Interfaces;
 

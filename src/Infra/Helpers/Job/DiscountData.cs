@@ -1,4 +1,4 @@
-namespace Core.Helpers.Job;
+namespace Infra.Helpers.Job;
 
 public class DiscountData
 {

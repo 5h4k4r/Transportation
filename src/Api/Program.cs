@@ -32,7 +32,6 @@ services
     .AddEndpointsApiExplorer()
     .ConfigureSwaggerGenerator(config)
     .ConfigureCacheService(config)
-    .ConfigureRepositoryWrapper()
     .ConfigureRepositoryWrapper().AddTransient<ErrorHandlingMiddleware>()
     .AddScoped<UserAuthContext>()
     .AddAuthentication(x =>
