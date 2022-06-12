@@ -18,7 +18,7 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         _context = repositoryContext;
     }
 
-    public async Task<List<ServantOnlinePeriod>> GetServantOnlineHistory(ulong servantId,
+    public async Task<List<ServantOnlinePeriod>> GetServantOnlinePeriods(ulong servantId,
         GetServantOnlineHistoryRequest model)
     {
         var excludeStartHour = model.ExcludeStartHour;
@@ -130,7 +130,7 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
             .ToList();
     }
 
-    public Task<int> GetServantOnlineHistoryCount(ulong servantId, GetServantOnlineHistoryRequest model)
+    public Task<int> GetServantOnlinePeriodsCount(ulong servantId, GetServantOnlineHistoryRequest model)
     {
         var query = GetServantOnlineHistoryQuery(model, servantId);
 

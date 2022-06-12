@@ -130,10 +130,11 @@ public class ServantsRepository : IServantsRepository
             .CountAsync();
     }
 
-    public async void CreateServant(ServantDto servant)
+    public async Task<Servant> CreateServant(ServantDto servant)
     {
         var newServant = _mapper.Map<Servant>(servant);
         await _context.Servants.AddAsync(newServant);
+        return newServant;
     }
 
     public Task<ServantDto?> GetServantByUserId(ulong userId, ulong areaId)

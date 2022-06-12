@@ -25,4 +25,9 @@
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Repositories\DocumentsRepository.cs" />
+    <Compile Remove="Interfaces\IDocumentsRepository.cs" />
+  </ItemGroup>
+
 </Project>

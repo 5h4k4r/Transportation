@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Api.Extensions;
 using AutoMapper;
+using Core.Helpers;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
@@ -80,8 +81,7 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(ServantPerformanceWithUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model,
-        [FromServices] UserAuthContext authContext)
+    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model)
     {
         if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
@@ -122,12 +122,11 @@ public class ServantsController : ControllerBase
     }
 
 
-    [HttpGet("{id}/online-history")]
+    [HttpGet("{id}/online-periods")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(List<ServantOnlinePeriod>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetServantOnlineHistory(int id, [FromQuery] GetServantOnlineHistoryRequest model,
-        [FromServices] UserAuthContext authContext)
+    public async Task<IActionResult> GetServantOnlinePeriods(int id, [FromQuery] GetServantOnlineHistoryRequest model)
     {
         if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
@@ -141,9 +140,9 @@ public class ServantsController : ControllerBase
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(Servant), id));
 
 
-        var servantOnlineHistory = await _unitOfWork.ServantWorkDays.GetServantOnlineHistory((ulong)id, model);
+        var servantOnlineHistory = await _unitOfWork.ServantWorkDays.GetServantOnlinePeriods((ulong)id, model);
         var servantOnlineHistoryCount =
-            await _unitOfWork.ServantWorkDays.GetServantOnlineHistoryCount((ulong)id, model);
+            await _unitOfWork.ServantWorkDays.GetServantOnlinePeriodsCount((ulong)id, model);
 
 
         return Ok(new PaginatedResponse<ServantOnlinePeriod>(servantOnlineHistoryCount, model, servantOnlineHistory));
@@ -173,12 +172,48 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
     [HttpPost]
-    public IActionResult CreateServant([FromBody] CreateServantRequest request)
+    public async Task<IActionResult> CreateServant([FromBody] CreateServantRequest request)
     {
-        var servant = _mapper.Map<ServantDto>(request);
-        _unitOfWork.Servants.CreateServant(servant);
+        if (await _unitOfWork.AreaInfos.GetAreaInfoById(request.AreaId) is null)
+            throw new NotFoundException("The Area you are trying to assign the servant to does not exist");
 
-        _unitOfWork.Save();
+
+        var servant = _mapper.Map<ServantDto>(request);
+        var s = await _unitOfWork.Servants.CreateServant(servant);
+
+        // await _unitOfWork.Save();
+
+        var documents = new List<Document>();
+        var namingPolicy = new SnakeCaseNamingPolicy();
+        
+        
+        for (var index = 0; index < request.GetType().GetProperties().Length; index++)
+        {
+            var p = request.GetType().GetProperties()[index];
+            if (
+                p.Name is "Certificate" or "CertificateBack" or "NationalCardBack" or "Avatar" or "NationalCard"
+            )
+                documents.Add(new Document
+                {
+                    Type = namingPolicy.ConvertName(p.Name),
+                    Path = p.GetValue(request, null)?.ToString()
+                });
+        }
+
+        // _unitOfWork.Documents.AddDocuments(documents, "App\\Models\\Servant", request.UserId);
+
+        if (!User.HasRole(Role.Servant))
+            await _unitOfWork.RoleUsers.AddRoleUser(new RoleUserDto
+            {
+                RoleId = (byte)Role.Servant,
+                UserId = request.UserId
+            });
+
+        
+        
+        
+        await _unitOfWork.Save();
+
 
         return Ok(BasicResponse.Successful);
     }

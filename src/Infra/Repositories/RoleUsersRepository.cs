@@ -3,6 +3,7 @@ using Core.Models.Base;
 using Infra.Entities;
 using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Task = System.Threading.Tasks.Task;
 
 namespace Infra.Repositories;
 
@@ -22,5 +23,15 @@ public class RoleUserRepository : IRoleUsersRepository
         var databaseModel = await _context.RoleUsers.Where(x => x.UserId == userId).SingleOrDefaultAsync();
         return _mapper.Map<RoleUserDto?>(databaseModel);
         //  Task.FromResult(_mapper.Map<RoleUserDTO?>(_context.RoleUsers.Where(x => x.UserId == userId).SingleOrDefaultAsync()));
+    }
+
+    public Task<RoleUser> AddRoleUser(RoleUserDto roleUser)
+    {
+        var mappedModel = _mapper.Map<RoleUser>(roleUser);
+        mappedModel.CreatedAt = DateTime.UtcNow;
+        mappedModel.UpdatedAt = DateTime.UtcNow;
+
+        _context.RoleUsers.AddAsync(mappedModel);
+        return Task.FromResult(mappedModel);
     }
 }

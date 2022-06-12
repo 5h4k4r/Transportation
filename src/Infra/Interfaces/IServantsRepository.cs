@@ -1,6 +1,7 @@
 using Core.Models.Base;
 using Core.Models.Repositories;
 using Core.Models.Requests;
+using Infra.Entities;
 
 namespace Infra.Interfaces;
 
@@ -13,5 +14,5 @@ public interface IServantsRepository
 
     Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId);
     Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId);
-    void CreateServant(ServantDto servant);
+    Task<Servant> CreateServant(ServantDto servant);
 }
