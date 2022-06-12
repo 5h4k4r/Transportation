@@ -2,6 +2,7 @@ using System.Text.Json;
 using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
+using Infra.Interfaces;
 
 namespace Api.Helpers.JobController;
 
@@ -37,8 +38,8 @@ internal class OfferDiscount
         if (_Discount != null && IsDiscountTime())
         {
             var isParsed = Enum.TryParse<Currency>(_Discount.ServiceAreaType.Currency, out var karat);
-            amountOfDiscount = await Core.Helpers.Helpers.RoundPrice(
-                Core.Helpers.Helpers.percentage(_Amount, _Discount.Value), karat,
+            amountOfDiscount = await Infra.Helpers.Helpers.RoundPrice(
+                Infra.Helpers.Helpers.percentage(_Amount, _Discount.Value), karat,
                 "toDown", unitOfWork);
 
             if (amountOfDiscount > _Discount.Max)

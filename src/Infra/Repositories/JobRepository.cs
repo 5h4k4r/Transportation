@@ -2,6 +2,7 @@ using AutoMapper;
 using Core.Interfaces;
 using Core.Models.Requests;
 using Infra.Entities;
+using Infra.Interfaces;
 
 namespace Infra.Repositories;
 

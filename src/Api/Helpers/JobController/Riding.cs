@@ -5,14 +5,15 @@ using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Repositories;
+using Infra.Interfaces;
 
 namespace Api.Helpers.JobController;
 
 public class Riding
 {
     public static async Task<TaskDto> RidingClientPosition(
-        string user,
-        ulong userId,
+        string? user,
+        ulong? userId,
         TaskWithDistanceMemberTaxiMeter task,
         double lat,
         double lng,

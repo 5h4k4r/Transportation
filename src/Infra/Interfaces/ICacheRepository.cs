@@ -1,6 +1,6 @@
 using Core.Models.Common;
 
-namespace Core.Interfaces;
+namespace Infra.Interfaces;
 
 public interface ICacheRepository
 {

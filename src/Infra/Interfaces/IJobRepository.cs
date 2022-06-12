@@ -1,6 +1,6 @@
 using Core.Models.Requests;
 
-namespace Core.Interfaces;
+namespace Infra.Interfaces;
 
 public interface IJobRepository
 {

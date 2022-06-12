@@ -5,6 +5,7 @@ using Core.Interfaces;
 using Core.Models.Common;
 using Core.Models.Requests;
 using Infra.Authentication;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,9 +35,9 @@ public class JobController : ControllerBase
         [FromServices] UserAuthContext authContext)
     {
         var userId = User.UserId();
-        if (jobRequest.SelectedOptionId != null)
+        if (jobRequest.SelectedOptionId != null && userId.HasValue)
         {
-            var activeTask = await _unitOfWork.Tasks.GetActiveTaskByServiceId(userId,
+            var activeTask = await _unitOfWork.Tasks.GetActiveTaskByServiceId((ulong)userId,
                 (uint)jobRequest.SelectedOptionId);
             if (activeTask != null)
             {
@@ -48,7 +49,7 @@ public class JobController : ControllerBase
                         if (jobRequest.Origin != null)
                             return Ok(Riding.RidingClientPosition(
                                     userId.ToString(),
-                                    User.UserId(), activeTask,
+                                    userId, activeTask,
                                     jobRequest.Origin.Latitude,
                                     jobRequest.Origin.Longitude,
                                     _unitOfWork,

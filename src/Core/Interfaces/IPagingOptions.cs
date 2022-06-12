@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Core.Constants;
 
 namespace Core.Interfaces;
 
@@ -16,6 +17,6 @@ public interface IPagingOptions
     ///     The default number of documents returned per page.
     /// </summary>
 
-    [Range(0, CoreConstants.MaxPaginationLimit)]
+    [Range(0, Constants.CoreConstants.MaxPaginationLimit)]
     int? Limit { get; set; }
 }

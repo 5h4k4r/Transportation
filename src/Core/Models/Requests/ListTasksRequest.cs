@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Core.Constants;
 using Core.Interfaces;
 using Core.Models.Common;
 using Core.Validations;
@@ -15,7 +16,7 @@ public class ListTasksRequest : IPagingOptions, ISortOptions, IValidatableObject
     public DateTime EndAt { get; set; } = DateTime.Today;
     public TaskState? Status { get; set; } = null;
     public int? Page { get; set; } = 0;
-    public int? Limit { get; set; } = Constants.DefaultPaginationLimit;
+    public int? Limit { get; set; } = CoreConstants.DefaultPaginationLimit;
 
     /// <summary>
     ///     Allowed Values: Task.Id, Task.Price, Task.Tip, Task.Status, Task.CreatedAt, Task.UpdatedAt, Task.RequestId,

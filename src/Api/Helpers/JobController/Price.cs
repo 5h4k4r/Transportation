@@ -1,5 +1,6 @@
 using Core.Interfaces;
 using Core.Models.Common;
+using Infra.Interfaces;
 using ServiceStack.Text;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -50,9 +51,9 @@ public class Price
                 }
 
                 balance = await payment.GetBalance(member.MemberPaymentTypes.First().Type);
-                balance = Core.Helpers.Helpers.Exchange(balance,
+                balance = Infra.Helpers.Helpers.Exchange(balance,
                     Enum.Parse<Currency>(taskDto.Task.Request.ServiceAreaType.Currency));
-                balance = await Core.Helpers.Helpers.RoundPrice(balance,
+                balance = await Infra.Helpers.Helpers.RoundPrice(balance,
                     Enum.Parse<Currency>(taskDto.Task.Request.ServiceAreaType.Currency), "toDown", unitOfWork);
                 await unitOfWork.Cache.SetKey("lastTimeGetBalance_" + taskDto.Task.Id, JsonSerializer.Serialize(new
                 {
@@ -116,7 +117,7 @@ public class Price
                 new
                 {
                     tip = expense.Tip.Servant.cash,
-                    amount = await Core.Helpers.Helpers.RoundPrice(expense.Amount.Servant.cash ?? 0, currency, null,
+                    amount = await Infra.Helpers.Helpers.RoundPrice(expense.Amount.Servant.cash ?? 0, currency, null,
                         unitOfWork),
                     type = "CASH",
                     description = cashDesc,
@@ -168,7 +169,7 @@ public class Price
                 new
                 {
                     tip = expense.Tip.Client.cash,
-                    amount = await Core.Helpers.Helpers.RoundPrice(expense.Amount.Client.cash ?? 0, currency, null,
+                    amount = await Infra.Helpers.Helpers.RoundPrice(expense.Amount.Client.cash ?? 0, currency, null,
                         unitOfWork),
                     type = "CASH",
                     description = cashDesc,

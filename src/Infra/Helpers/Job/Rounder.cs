@@ -1,9 +1,9 @@
 using System.Text.Json;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
+using Infra.Interfaces;
 
-namespace Api.Helpers.JobController;
+namespace Infra.Helpers.Job;
 
 internal static class Rounder
 {

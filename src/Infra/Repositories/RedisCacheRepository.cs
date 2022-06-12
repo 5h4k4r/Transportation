@@ -2,6 +2,7 @@ using AutoMapper;
 using Core.Interfaces;
 using Core.Models.Common;
 using Infra.Entities;
+using Infra.Interfaces;
 using ServiceStack.Redis;
 using Task = System.Threading.Tasks.Task;
 

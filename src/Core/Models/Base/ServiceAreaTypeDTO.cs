@@ -19,3 +19,4 @@
         public UsageDto Usage { get; set; } = null!;
 
     }
+}

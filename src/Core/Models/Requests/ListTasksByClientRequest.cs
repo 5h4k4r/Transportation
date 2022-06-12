@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Core.Constants;
 using Core.Interfaces;
 using Core.Models.Common;
 using Core.Validations;
@@ -18,7 +19,7 @@ public class ListTasksByClientRequest : IPagingOptions, ISortOptions, IValidatab
     public bool? IncludeRequest { get; set; }
     public bool? IncludeServant { get; set; }
     public int? Page { get; set; } = 0;
-    public int? Limit { get; set; } = Constants.DefaultPaginationLimit;
+    public int? Limit { get; set; } = CoreConstants.DefaultPaginationLimit;
 
     /// <summary>
     ///     Allowed Values: "Client.Id", "Task.Id", "Task.Price", "Task.ServantId", "Task.CreatedAt", "Task.UpdatedAt",

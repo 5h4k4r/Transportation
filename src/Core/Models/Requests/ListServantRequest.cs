@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Core.Constants;
 using Core.Interfaces;
 using Core.Validations;
 
@@ -16,8 +17,8 @@ public class ListServantRequest : IPagingOptions, ISortOptions, IValidatableObje
     public bool IncompleteOnly { get; set; } = false;
     public int? Page { get; set; } = 0;
 
-    [Range(0, Constants.MaxPaginationLimit)]
-    public int? Limit { get; set; } = Constants.DefaultPaginationLimit;
+    [Range(0, CoreConstants.MaxPaginationLimit)]
+    public int? Limit { get; set; } = CoreConstants.DefaultPaginationLimit;
 
     /// <summary>
     ///     Allowed Values:  "Address", "AreaId", "CreatedAt", "Id", "UserId", "BankId", "Certificate", "NationalId",

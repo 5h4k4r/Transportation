@@ -1,8 +1,8 @@
-using Api.Helpers.JobController;
-using Core.Interfaces;
 using Core.Models.Common;
+using Infra.Helpers.Job;
+using Infra.Interfaces;
 
-namespace Core.Helpers;
+namespace Infra.Helpers;
 
 public static class Helpers
 {

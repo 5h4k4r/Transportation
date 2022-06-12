@@ -1,6 +1,8 @@
 using AutoMapper;
 using Core.Interfaces;
 using Infra.Entities;
+using Infra.Interfaces;
+using ServiceStack.Redis;
 
 namespace Infra.Repositories;
 
@@ -10,16 +12,19 @@ public class UnitOfWork : IUnitOfWork
     private readonly TransportationContext _repoContext;
     private readonly IMapper _mapper;
     private readonly ICurl _curl;
-    
-    public UnitOfWork(TransportationContext repositoryContext, IMapper mapper ,IRedisClientsManagerAsync cacheService, ICurl curl)
+
+    public UnitOfWork(TransportationContext repositoryContext, IMapper mapper, IRedisClientsManagerAsync cacheService,
+        ICurl curl)
     {
         _repoContext = repositoryContext;
         _mapper = mapper;
         _cacheService = cacheService;
         _curl = curl;
     }
+
     private ICacheRepository? _Cache;
     public ICacheRepository Cache => _Cache ??= new RedisCacheRepository(_repoContext, _mapper, _cacheService);
+    private IServantsRepository? _servants;
     public IServantsRepository Servants => _servants ??= new ServantsRepository(_repoContext, _mapper);
     private IServiceRepository? _services;
     public IServiceRepository Services => _services ??= new ServicesRepository(_repoContext, _mapper);

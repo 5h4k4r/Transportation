@@ -4,6 +4,7 @@ using Core.Helpers.Job;
 using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
+using Infra.Interfaces;
 
 namespace Infra.Repositories;
 

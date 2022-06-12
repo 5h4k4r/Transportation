@@ -2,7 +2,7 @@ using Core.Helpers.Job;
 using Core.Models.Base;
 using Core.Models.Common;
 
-namespace Core.Interfaces;
+namespace Infra.Interfaces;
 
 public interface IPaymentRepository
 {

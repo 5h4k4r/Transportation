@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Core.Constants;
 using Core.Interfaces;
 
 namespace Core.Models.Requests;
@@ -10,6 +11,6 @@ public class GetServantOnlineHistoryRequest : ListServantsOnlineHistoryRequest, 
 
     public int? Page { get; set; } = 0;
 
-    [Range(0, Constants.MaxPaginationLimit)]
-    public int? Limit { get; set; } = Constants.DefaultPaginationLimit;
+    [Range(0, CoreConstants.MaxPaginationLimit)]
+    public int? Limit { get; set; } = CoreConstants.DefaultPaginationLimit;
 }
