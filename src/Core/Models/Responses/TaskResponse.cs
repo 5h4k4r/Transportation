@@ -1,6 +1,6 @@
 using Core.Models.Base;
 
-namespace Core.Models.Repositories;
+namespace Core.Models.Responses;
 
 public class TaskResponse
 {
@@ -12,5 +12,4 @@ public class TaskResponse
     public sbyte Status { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-
 }

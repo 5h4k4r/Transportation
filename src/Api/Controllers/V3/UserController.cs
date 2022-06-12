@@ -3,7 +3,7 @@ using Api.Helpers;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
-using Core.Models.Repositories;
+using Core.Models.Responses;
 using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

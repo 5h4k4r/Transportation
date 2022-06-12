@@ -1,5 +1,6 @@
 using Core.Models.Repositories;
 using Core.Models.Requests;
+using Core.Models.Responses;
 
 namespace Infra.Interfaces;
 

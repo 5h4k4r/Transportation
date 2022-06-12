@@ -1,6 +1,6 @@
 using Core.Models.Base;
-using Core.Models.Repositories;
 using Core.Models.Requests;
+using Core.Models.Responses;
 using Infra.Entities;
 using Task = System.Threading.Tasks.Task;
 

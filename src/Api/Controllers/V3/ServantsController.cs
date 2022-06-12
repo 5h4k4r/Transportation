@@ -6,6 +6,7 @@ using Core.Models.Common;
 using Core.Models.Exceptions;
 using Core.Models.Repositories;
 using Core.Models.Requests;
+using Core.Models.Responses;
 using Infra.Authentication;
 using Infra.Entities;
 using Infra.Interfaces;

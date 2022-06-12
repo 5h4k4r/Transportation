@@ -1,4 +1,4 @@
-namespace Core.Models.Repositories;
+namespace Core.Models.Responses;
 
 public class VehicleDetailDtoResponse
 {

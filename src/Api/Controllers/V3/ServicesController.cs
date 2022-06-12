@@ -1,7 +1,7 @@
 using System.Net.Mime;
 using AutoMapper;
-using Core.Models.Base;
 using Core.Models.Common;
+using Core.Models.Responses;
 using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,10 +26,12 @@ public class ServicesController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(List<ServiceDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<ListServicesResponses>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListServices()
     {
         var services = await _unitOfWork.Services.ListServices();
+        if (services == null || services.Count == 0)
+            return NotFound(new BasicResponse("No services found"));
 
 
         return Ok(services);

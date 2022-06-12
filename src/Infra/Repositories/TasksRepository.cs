@@ -4,6 +4,7 @@ using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Repositories;
 using Core.Models.Requests;
+using Core.Models.Responses;
 using Infra.Entities;
 using Infra.Extensions;
 using Infra.Interfaces;
@@ -88,7 +89,6 @@ public class TasksRepository : ITasksRepository
             .ToListAsync();
 
 
-
         return tasks;
     }
 
@@ -101,7 +101,6 @@ public class TasksRepository : ITasksRepository
     {
         return ListTasksByClientRequestQuery(model).CountAsync();
     }
-
 
 
     #region Private Functions
