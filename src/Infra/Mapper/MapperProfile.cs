@@ -1,8 +1,10 @@
 using AutoMapper;
 using Core.Models.Base;
+using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Entities;
 using Task = Infra.Entities.Task;
+
 
 namespace Infra.Mapper;
 
@@ -16,6 +18,15 @@ public class MapperProfile : Profile
         CreateMap<Vehicle, VehicleDto>().ReverseMap();
         CreateMap<VehicleDetailDto, CreateVehicleRequest>().ReverseMap();
         CreateMap<VehicleDto, CreateVehicleRequest>().ReverseMap();
+        CreateMap<VehicleDto, UpdateVehicleRequest>().ReverseMap();
+        CreateMap<Service, ServiceDto>().ReverseMap();
+        CreateMap<ServiceAreaType, ServiceAreaTypeDto>().ReverseMap();
+        CreateMap<Category, CategoryDto>().ReverseMap();
+        CreateMap<CategoryTranslation, CategoryTranslationDto>().ReverseMap();
+        CreateMap<VehicleDto, VehicleDtoResponse>().ReverseMap();
+        CreateMap<VehicleDetailDto, VehicleDetailDtoResponse>().ReverseMap();
+        CreateMap<ServiceSubscriberDto, ServiceSubscriber>().ReverseMap();
+        CreateMap<VehicleDetailDto, UpdateVehicleDetailRequest>().ReverseMap();
         CreateMap<ServantDto, CreateServantRequest>().ReverseMap();
         CreateMap<VehicleDetail, VehicleDetailDto>().ReverseMap();
         CreateMap<Member, MemberDto>().ReverseMap();
@@ -38,4 +49,5 @@ public class MapperProfile : Profile
         CreateMap<Task, TaskDto>().ReverseMap();
         CreateMap<Destination, DestinationDto>().ReverseMap();
     }
+
 }

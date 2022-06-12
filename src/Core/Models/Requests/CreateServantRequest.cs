@@ -1,9 +1,9 @@
-namespace Core.Models.Requests;
+using System.Text.Json.Serialization;
 
+namespace Core.Models.Requests;
 
 public class CreateServantRequest
 {
-
     public ulong UserId { get; set; }
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
@@ -21,6 +21,10 @@ public class CreateServantRequest
     public uint AreaId { get; set; }
     public byte? GenderId { get; set; }
     public string Address { get; set; } = null!;
+
+    [JsonIgnore] public DateTime? CreateAt { get; set; } = DateTime.UtcNow;
+
+    [JsonIgnore] public DateTime? UpdateAt { get; set; } = DateTime.UtcNow;
 }
 
 

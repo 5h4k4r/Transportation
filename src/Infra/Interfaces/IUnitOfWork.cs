@@ -1,4 +1,4 @@
-namespace Core.Interfaces;
+namespace Infra.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
@@ -15,6 +15,7 @@ public interface IUnitOfWork : IDisposable
     ILanguagesRepository Languages { get; }
     IServantWorkDaysRepository ServantWorkDays { get; }
     IRolesRepository Roles { get; }
+    IServiceRepository Services { get; }
     IUsagesRepository Usages { get; }
 
     IGendersRepository Genders { get; }

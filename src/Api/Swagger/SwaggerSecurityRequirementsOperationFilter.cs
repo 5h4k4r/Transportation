@@ -6,7 +6,6 @@ namespace Api.Swagger;
 
 public class SwaggerSecurityRequirementsOperationFilter : IOperationFilter
 {
-
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
         HandleAuthorizeAttribute(operation, context);
@@ -23,7 +22,8 @@ public class SwaggerSecurityRequirementsOperationFilter : IOperationFilter
 
         if (!hasAuthorizeAttribute) return;
 
-        var hasAllowAnonymousAttribute = context.MethodInfo.GetCustomAttributes(true).OfType<AllowAnonymousAttribute>().Any();
+        var hasAllowAnonymousAttribute =
+            context.MethodInfo.GetCustomAttributes(true).OfType<AllowAnonymousAttribute>().Any();
 
         if (hasAllowAnonymousAttribute)
             return;
@@ -33,18 +33,20 @@ public class SwaggerSecurityRequirementsOperationFilter : IOperationFilter
         if (!operation.Responses.ContainsKey("403"))
             operation.Responses.Add("403", new OpenApiResponse { Description = "Forbidden" });
 
+        var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
 
-        var userHeaderAuth = new OpenApiSecurityScheme
+        var authHeader = new OpenApiSecurityScheme
         {
-            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "user" }
+            Reference = new OpenApiReference
+                { Type = ReferenceType.SecurityScheme, Id = isDevelopment ? "user" : "auth" }
         };
 
         operation.Security = new List<OpenApiSecurityRequirement>
         {
-            new() {
-                [ userHeaderAuth ] = Array.Empty<string>()
+            new()
+            {
+                [authHeader] = Array.Empty<string>()
             }
         };
     }
-
 }

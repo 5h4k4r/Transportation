@@ -14,8 +14,8 @@
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public CategoryDto? Category { get; set; }
 
         public UsageDto Usage { get; set; } = null!;
 
     }
-}

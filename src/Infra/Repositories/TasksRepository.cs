@@ -1,17 +1,19 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Constants;
+using AutoMapper.QueryableExtensions;
+using Core.Constants;
 using Core.Extensions;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
+using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using ServiceStack;
 using Task = Infra.Entities.Task;
+using ServiceStack;
 
 namespace Infra.Repositories;
 
@@ -28,8 +30,11 @@ public class TasksRepository : ITasksRepository
 
     public async Task<List<ListTasks>> ListTasks(ListTasksRequest model)
     {
-        var tasks = await GetListTasksQuery(model).Include(x => x.Servant)
-            .Include(x => x.MemberPaymentTypes).ThenInclude(x => x.Member)
+        var tasks = await GetListTasksQuery(model)
+            .Include(x => x.Servant)
+            .Include(x => x.MemberPaymentTypes)
+            .ThenInclude(x => x.Member)
+            .ThenInclude(x => x.User)
             .Join(
                 _context.Destinations,
                 task => task.Id,
@@ -55,7 +60,7 @@ public class TasksRepository : ITasksRepository
                 Status = x.Task.Status,
                 CreatedAt = x.Task.CreatedAt,
                 UpdatedAt = x.Task.UpdatedAt,
-                TaskDistanceAndDuration = new TaskDistance
+                Distance = new TaskDistance
                 {
                     Distance = (uint)x.Destination.Distance,
                     Duration = (uint)x.Destination.Duration
@@ -69,16 +74,15 @@ public class TasksRepository : ITasksRepository
                 },
                 Requester = new Requester
                 {
-                    Id = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member.Id,
-                    Mobile = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member.User.Mobile,
-                    Name = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member.User.Name,
-                    Status = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member.Status
+                    Id = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member?.Id,
+                    Mobile = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member?.User?.Mobile,
+                    Name = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member?.User?.Name,
+                    Status = x.Task.MemberPaymentTypes.FirstOrDefault()?.Member?.Status
                 }
             });
 
         return response.ToList();
     }
-
     public async Task<List<ListTasksByClient>> ListTasksByClient(ListTasksByClientRequest model)
     {
         var tasks = await ListTasksByClientRequestQuery(model)

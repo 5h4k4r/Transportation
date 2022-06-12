@@ -1,7 +1,7 @@
 using Core.Models.Base;
 using Core.Models.Requests;
 
-namespace Core.Interfaces;
+namespace Infra.Interfaces;
 
 public interface IAreaInfosRepository
 {
@@ -10,6 +10,4 @@ public interface IAreaInfosRepository
     Task<AreaInfoDto?> GetAreaInfoByUser(UserDto user);
     Task<AreaInfoDto?> GetAreaInfoByTitle(string title);
     Task<List<AreaInfoDto>> ListAreaInfos(ListAreaInfosRequest model);
-
-
 }

@@ -1,5 +1,6 @@
 using Core.Interfaces;
 using Core.Models.Exceptions;
+using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
 
