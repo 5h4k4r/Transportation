@@ -1,7 +1,9 @@
+using Api.Helpers;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Models.Base;
 using Core.Models.Exceptions;
+using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
@@ -102,10 +104,69 @@ public class VehiclesRepository : IVehiclesRepository
         return newVehicleDetail;
     }
 
-    public Task<VehicleDto?> GetVehicleById(ulong id)
+    public Task<VehicleDtoResponse?> GetVehicleById(ulong id)
     {
-        return _context.Vehicles.Where(v => v.Id == id).ProjectTo<VehicleDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync();
+        var query = _context.Vehicles.Where(v => v.Id == id)
+            .ProjectTo<VehicleDto>(_mapper.ConfigurationProvider)
+            .Join(_context.ServiceSubscribers, v => v.Id, ss => ss.ModelId, (vehicle, service) => new
+            {
+                vehicle,
+                service.ServiceAreaTypeId
+            })
+            .Join(_context.ServiceAreaTypes, v => v.ServiceAreaTypeId, sat => sat.Id, (vs, serviceAreaType) => new
+            {
+                vs.vehicle,
+                serviceAreaTypeId = serviceAreaType.Id,
+                service = serviceAreaType.Service.Pin, // Taxi
+                areaId = serviceAreaType.AreaId,
+                typeId = serviceAreaType.TypeId
+            })
+            .Join(_context.BaseTypeTranslations.Where(x => x.LanguageId == 2),
+                x => x.typeId,
+                bt => bt.BaseTypeId,
+                (vs, bt) => new
+                {
+                    vs,
+                    bt.Title // gunjaw w xera
+                }).Join(_context.AreaInfos, vs => vs.vs.areaId, aInfo => aInfo.AreaId, (vsa, area) => new
+            {
+                vsa,
+                area.Title //Sulaimani
+            })
+            .Select(x =>
+                new VehicleDtoResponse
+                {
+                    Id = x.vsa.vs.vehicle.Id,
+                    UsageId = x.vsa.vs.vehicle.UsageId,
+                    CreatedAt = x.vsa.vs.vehicle.CreatedAt,
+                    UpdatedAt = x.vsa.vs.vehicle.UpdatedAt,
+                    VehicleDetail = new VehicleDetailDtoResponse
+                    {
+                        Id = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().Id,
+                        VehicleId = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().VehicleId,
+                        Color = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().Color,
+                        InsuranceExpire = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().InsuranceExpire,
+                        InsuranceNo = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().InsuranceNo,
+                        Model = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().Model,
+                        CreatedAt = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().CreatedAt,
+                        UpdatedAt = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().UpdatedAt,
+                        Tip = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().Tip,
+                        Vin = x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().Vin,
+                        Plaque = VehicleHelper.PreparePlaque(x.vsa.vs.vehicle.VehicleDetails.FirstOrDefault().Plaque)
+                    },
+                    Services =
+                        new[]
+                        {
+                            new ServiceResponse
+                            {
+                                Id = x.vsa.vs.serviceAreaTypeId,
+                                Title = $"{x.vsa.vs.service} {x.vsa.Title} {x.Title}"
+                            }
+                        }
+                }
+            ).FirstOrDefault();
+
+        return Task.FromResult(query);
     }
 
 
@@ -129,15 +190,21 @@ public class VehiclesRepository : IVehiclesRepository
             .ToListAsync();
     }
 
-    public Task UpdateVehicle(VehicleDto vehicle)
+    public Task<Vehicle> UpdateVehicle(VehicleDto vehicle)
     {
         var vehicleToUpdate = _mapper.Map<Vehicle>(vehicle);
         _context.Vehicles.Update(vehicleToUpdate);
-        return Task.CompletedTask;
+        return Task.FromResult(vehicleToUpdate);
     }
 
     public async Task AddServantToVehicle(ulong vehicleId, ulong servantUserId)
     {
+        var vehicle = _context.Vehicles.SingleOrDefault(v => v.Id == vehicleId);
+        var servant = _context.Servants.SingleOrDefault(s => s.UserId == servantUserId);
+
+        if (vehicle is null || servant is null)
+            throw new NotFoundException("Vehicle or Servant not found");
+
         var dbVehicleUser = new VehicleUser
         {
             VehicleId = vehicleId,
@@ -153,8 +220,9 @@ public class VehiclesRepository : IVehiclesRepository
             UpdatedAt = DateTime.UtcNow
         };
         var vehicleUser =
-            _context.VehicleUsers.Where(v => v.VehicleId == vehicleId && v.UserId == servantUserId)
-                .SingleOrDefault();
+            _context.VehicleUsers
+                .SingleOrDefault(v => v.VehicleId == vehicleId && v.UserId == servantUserId);
+
         if (vehicleUser is null)
         {
             await _context.VehicleUsers.AddAsync(dbVehicleUser);
@@ -166,13 +234,14 @@ public class VehiclesRepository : IVehiclesRepository
         }
     }
 
-    public async Task DeleteVehicle(ulong id)
+    public Task DeleteVehicle(ulong id)
     {
         var dbVehicle = _context.Vehicles.SingleOrDefaultAsync(v => v.Id == id).Result;
         if (dbVehicle is null)
             throw new NotFoundException("Record Not Found");
 
         dbVehicle.DeletedAt = DateTime.UtcNow;
+        return Task.CompletedTask;
     }
 
     public async Task SubscribeVehicleToService(ulong vehicleId, ICollection<ulong> serviceIds)

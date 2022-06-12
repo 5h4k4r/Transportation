@@ -1,5 +1,5 @@
 using System.Net.Mime;
-using System.Text.Json;
+using Api.Helpers;
 using AutoMapper;
 using Core.Models.Base;
 using Core.Models.Common;
@@ -44,55 +44,14 @@ public class VehiclesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetVehicle(ulong id)
     {
-        VehicleDtoResponse? vehicleResponse = null;
-
         var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
         if (vehicle is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
-        if (vehicle.VehicleDetails != null && vehicle.VehicleDetails.Count > 0)
-        {
-            var vehicleDetail = vehicle.VehicleDetails.FirstOrDefault();
-            var plaque = vehicleDetail?.Plaque;
-            PlaqueDtoResponse? plaqueJson = null;
-            if (plaque != null)
-            {
-                var plaqueJsons = PreparePlaque(plaque);
-            }
-
-
-            var vehicleDetailsResponse = new VehicleDetailDtoResponse
-            {
-                Id = vehicleDetail?.Id,
-                VehicleId = vehicleDetail?.VehicleId,
-                Plaque = plaqueJson,
-                Color = vehicleDetail?.Color,
-                Model = vehicleDetail?.Model,
-                Tip = vehicleDetail?.Tip,
-                InsuranceNo = vehicleDetail?.InsuranceNo,
-                InsuranceExpire = vehicleDetail?.InsuranceExpire,
-                Vin = vehicleDetail?.Vin,
-                CreatedAt = vehicleDetail?.CreatedAt,
-                UpdatedAt = vehicleDetail?.UpdatedAt,
-                DeletedAt = vehicleDetail?.DeletedAt
-            };
-
-            vehicleResponse = new VehicleDtoResponse
-            {
-                Id = vehicle.Id,
-                Title = vehicle.Title,
-                UsageId = vehicle.UsageId,
-                CreatedAt = vehicle.CreatedAt,
-                UpdatedAt = vehicle.UpdatedAt,
-                DeletedAt = vehicle.DeletedAt,
-                VehicleDetails = new List<VehicleDetailDtoResponse> { vehicleDetailsResponse }
-            };
-        }
-
-        return Ok(vehicleResponse);
+        return Ok(vehicle);
     }
 
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<UserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet("crews/{id}")]
     public async Task<IActionResult> GetVehicleCrew(ulong id, [FromQuery] GetVehicleCrewRequest request)
@@ -118,7 +77,11 @@ public class VehiclesController : ControllerBase
     {
         var newVehicle = _mapper.Map<VehicleDto>(request);
 
+
+        var plaqueString = VehicleHelper.PlaqueToString(request.Plaque);
         var newVehicleDetail = _mapper.Map<VehicleDetailDto>(request);
+        newVehicleDetail.Plaque = plaqueString!;
+
         newVehicleDetail.Vehicle = newVehicle;
 
         var addedVehicle = await _unitOfWork.Vehicles.AddVehicleDetail(newVehicleDetail);
@@ -149,22 +112,28 @@ public class VehiclesController : ControllerBase
         newVehicle.UpdatedAt = DateTime.UtcNow;
         newVehicle.Id = id;
         if (newVehicle.VehicleDetails != null && newVehicle.VehicleDetails.Count > 0)
-        {
-            var vehicleDetailDto = vehicle.VehicleDetails.First();
-            var newVehicleDetailDto = newVehicle.VehicleDetails.First();
-            newVehicleDetailDto.VehicleId = id;
-            newVehicleDetailDto.Id = vehicleDetailDto.Id;
-            newVehicleDetailDto.CreatedAt = vehicleDetailDto.CreatedAt;
-            newVehicleDetailDto.UpdatedAt = DateTime.UtcNow;
-            newVehicle.VehicleDetails = new List<VehicleDetailDto> { newVehicleDetailDto };
-        }
+            if (vehicle.VehicleDetail != null)
+            {
+                var plaqueString = VehicleHelper.PlaqueToString(request.VehicleDetails.First().Plaque);
+                var vehicleDetailDto = vehicle.VehicleDetail;
 
-        await _unitOfWork.Vehicles.UpdateVehicle(newVehicle);
+
+                var newVehicleDetailDto = newVehicle.VehicleDetails.First();
+                newVehicleDetailDto.VehicleId = id;
+                newVehicleDetailDto.Id = vehicleDetailDto.Id;
+                newVehicleDetailDto.CreatedAt = vehicleDetailDto.CreatedAt;
+                newVehicleDetailDto.UpdatedAt = DateTime.UtcNow;
+                newVehicleDetailDto.Plaque = plaqueString;
+
+                newVehicle.VehicleDetails = new List<VehicleDetailDto> { newVehicleDetailDto };
+            }
+
+        var updatedVehicle = await _unitOfWork.Vehicles.UpdateVehicle(newVehicle);
 
 
         await _unitOfWork.Save();
 
-        var response = await _unitOfWork.Vehicles.GetVehicleById(id);
+        var response = _mapper.Map<VehicleDto>(updatedVehicle);
 
         return Ok(response);
     }
@@ -174,13 +143,6 @@ public class VehiclesController : ControllerBase
     [HttpPost("servant")]
     public async Task<IActionResult> AddSeravntToVehicle([FromBody] AddServantToVehicleRequest request)
     {
-        var vehicle = await _unitOfWork.Vehicles.GetVehicleById(request.VehicleId);
-        var servant = await _unitOfWork.Servants.GetServantByUserId(request.UserId);
-        if (vehicle is null)
-            throw new NotFoundException("Vehicle not found");
-
-        if (servant is null)
-            throw new NotFoundException("Servant not found");
         await _unitOfWork.Vehicles.AddServantToVehicle(request.VehicleId, request.UserId);
         await _unitOfWork.Save();
 
@@ -193,23 +155,9 @@ public class VehiclesController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteVehicle(ulong id)
     {
-        var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
-        if (vehicle is null)
-            throw new NotFoundException();
-
         await _unitOfWork.Vehicles.DeleteVehicle(id);
         await _unitOfWork.Save();
 
         return Ok(BasicResponse.Successful);
-    }
-
-    private PlaqueDtoResponse? PreparePlaque(string plaque)
-    {
-        var deserializationOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-        var plaqueJson = JsonSerializer.Deserialize<PlaqueDtoResponse>(plaque, deserializationOptions);
-        return plaqueJson;
     }
 }

@@ -6,6 +6,7 @@ using Api.Settings;
 using Core.Models.Authentication;
 using Core.Models.Base;
 using Core.Models.Common;
+using Core.Models.Exceptions;
 using Core.Models.Requests;
 using Infra.Authentication;
 using Infra.Interfaces;
@@ -41,10 +42,10 @@ public class AuthController : ControllerBase
         var user = await _unitOfWork.User.GetUserByPhone(phone, true);
 
         if (user is null)
-            return NotFound(BasicResponse.ResourceNotFound);
+            throw new NotFoundException();
 
         if (!user.HasRole("superadmin") && !user.HasRole("admin"))
-            return Forbid();
+            throw new UnauthorizedException("not Admin or SuperAdmin");
 
         var settings = _config.GetSection(SettingsConfig.Config).Get<SettingsConfig>();
 
@@ -68,7 +69,7 @@ public class AuthController : ControllerBase
             var user = await _unitOfWork.User.GetUserByPhone(phone);
 
             if (user is null)
-                return NotFound(BasicResponse.ResourceNotFound);
+                throw new NotFoundException("User not found");
 
             user.AuthId = model.AuthId;
         }
@@ -89,12 +90,12 @@ public class AuthController : ControllerBase
         var mySqlUser = await _unitOfWork.User.GetUserByAuthId(user.Id, true);
 
         if (mySqlUser is null)
-            return NotFound(BasicResponse.ResourceNotFound);
+            throw new NotFoundException("User not found");
 
         var areaInfo = await _unitOfWork.AreaInfos.GetAreaInfoByUser(mySqlUser);
 
         if (areaInfo is null)
-            return NotFound(BasicResponse.ResourceDoesNotExist(nameof(areaInfo)));
+            throw new NotFoundException(nameof(areaInfo) + "not found");
 
         RoleUserDto? roleUserWithDepartment = null;
         var k = mySqlUser.RoleUsers.OrderBy(x => x.RoleId).ToList();

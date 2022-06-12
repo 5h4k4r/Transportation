@@ -5,6 +5,7 @@ namespace Core.Models.Requests;
 
 public class ListServantsOnlineHistoryRequest : IValidatableObject
 {
+    public uint? ServantId { get; set; } = null;
     public DateTime StartDate { get; set; } = DateTime.Today;
     public DateTime EndDate { get; set; } = DateTime.Today.AddDays(1);
 

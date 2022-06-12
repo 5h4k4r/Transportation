@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Core.Models.Repositories;
 
 namespace Core.Models.Requests;
 
@@ -23,7 +24,7 @@ public class UpdateVehicleDetailRequest
     public DateOnly? InsuranceExpire { get; set; }
     public string? InsuranceNo { get; set; }
     public string? Model { get; set; } = string.Empty;
-    public string? Plaque { get; set; } = string.Empty;
+    public PlaqueDtoResponse? Plaque { get; set; }
     public string? Tip { get; set; } = string.Empty;
 
     [JsonIgnore] public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
