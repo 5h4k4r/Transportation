@@ -3,6 +3,7 @@ using Core.Models.Base;
 using Core.Models.Requests;
 using Core.Models.Responses;
 using Infra.Entities;
+
 using Task = Infra.Entities.Task;
 
 
@@ -48,6 +49,10 @@ public class MapperProfile : Profile
         CreateMap<UsageDto, Usage>().ReverseMap();
         CreateMap<GenderTranslation, GenderTranslationDto>().ReverseMap();
         CreateMap<VehicleOwner, VehicleOwnerDto>().ReverseMap();
+        CreateMap<DiscountCode, DiscountCodeDto>().ReverseMap();
+        CreateMap<DiscountCodeUser, DiscountCodeUserDto>().ReverseMap();
+        CreateMap<DiscountCodeDto, CreateDiscountCodeRequest>().ReverseMap();
+        CreateMap<ServantStatusDto, ServantDto>().ReverseMap();
         CreateMap<Task, TaskDto>().ReverseMap();
         CreateMap<Destination, DestinationDto>().ReverseMap();
     }

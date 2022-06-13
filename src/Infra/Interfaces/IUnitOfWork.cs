@@ -4,7 +4,6 @@ public interface IUnitOfWork : IDisposable
 {
     IUsersRepository User { get; }
     IServantsRepository Servants { get; }
-
     IVehiclesRepository Vehicles { get; }
     ITasksRepository Tasks { get; }
     IRoleUsersRepository RoleUsers { get; }
@@ -19,6 +18,9 @@ public interface IUnitOfWork : IDisposable
     IUsagesRepository Usages { get; }
 
     IGendersRepository Genders { get; }
+    
+    IDiscountCodeRepository DiscountCodes { get; }
+    
     IJobRepository Jobs { get; }
     ICacheRepository Cache { get; }
     Task<int> Save();

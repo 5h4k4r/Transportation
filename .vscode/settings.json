@@ -7,4 +7,6 @@
   "[csharp]": {
     "editor.defaultFormatter": "csharpier.csharpier-vscode"
   }
+  "omnisharp.useModernNet": true,
+  "nuxt.isNuxtApp": false
 }

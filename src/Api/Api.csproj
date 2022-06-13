@@ -26,4 +26,8 @@
     <ProjectReference Include="..\Infra\Infra.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\V3\ServiceSubscriberController.cs" />
+  </ItemGroup>
+
 </Project>

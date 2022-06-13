@@ -30,4 +30,10 @@
     <Compile Remove="Interfaces\IDocumentsRepository.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Migrations\20220530080611_AddRealationBetweenServiceAreaTypeAndServiceSubscriber.cs" />
+    <Compile Remove="Migrations\20220530080611_AddRealationBetweenServiceAreaTypeAndServiceSubscriber.Designer.cs" />
+    <Compile Remove="Repositories\ServiceSubscribersRespository.cs" />
+  </ItemGroup>
+
 </Project>

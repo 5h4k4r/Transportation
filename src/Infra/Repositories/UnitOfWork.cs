@@ -3,7 +3,7 @@ using Core.Interfaces;
 using Infra.Entities;
 using Infra.Interfaces;
 using ServiceStack.Redis;
-
+using IServantsRepository = Core.Interfaces.IServantsRepository;
 namespace Infra.Repositories;
 
 public class UnitOfWork : IUnitOfWork
@@ -39,10 +39,14 @@ public class UnitOfWork : IUnitOfWork
 
     public IGendersRepository Genders => _gender ??= new GendersRepository(_repoContext, _mapper);
 
-    private ITasksRepository? _tasks;
-    public ITasksRepository Tasks => _tasks ??= new TasksRepository(_repoContext, _mapper);
-    private IRoleUsersRepository? _roleUsers;
-    public IRoleUsersRepository RoleUsers => _roleUsers ??= new RoleUserRepository(_repoContext, _mapper);
+    private ITasksRepository? _Tasks;
+    public ITasksRepository Tasks => _Tasks ??= new TasksRepository(_repoContext, _mapper);
+    private IRoleUsersRepository? _RoleUsers;
+
+    public IRoleUsersRepository RoleUsers => _RoleUsers ??= new RoleUserRepository(_repoContext, _mapper);
+    private IDiscountCodeRepository? _DiscountCode;
+
+    public IDiscountCodeRepository DiscountCodes => _DiscountCode ?? new DiscountCodesRepository(_repoContext, _mapper);
 
     private IRolesRepository? _roles;
     public IRolesRepository Roles => _roles ??= new RolesRepository(_repoContext, _mapper);

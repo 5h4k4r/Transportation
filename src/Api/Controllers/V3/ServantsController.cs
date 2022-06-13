@@ -1,15 +1,20 @@
 using System.Net.Mime;
 using Api.Extensions;
+using Api.Extensions;
 using AutoMapper;
+using Core.Helpers;
 using Core.Helpers;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
+using Core.Models.Exceptions;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Core.Models.Responses;
+using Core.Models.Responses;
 using Infra.Authentication;
 using Infra.Entities;
+using Infra.Interfaces;
 using Infra.Interfaces;
 using Infra.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
@@ -47,8 +52,8 @@ public class ServantsController : ControllerBase
             throw new UnauthorizedException();
 
         // The servant we get from database
-        var items = await _unitOfWork.Servants.ListServants(model, User.GetAreaId().Value);
-        var count = await _unitOfWork.Servants.ListServantsCount(model, User.GetAreaId().Value);
+        var items = await _unitOfWork.Servants.ListServants(model, User.GetAreaId()!.Value);
+        var count = await _unitOfWork.Servants.ListServantsCount(model, User.GetAreaId()!.Value);
 
 
         return Ok(new PaginatedResponse<ServantDto>(count, model, items));
@@ -132,7 +137,7 @@ public class ServantsController : ControllerBase
         if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
 
-        model.AreaId = User.GetAreaId().Value;
+        model.AreaId = User.GetAreaId()!.Value;
 
         // The servant we get from database
         var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, model.AreaId.Value);
@@ -159,7 +164,7 @@ public class ServantsController : ControllerBase
         if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
 
-        model.AreaId = User.GetAreaId().Value;
+        model.AreaId = User.GetAreaId()!.Value;
 
         var items = await _unitOfWork.ServantWorkDays.ListServantsOnlineHistory(model);
 
@@ -218,4 +223,5 @@ public class ServantsController : ControllerBase
 
         return Ok(BasicResponse.Successful);
     }
+
 }
