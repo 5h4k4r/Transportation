@@ -14,5 +14,6 @@ public interface IServantsRepository
 
     Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId);
     Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId);
+
     Task<Servant> CreateServant(ServantDto servant);
 }

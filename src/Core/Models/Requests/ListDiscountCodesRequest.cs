@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.Constants;
 using Core.Interfaces;
 using Core.Validations;
 
@@ -17,8 +18,8 @@ public class ListDiscountCodesRequest : IPagingOptions, ISortOptions, IValidatab
     public bool? ActiveCodesOnly { get; set; } = false;
     public int? Page { get; set; }
 
-    [Range(0, Constants.MaxPaginationLimit)]
-    public int? Limit { get; set; } = Constants.DefaultPaginationLimit;
+    [Range(0, CoreConstants.MaxPaginationLimit)]
+    public int? Limit { get; set; } = CoreConstants.DefaultPaginationLimit;
 
     /// <summary>
     ///     Allowed Values: "Id", "Code", "Value","AreaId","UsageLimit","Status","StartAt","ExpireAt"

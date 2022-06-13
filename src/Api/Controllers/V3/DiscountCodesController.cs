@@ -1,10 +1,10 @@
 ﻿using System.Net.Mime;
 using System.Text.Json;
 using AutoMapper;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Requests;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -65,7 +65,8 @@ public class DiscountCodesController : ControllerBase
     [ProducesResponseType(typeof(List<DiscountCodeUserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet("{codeId}/user/{userId}/tasks")]
-    public async Task<ActionResult> ListUserTasksByDiscountCode([FromQuery] ListDiscountCodesRequest model, uint codeId, uint userId)
+    public async Task<ActionResult> ListUserTasksByDiscountCode([FromQuery] ListDiscountCodesRequest model, uint codeId,
+        uint userId)
     {
         var users = await _unitOfWork.DiscountCodes.ListUserTasksByDiscountCode(model, codeId, userId);
         return Ok(new PaginatedResponse<DiscountCodeUserDto>(0, model, users.DiscountCodeUser, users.DiscountCode));
