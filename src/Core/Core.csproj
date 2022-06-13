@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Remove="Interfaces\IServiceSubscribersRespository.cs" />
+    <Compile Remove="Models\Requests\UpdateDiscountCodeRequest.cs" />
   </ItemGroup>
 
 </Project>
