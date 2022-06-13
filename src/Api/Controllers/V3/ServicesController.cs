@@ -30,7 +30,7 @@ public class ServicesController : ControllerBase
     public async Task<IActionResult> ListServices()
     {
         var services = await _unitOfWork.Services.ListServices();
-        if (services == null || services.Count == 0)
+        if (services.Count == 0)
             return NotFound(new BasicResponse("No services found"));
 
 
