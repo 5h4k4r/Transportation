@@ -2,7 +2,9 @@ using AutoMapper;
 using Core.Models.Base;
 using Core.Models.Requests;
 using Infra.Entities;
+
 namespace Infra.Mapper;
+
 public class MapperProfile : Profile
 {
     public MapperProfile()
@@ -32,9 +34,7 @@ public class MapperProfile : Profile
         CreateMap<VehicleOwner, VehicleOwnerDto>().ReverseMap();
         CreateMap<DiscountCode, DiscountCodeDto>().ReverseMap();
         CreateMap<DiscountCodeUser, DiscountCodeUserDto>().ReverseMap();
-        CreateMap<DiscountCodeDto,CreateDiscountCodeRequest>().ReverseMap();
-        CreateMap<DiscountCodeDto,UpdateDiscountCodeRequest>().ReverseMap();
+        CreateMap<DiscountCodeDto, CreateDiscountCodeRequest>().ReverseMap();
         CreateMap<ServantStatusDto, ServantDto>().ReverseMap();
     }
-
 }
