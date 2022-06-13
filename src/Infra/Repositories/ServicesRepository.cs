@@ -1,6 +1,6 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core.Models.Base;
+using Core.Models.Responses;
 using Infra.Entities;
 using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -19,13 +19,13 @@ public class ServicesRepository : IServiceRepository
         _mapper = mapper;
     }
 
-    public Task<List<ServiceDto>> ListServices()
+    public Task<List<ListServicesResponses>> ListServices()
     {
         var services = _context.Services
             .Include(x => x.ServiceAreaTypes)
             .ThenInclude(x => x.Category)
-            .ThenInclude(x => x.CategoryTranslations.Where(s => s.LanguageId == 2))
-            .ProjectTo<ServiceDto>(_mapper.ConfigurationProvider).ToList();
+            .ThenInclude(x => x.CategoryTranslations)
+            .ProjectTo<ListServicesResponses>(_mapper.ConfigurationProvider).ToList();
 
         return Task.FromResult(services);
     }

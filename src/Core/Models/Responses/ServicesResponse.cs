@@ -1,6 +1,6 @@
 using Core.Models.Base;
 
-namespace Core.Models.Repositories;
+namespace Core.Models.Responses;
 
 public class ServicesResponse
 {

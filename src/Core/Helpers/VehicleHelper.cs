@@ -1,5 +1,5 @@
 using System.Text.Json;
-using Core.Models.Repositories;
+using Core.Models.Responses;
 
 namespace Api.Helpers;
 

@@ -1,6 +1,19 @@
-﻿namespace Core.Models.Base;
+using Core.Models.Base;
 
-public class ServiceAreaTypeDto
+namespace Core.Models.Responses;
+
+public class ListServicesResponses
+{
+    public ulong Id { get; set; }
+    public string Pin { get; set; } = null!;
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
+
+    public ICollection<ServiceAreaTypeDtoResponse?> ServiceAreaTypes { get; set; } = null!;
+}
+
+public class ServiceAreaTypeDtoResponse
 {
     public ulong Id { get; set; }
     public ulong ServiceId { get; set; }
@@ -8,7 +21,6 @@ public class ServiceAreaTypeDto
     public ulong CategoryId { get; set; }
     public ulong? TypeId { get; set; }
     public ulong? UsageId { get; set; }
-    public string Params { get; set; } = null!;
     public string Currency { get; set; } = null!;
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
@@ -16,5 +28,4 @@ public class ServiceAreaTypeDto
 
     public CategoryDto? Category { get; set; }
     public ServiceDto? Service { get; set; }
-    public UsageDto Usage { get; set; } = null!;
 }

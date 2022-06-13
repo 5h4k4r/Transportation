@@ -1,13 +1,12 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Constants;
-using AutoMapper.QueryableExtensions;
-using Core.Constants;
 using Core.Extensions;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Repositories;
 using Core.Models.Requests;
+using Core.Models.Responses;
 using Infra.Entities;
 using Infra.Extensions;
 using Infra.Interfaces;
@@ -83,6 +82,7 @@ public class TasksRepository : ITasksRepository
 
         return response.ToList();
     }
+
     public async Task<List<ListTasksByClient>> ListTasksByClient(ListTasksByClientRequest model)
     {
         var tasks = await ListTasksByClientRequestQuery(model)
@@ -166,6 +166,7 @@ public class TasksRepository : ITasksRepository
                 )
                 .ProjectTo<DestinationDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+    
 
         tasks.DestinationDtos = destinationDtos;
         return tasks;

@@ -1,6 +1,7 @@
 using Core.Helpers;
 using Core.Models.Repositories;
 using Core.Models.Requests;
+using Core.Models.Responses;
 using Infra.Entities;
 using Infra.Extensions;
 using Infra.Interfaces;
