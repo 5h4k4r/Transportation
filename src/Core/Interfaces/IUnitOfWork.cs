@@ -18,7 +18,7 @@ public interface IUnitOfWork : IDisposable
 
     IGendersRepository Genders { get; }
     
-    IDiscountCodeRepository DiscountCode { get; }
+    IDiscountCodeRepository DiscountCodes { get; }
     
     Task<int> Save();
     T? GetException<T>(Exception e) where T : Exception;

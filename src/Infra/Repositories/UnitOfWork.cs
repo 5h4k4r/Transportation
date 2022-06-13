@@ -36,7 +36,7 @@ public class UnitOfWork : IUnitOfWork
     public IRoleUsersRepository RoleUsers => _RoleUsers ??= new RoleUserRepository(_repoContext, _mapper);
     private IDiscountCodeRepository? _DiscountCode;
 
-    public IDiscountCodeRepository DiscountCode => _DiscountCode ?? new DiscountCodesRepository(_repoContext, _mapper);
+    public IDiscountCodeRepository DiscountCodes => _DiscountCode ?? new DiscountCodesRepository(_repoContext, _mapper);
 
     private IRolesRepository? _Roles;
     public IRolesRepository Roles => _Roles ??= new RolesRepository(_repoContext, _mapper);
