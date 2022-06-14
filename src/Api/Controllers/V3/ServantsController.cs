@@ -133,7 +133,7 @@ public class ServantsController : ControllerBase
         if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
 
-        model.AreaId = User.GetAreaId().Value;
+        model.AreaId = User.GetAreaId()!.Value;
 
         // The servant we get from database
         var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, model.AreaId.Value);
