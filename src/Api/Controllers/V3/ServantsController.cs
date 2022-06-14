@@ -152,8 +152,16 @@ public class ServantsController : ControllerBase
         var servantOnlineHistoryCount =
             await _unitOfWork.ServantWorkDays.GetServantOnlinePeriodsCount((ulong)id, model);
 
+        var totalOnlineTime = await _unitOfWork.ServantWorkDays.GetServantOnlinePeriodsTotalTime(model, (ulong)id);
+        var totalTimes = new ServantOnlinePeriodTotalTime
+        {
+            TotalOnlineTime = totalOnlineTime.OnlineHours,
+            TotalOnlineTimeInSeconds = totalOnlineTime.TotalTimeInSeconds
+        };
 
-        return Ok(new PaginatedResponse<ServantOnlinePeriod>(servantOnlineHistoryCount, model, servantOnlineHistory));
+
+        return Ok(new PaginatedResponse<ServantOnlinePeriod>(servantOnlineHistoryCount, model, servantOnlineHistory,
+            totalTimes));
     }
 
 

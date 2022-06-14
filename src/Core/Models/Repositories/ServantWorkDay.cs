@@ -1,5 +1,11 @@
 namespace Core.Models.Repositories;
 
+public class ServantOnlinePeriodTotalTime
+{
+    public string? TotalOnlineTime { get; set; }
+    public double? TotalOnlineTimeInSeconds { get; set; }
+}
+
 public class ServantOnlinePeriod
 {
     public TimeSpan? TotalOnlineTime { get; set; }
