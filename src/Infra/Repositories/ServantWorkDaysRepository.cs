@@ -31,6 +31,9 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
             .Select(x => x.ToList())
             .ApplyPagination(model).ToListAsync();
 
+        //get this servant's total online time
+        var totalOnlineTime = await ListServantsOnlineHistory(model, servantId);
+
 
         var servantWorkDayPeriods = dailyStats.Select(workDay =>
         {
@@ -77,14 +80,31 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         return servantWorkDayPeriods;
     }
 
+    public Task<int> GetServantOnlinePeriodsCount(ulong servantId, GetServantOnlineHistoryRequest model)
+    {
+        var query = GetServantOnlineHistoryQuery(model, servantId);
+
+        var count = query
+            .OrderByDescending(x => x.StartAt)
+            .GroupBy(x => x.ServantDailyStatistic.DayId)
+            .CountAsync();
+
+
+        return count;
+    }
+
 
     public async Task<List<ListServantsOnlineHistory>?> ListServantsOnlineHistory(
-        ListServantsOnlineHistoryRequest model)
+        ListServantsOnlineHistoryRequest model, ulong? servantId = null)
     {
         var excludeStartHour = model.ExcludeStartHour ?? null;
         var excludeEndHour = model.ExcludeEndHour ?? null;
+        IQueryable<ServantDailyOnlinePeriod> query;
 
-        var query = GetServantOnlineHistoryQuery(model, model.ServantId);
+        if (servantId.HasValue)
+            query = GetServantOnlineHistoryQuery(model, servantId);
+        else
+            query = GetServantOnlineHistoryQuery(model);
 
         var onlineHistory = await query
             .OrderByDescending(x => x.StartAt)
@@ -129,19 +149,6 @@ public class ServantWorkDaysRepository : IServantWorkDaysRepository
         return response
             .Where(x => x.TotalTimeInSeconds / 3600 > model.MinHours)
             .ToList();
-    }
-
-    public Task<int> GetServantOnlinePeriodsCount(ulong servantId, GetServantOnlineHistoryRequest model)
-    {
-        var query = GetServantOnlineHistoryQuery(model, servantId);
-
-        var count = query
-            .OrderByDescending(x => x.StartAt)
-            .GroupBy(x => x.ServantDailyStatistic.DayId)
-            .CountAsync();
-
-
-        return count;
     }
 
     private IQueryable<ServantDailyOnlinePeriod> GetServantOnlineHistoryQuery(ListServantsOnlineHistoryRequest request,
