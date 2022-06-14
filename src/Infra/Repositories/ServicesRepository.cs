@@ -29,4 +29,15 @@ public class ServicesRepository : IServiceRepository
 
         return Task.FromResult(services);
     }
+
+    public Task<ServiceAreaTypeDtoResponse?> GetServiceById(uint id, uint? serviceId = null)
+    {
+        var query = _context.ServiceAreaTypes.AsQueryable().Where(x => x.Id == id).AsNoTracking();
+
+        if (serviceId.HasValue)
+            query = query.Where(x => x.ServiceId == serviceId);
+
+        return Task.FromResult(query.ProjectTo<ServiceAreaTypeDtoResponse>(_mapper.ConfigurationProvider)
+            .FirstOrDefault());
+    }
 }

@@ -36,4 +36,18 @@ public class ServicesController : ControllerBase
 
         return Ok(services);
     }
+
+
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ServiceAreaTypeDtoResponse), StatusCodes.Status200OK)]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetService(uint id, uint serviceId)
+
+    {
+        var service = await _unitOfWork.Services.GetServiceById(id, serviceId);
+        if (service == null)
+            return NotFound(new BasicResponse("No service found"));
+
+        return Ok(service);
+    }
 }
