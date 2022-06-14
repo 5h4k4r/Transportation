@@ -20,11 +20,14 @@ public interface IUnitOfWork : IDisposable
     IUsagesRepository Usages { get; }
 
     IGendersRepository Genders { get; }
-    
+
     IDiscountCodeRepository DiscountCodes { get; }
-    
+
     IJobRepository Jobs { get; }
     ICacheRepository Cache { get; }
+    IDocumentRepository Document { get; }
     Task<int> Save();
+    void BeginTransaction();
+    void EndTransaction();
     T? GetException<T>(Exception e) where T : Exception;
 }

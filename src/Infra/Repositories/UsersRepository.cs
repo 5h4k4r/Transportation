@@ -21,10 +21,10 @@ public class UsersRepository : IUsersRepository
     }
 
 
-    public Task<UserDto?> GetUserById([Required] int id)
+    public Task<UserDto?> GetUserById([Required] ulong id)
     {
         return _context.Users
-            .Where(x => x.Id == (ulong)id)
+            .Where(x => x.Id == id)
             .ProjectTo<UserDto?>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
     }

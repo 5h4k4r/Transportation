@@ -1,24 +1,22 @@
 using System.Net.Mime;
 using Api.Extensions;
-using Api.Extensions;
 using AutoMapper;
-using Core.Helpers;
 using Core.Helpers;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
-using Core.Models.Exceptions;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Core.Models.Responses;
-using Core.Models.Responses;
+using Core.Settings;
 using Infra.Authentication;
 using Infra.Entities;
 using Infra.Interfaces;
-using Infra.Interfaces;
+using Infra.Models;
 using Infra.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Role = Core.Models.Authentication.Role;
 
 namespace Api.Controllers.V3;
@@ -30,13 +28,17 @@ namespace Api.Controllers.V3;
 [Route("v3/servants")]
 public class ServantsController : ControllerBase
 {
+    private readonly ICurl _curl;
     private readonly IMapper _mapper;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ServantsController(IUnitOfWork unitOfWork, IMapper mapper)
+    public ServantsController(IUnitOfWork unitOfWork, IMapper mapper, ICurl curl, IServiceProvider sp)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _curl = curl;
+        _serviceProvider = sp;
     }
 
     /// <summary>
@@ -71,7 +73,7 @@ public class ServantsController : ControllerBase
             throw new UnauthorizedException();
 
         // The servant we get from database
-        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, User.GetAreaId().Value);
+        var servant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, User.GetAreaId()!.Value);
 
         if (servant is null)
             return NotFound(BasicResponse.ResourceNotFound);
@@ -93,7 +95,7 @@ public class ServantsController : ControllerBase
             throw new UnauthorizedException();
 
         // The servant we get from database
-        var databaseServant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, User.GetAreaId().Value);
+        var databaseServant = await _unitOfWork.Servants.GetServantByUserId((ulong)id, User.GetAreaId()!.Value);
 
         if (databaseServant == null)
             return NotFound(BasicResponse.ResourceDoesNotExist(nameof(ServantPerformed), id));
@@ -183,16 +185,17 @@ public class ServantsController : ControllerBase
         if (await _unitOfWork.AreaInfos.GetAreaInfoById(request.AreaId) is null)
             throw new NotFoundException("The Area you are trying to assign the servant to does not exist");
 
-
+        _unitOfWork.BeginTransaction();
         var servant = _mapper.Map<ServantDto>(request);
-        var s = await _unitOfWork.Servants.CreateServant(servant);
+        var createdServant = await _unitOfWork.Servants.CreateServant(servant);
+        var user = await _unitOfWork.User.GetUserById(request.UserId);
 
-        // await _unitOfWork.Save();
+        await _unitOfWork.Save();
 
         var documents = new List<Document>();
         var namingPolicy = new SnakeCaseNamingPolicy();
-        
-        
+
+
         for (var index = 0; index < request.GetType().GetProperties().Length; index++)
         {
             var p = request.GetType().GetProperties()[index];
@@ -206,7 +209,7 @@ public class ServantsController : ControllerBase
                 });
         }
 
-        // _unitOfWork.Documents.AddDocuments(documents, "App\\Models\\Servant", request.UserId);
+        _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Servant", request.UserId);
 
         if (!User.HasRole(Role.Servant))
             await _unitOfWork.RoleUsers.AddRoleUser(new RoleUserDto
@@ -215,13 +218,20 @@ public class ServantsController : ControllerBase
                 UserId = request.UserId
             });
 
-        
-        
-        
         await _unitOfWork.Save();
 
+        var model = new AddServantToWalletServiceRequest
+        {
+            group = "driver",
+            userId = user.AuthId,
+            IBan = null
+        };
+
+        var wallet = _serviceProvider.GetRequiredService<IOptions<WalletOptions>>().Value;
+
+        var response = await _curl.Send($"{wallet.ServerUrl}/service/user-groups/store", true, true, model);
+        _unitOfWork.EndTransaction();
 
         return Ok(BasicResponse.Successful);
     }
-
 }

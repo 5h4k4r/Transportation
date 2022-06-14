@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 using Core.Constants;
 using Core.Interfaces;
 
@@ -7,7 +6,8 @@ namespace Core.Models.Requests;
 
 public class GetServantOnlineHistoryRequest : ListServantsOnlineHistoryRequest, IPagingOptions
 {
-    [JsonIgnore] public double MinHours { get; set; }
+    // [JsonIgnore] public double MinHours { get; set; }
+    // [JsonIgnore] public ulong ServantId { get; set; }
 
     public int? Page { get; set; } = 0;
 

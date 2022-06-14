@@ -24,6 +24,13 @@ public static class StartupConfigurations
             .Bind(cacheOptions)
             .ValidateDataAnnotations();
 
+        var walletOptions = config.GetSection(WalletOptions.Config);
+
+        services
+            .AddOptions<WalletOptions>()
+            .Bind(walletOptions)
+            .ValidateDataAnnotations();
+
         return services;
     }
 
@@ -31,5 +38,6 @@ public static class StartupConfigurations
     {
         _ = sp.GetRequiredService<IOptions<DatabaseOptions>>().Value;
         _ = sp.GetRequiredService<IOptions<CacheOptions>>().Value;
+        _ = sp.GetRequiredService<IOptions<WalletOptions>>().Value;
     }
 }
