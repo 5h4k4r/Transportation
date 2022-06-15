@@ -38,7 +38,8 @@ public class VehiclesRepository : IVehiclesRepository
 
                 case ListVehicleRequestFilterField.PlateNumber:
                     query = query.Where(v =>
-                        v.VehicleDetails.Any(vd => vd.Plaque != null && vd.Plaque.Contains(model.FilterValue)));
+                        v.VehicleDetails.Any(vd =>
+                            vd.Plaque != null && vd.Plaque.Contains("\"code\":\"" + model.FilterValue + "\",")));
                     break;
 
                 case ListVehicleRequestFilterField.Title:
