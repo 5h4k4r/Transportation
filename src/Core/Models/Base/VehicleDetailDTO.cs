@@ -4,7 +4,7 @@ public class VehicleDetailDto
 {
     public ulong? Id { get; set; }
     public ulong VehicleId { get; set; }
-    public string Plaque { get; set; }
+    public string? Plaque { get; set; }
     public string? Color { get; set; }
     public string? Tip { get; set; }
     public string? Model { get; set; }

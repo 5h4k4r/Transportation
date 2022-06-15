@@ -24,7 +24,7 @@ public class VehiclesRepository : IVehiclesRepository
         _mapper = mapper;
     }
 
-    public Task<List<VehicleDto>> ListVehicle(ListVehiclesRequest model)
+    public Task<List<VehicleDtoResponse>> ListVehicle(ListVehiclesRequest model)
     {
         var query = _context.Vehicles.Include(v => v.VehicleDetails).AsQueryable();
 
@@ -51,8 +51,30 @@ public class VehiclesRepository : IVehiclesRepository
                     break;
             }
 
-        return query
-            .ProjectTo<VehicleDto>(_mapper.ConfigurationProvider).ApplyPagination(model).ToListAsync();
+        return query.Select(x => new VehicleDtoResponse
+            {
+                Id = x.Id,
+                UsageId = x.UsageId,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                VehicleDetail = new VehicleDetailDtoResponse
+                {
+                    Id = x.VehicleDetails.FirstOrDefault()!.Id,
+                    VehicleId = x.VehicleDetails.FirstOrDefault()!.VehicleId,
+                    Color = x.VehicleDetails.FirstOrDefault()!.Color,
+                    InsuranceExpire = x.VehicleDetails.FirstOrDefault()!.InsuranceExpire,
+                    InsuranceNo = x.VehicleDetails.FirstOrDefault()!.InsuranceNo,
+                    Model = x.VehicleDetails.FirstOrDefault()!.Model,
+                    CreatedAt = x.VehicleDetails.FirstOrDefault()!.CreatedAt,
+                    UpdatedAt = x.VehicleDetails.FirstOrDefault()!.UpdatedAt,
+                    Tip = x.VehicleDetails.FirstOrDefault()!.Tip,
+                    Vin = x.VehicleDetails.FirstOrDefault()!.Vin,
+                    Plaque = VehicleHelper.PreparePlaque(x.VehicleDetails.FirstOrDefault()!.Plaque)
+                }
+            })
+            //.ProjectTo<VehicleDto>(_mapper.ConfigurationProvider)
+            .OrderByDescending(v => v.CreatedAt)
+            .ApplyPagination(model).ToListAsync();
     }
 
     public Task<int> ListVehicleCount(ListVehiclesRequest model)

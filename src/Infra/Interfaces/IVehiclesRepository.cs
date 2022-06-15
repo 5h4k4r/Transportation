@@ -8,7 +8,7 @@ namespace Infra.Interfaces;
 
 public interface IVehiclesRepository
 {
-    Task<List<VehicleDto>> ListVehicle(ListVehiclesRequest model);
+    Task<List<VehicleDtoResponse>> ListVehicle(ListVehiclesRequest model);
     Task<int> ListVehicleCount(ListVehiclesRequest model);
 
     public Task<VehicleDtoResponse?> GetVehicleById(ulong id);

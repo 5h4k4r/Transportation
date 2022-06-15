@@ -5,7 +5,7 @@ namespace Api.Helpers;
 
 public static class VehicleHelper
 {
-    public static PlaqueDtoResponse? PreparePlaque(string plaque)
+    public static PlaqueDtoResponse? PreparePlaque(string? plaque)
     {
         var deserializationOptions = new JsonSerializerOptions
         {

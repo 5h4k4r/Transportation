@@ -29,14 +29,14 @@ public class VehiclesController : ControllerBase
         _mapper = mapper;
     }
 
-    [ProducesResponseType(typeof(PaginatedResponse<VehicleDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedResponse<VehicleDtoResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpGet]
     public async Task<IActionResult> ListVehicles([FromQuery] ListVehiclesRequest model)
     {
         var vehicle = await _unitOfWork.Vehicles.ListVehicle(model);
         var vehicelsCount = await _unitOfWork.Vehicles.ListVehicleCount(model);
-        return Ok(new PaginatedResponse<VehicleDto>(vehicelsCount, model, vehicle));
+        return Ok(new PaginatedResponse<VehicleDtoResponse>(vehicelsCount, model, vehicle));
     }
 
     [ProducesResponseType(typeof(VehicleDtoResponse), StatusCodes.Status200OK)]
