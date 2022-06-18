@@ -18,10 +18,22 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.4" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
+    <PackageReference Include="ServiceStack.Redis" Version="6.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Repositories\DocumentsRepository.cs" />
+    <Compile Remove="Interfaces\IDocumentsRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20220530080611_AddRealationBetweenServiceAreaTypeAndServiceSubscriber.cs" />
+    <Compile Remove="Migrations\20220530080611_AddRealationBetweenServiceAreaTypeAndServiceSubscriber.Designer.cs" />
+    <Compile Remove="Repositories\ServiceSubscribersRespository.cs" />
   </ItemGroup>
 
 </Project>

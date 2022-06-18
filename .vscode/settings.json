@@ -3,5 +3,10 @@
   "editor.defaultFormatter": "ms-dotnettools.csharp",
   "omnisharp.enableRoslynAnalyzers": true,
   "omnisharp.organizeImportsOnFormat": true,
-  "omnisharp.useModernNet": true
+  "omnisharp.useModernNet": true,
+  "[csharp]": {
+    "editor.defaultFormatter": "csharpier.csharpier-vscode"
+  }
+  "omnisharp.useModernNet": true,
+  "nuxt.isNuxtApp": false
 }

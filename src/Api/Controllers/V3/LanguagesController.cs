@@ -1,8 +1,8 @@
 using System.Net.Mime;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Requests;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +29,8 @@ public class LanguagesController : ControllerBase
     public async Task<ActionResult> ListLanguages([FromQuery] ListLanguagesRequest model)
     {
         var isLocalRequest = model.LocaleOnly.HasValue && model.LocaleOnly.Value;
+
+
         if (isLocalRequest)
         {
             var locales = await _unitOfWork.Languages.ListLanguagesLocales();

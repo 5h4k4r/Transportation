@@ -1,68 +1,87 @@
 using AutoMapper;
 using Core.Interfaces;
 using Infra.Entities;
+using Infra.Interfaces;
+using ServiceStack.Redis;
 
 namespace Infra.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly TransportationContext _repoContext;
+    private readonly IRedisClientsManagerAsync _cacheService;
+    private readonly ICurl _curl;
     private readonly IMapper _mapper;
+    private readonly TransportationContext _repoContext;
+    private IAreaDepartmentsRepository? _areaDepartments;
+    private IAreaInfosRepository? _areaInfos;
+    private ICacheRepository? _cache;
+    private IDepartmentsRepository? _departments;
+    private IDocumentRepository? _documents;
+    private IEmployeesRepository? _employees;
+    private IGendersRepository? _gender;
+    private IJobRepository? _jobs;
+    private ILanguagesRepository? _languages;
+    private IRolesRepository? _roles;
+    private IRoleUsersRepository? _roleUsers;
+    private IServantsRepository? _servants;
+    private IServantWorkDaysRepository? _servantWorkDays;
+    private IServiceRepository? _services;
+    private ITasksRepository? _tasks;
+    private IUsagesRepository? _usages;
+    private IUsersRepository? _user;
+    private IVehiclesRepository? _vehicles;
+    private IDiscountCodeRepository _discountCode;
 
-    public UnitOfWork(TransportationContext repositoryContext, IMapper mapper)
+    public UnitOfWork(TransportationContext repositoryContext, IMapper mapper, IRedisClientsManagerAsync cacheService,
+        ICurl curl)
     {
         _repoContext = repositoryContext;
         _mapper = mapper;
+        _cacheService = cacheService;
+        _curl = curl;
     }
 
-    private IServantsRepository? _servants;
+    public ICacheRepository Cache => _cache ??= new RedisCacheRepository(_repoContext, _mapper, _cacheService);
     public IServantsRepository Servants => _servants ??= new ServantsRepository(_repoContext, _mapper);
-
-    private IVehiclesRepository? _vehicles;
+    public IServiceRepository Services => _services ??= new ServicesRepository(_repoContext, _mapper);
     public IVehiclesRepository Vehicles => _vehicles ??= new VehiclesRepository(_repoContext, _mapper);
-
-    private IUsersRepository? _user;
     public IUsersRepository User => _user ??= new UsersRepository(_repoContext, _mapper);
 
-    private IGendersRepository? _gender;
-
     public IGendersRepository Genders => _gender ??= new GendersRepository(_repoContext, _mapper);
-
-    private ITasksRepository? _tasks;
     public ITasksRepository Tasks => _tasks ??= new TasksRepository(_repoContext, _mapper);
-    private IRoleUsersRepository? _roleUsers;
     public IRoleUsersRepository RoleUsers => _roleUsers ??= new RoleUserRepository(_repoContext, _mapper);
-
-    private IRolesRepository? _roles;
+    public IDiscountCodeRepository DiscountCodes => _discountCode ?? new DiscountCodesRepository(_repoContext, _mapper);
     public IRolesRepository Roles => _roles ??= new RolesRepository(_repoContext, _mapper);
-
-    private IAreaInfosRepository? _areaInfos;
     public IAreaInfosRepository AreaInfos => _areaInfos ??= new AreaInfosRepository(_repoContext, _mapper);
-
-    private IAreaDepartmentsRepository? _areaDepartments;
 
     public IAreaDepartmentsRepository AreaDepartments =>
         _areaDepartments ??= new AreaDepartmentsRepository(_repoContext, _mapper);
 
-    private IDepartmentsRepository? _departments;
     public IDepartmentsRepository Departments => _departments ??= new DepartmentsRepository(_repoContext, _mapper);
-
-    private IEmployeesRepository? _employees;
     public IEmployeesRepository Employees => _employees ??= new EmployeesRepository(_repoContext, _mapper);
-
-    private ILanguagesRepository? _languages;
     public ILanguagesRepository Languages => _languages ??= new LanguagesRepository(_repoContext, _mapper);
-
-    private IServantWorkDaysRepository? _servantWorkDays;
+    public IJobRepository Jobs => _jobs ??= new JobRepository(_repoContext, _mapper);
 
     public IServantWorkDaysRepository ServantWorkDays =>
         _servantWorkDays ??= new ServantWorkDaysRepository(_repoContext);
 
-    private IUsagesRepository? _usages;
     public IUsagesRepository Usages => _usages ??= new UsagesRepository(_repoContext, _mapper);
+    public IDocumentRepository Document => _documents ??= new DocumentRepository(_repoContext, _mapper);
 
+    public void BeginTransaction()
+    {
+        _repoContext.Database.BeginTransaction();
+    }
 
-    public Task<int> Save() => _repoContext.SaveChangesAsync();
+    public void EndTransaction()
+    {
+        _repoContext.Database.CommitTransaction();
+    }
+
+    public Task<int> Save()
+    {
+        return _repoContext.SaveChangesAsync();
+    }
 
 
     public void Dispose()
@@ -76,10 +95,7 @@ public class UnitOfWork : IUnitOfWork
         var innerException = exception;
         while (innerException != null)
         {
-            if (innerException is T result)
-            {
-                return result;
-            }
+            if (innerException is T result) return result;
 
             innerException = innerException.InnerException ?? null;
         }

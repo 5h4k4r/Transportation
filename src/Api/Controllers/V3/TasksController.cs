@@ -1,14 +1,16 @@
 using System.Net.Mime;
-using Core.Interfaces;
+using Api.Extensions;
+using Core.Models.Authentication;
 using Core.Models.Common;
+using Core.Models.Exceptions;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Authentication;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers.V3;
-
 
 [Authorize]
 [ApiController]
@@ -25,38 +27,39 @@ public class TasksController : ControllerBase
     }
 
     /// <summary>
-    /// Lists all the tasks.
+    ///     Lists all the tasks.
     /// </summary>
-
     [HttpGet]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PaginatedResponse<ListTasks>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListTasks([FromQuery] ListTasksRequest model, [FromServices] UserAuthContext authContext)
+    public async Task<IActionResult> ListTasks([FromQuery] ListTasksRequest model,
+        [FromServices] UserAuthContext authContext)
     {
-        var authId = authContext.GetAuthUser().Id;
+        if (!User.HasRole(Role.SuperAdmin) && !User.GetAreaId().HasValue)
+            throw new UnauthorizedException();
 
-        var user = await _unitOfWork.User.GetUserByAuthId(authId);
+        model.AreaId = User.GetAreaId().Value;
 
-        if (user is null || !user.AreaId.HasValue)
-            return NotFound();
-
-        if ((await _unitOfWork.RoleUsers.GetRoleUserByUserId(user.Id))?.RoleId < 5)
-            model.AreaId = user.AreaId.Value;
+        // if ((await _unitOfWork.RoleUsers.GetRoleUserByUserId(user.Id))?.RoleId < 5)
+        //     model.AreaId = user.AreaId.Value;
 
         var items = await _unitOfWork.Tasks.ListTasks(model);
         var count = await _unitOfWork.Tasks.CountTasks(model);
 
         return Ok(new PaginatedResponse<ListTasks>(count, model, items));
     }
-    /// <summary>
-    /// Lists all tasks by a client.
-    /// </summary>
 
-    [HttpGet("client")]
+    /// <summary>
+    ///     Lists all tasks by a client.
+    /// </summary>
+    [HttpGet("client/{clientId}")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(PaginatedResponse<ListTasksByClient>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> ListTasksByClient([FromQuery] ListTasksByClientRequest model)
+    public async Task<IActionResult> ListTasksByClient(ulong clientId, [FromQuery] ListTasksByClientRequest model)
     {
+        // TODO: Fix this(remove clientId from model)
+        model.ClientId = clientId;
+
         var items = await _unitOfWork.Tasks.ListTasksByClient(model);
         var count = await _unitOfWork.Tasks.CountClientTasks(model);
 

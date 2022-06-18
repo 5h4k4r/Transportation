@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
+using Core.Models.Responses;
 
 namespace Core.Models.Requests;
-
 
 public class CreateVehicleRequest
 {
@@ -20,7 +20,7 @@ public class CreateVehicleRequest
     public string Vin { get; set; } = string.Empty;
 
 
-    public string Plaque { get; set; } = string.Empty;
+    public PlaqueDtoResponse Plaque { get; set; }
 
     public ICollection<ulong>? ServiceAreaTypes { get; set; }
 
@@ -33,10 +33,10 @@ public class CreateVehicleRequest
     public string TechInsuransis { get; set; } = string.Empty;
 
     public string Incurance { get; set; } = string.Empty;
-    [JsonIgnore]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    [JsonIgnore]
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    [JsonIgnore] public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [JsonIgnore] public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 }
 
 //     {

@@ -1,24 +1,26 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Core.Interfaces;
 using Core.Models.Base;
 using Infra.Entities;
+using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Repositories;
 
 public class DepartmentsRepository : IDepartmentsRepository
 {
-    protected readonly TransportationContext Context;
     private readonly IMapper _mapper;
+    protected readonly TransportationContext Context;
+
     public DepartmentsRepository(TransportationContext context, IMapper mapper)
     {
         Context = context;
         _mapper = mapper;
     }
-    public Task<DepartmentDto?> GetDepartmentById(ulong id) => Context.Departments.Where(x => x.Id == id).ProjectTo<DepartmentDto>(_mapper.ConfigurationProvider).FirstOrDefaultAsync();
 
-
-
-
+    public Task<DepartmentDto?> GetDepartmentById(ulong id)
+    {
+        return Context.Departments.Where(x => x.Id == id).ProjectTo<DepartmentDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync();
+    }
 }

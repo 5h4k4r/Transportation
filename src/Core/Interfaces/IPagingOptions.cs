@@ -1,22 +1,22 @@
 using System.ComponentModel.DataAnnotations;
-
+using Core.Constants;
 
 namespace Core.Interfaces;
 
 public interface IPagingOptions
 {
     /// <summary>
-    /// Gets or sets the page index of the current pagination.
+    ///     Gets or sets the page index of the current pagination.
     /// </summary>
     int? Page { get; set; }
 
     /// <summary>
-    /// Gets or sets the total items per page limit.
+    ///     Gets or sets the total items per page limit.
     /// </summary>
     /// <summary>
-    /// The default number of documents returned per page.
+    ///     The default number of documents returned per page.
     /// </summary>
 
-    [Range(0, Constants.MaxPaginationLimit)]
+    [Range(0, Constants.CoreConstants.MaxPaginationLimit)]
     int? Limit { get; set; }
 }

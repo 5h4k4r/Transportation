@@ -1,12 +1,12 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Extensions;
-using Core.Interfaces;
 using Core.Models.Base;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Extensions;
+using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Task = Infra.Entities.Task;
 
@@ -21,6 +21,16 @@ public class ServantsRepository : IServantsRepository
     {
         _context = context;
         _mapper = mapper;
+    }
+
+    public Task<ServantDto?> GetServantByUserId(ulong userId, ulong areaId)
+    {
+        return _context.Servants
+            .Where(x => x.AreaId == areaId)
+            .Where(x => x.UserId == userId)
+            .Include(x => x.ServantScores)
+            .ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync();
     }
 
 
@@ -49,50 +59,28 @@ public class ServantsRepository : IServantsRepository
 
     public Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId)
     {
-        var query = _context.Servants
-            .Where(x => x.AreaId == userAreaId);
+        var query = _context.Servants.Where(x => x.AreaId == userAreaId)
+            .ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
 
         query = CheckForSearchField(query, model);
 
-        if (model.IncompleteOnly)
-            query = query
-                .Where(x =>
-                    (x.FirstName == null ||
-                     x.LastName == null ||
-                     x.NationalId == null ||
-                     x.Certificate == null ||
-                     x.BankId == null ||
-                     x.GenderId == null ||
-                     x.Address == null ||
-                     _context.Documents
-                         .Where(d => d.ModelId == x.UserId)
-                         .Count(d => d.ModelType == @"App\Models\Servant") < 5
-                     ||
-                     !_context.Documents
-                         .Where(d => d.ModelType == @"App\Models\Servant")
-                         .Any(d => d.ModelId == x.UserId)
-                    ) && x.DeletedAt == null
-                );
-
 
         return query
-            .ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
             .Select(x => new ServantDto
             {
+                Address = x.Address,
+                AreaId = x.AreaId,
+                CreatedAt = x.CreatedAt,
                 Id = x.Id,
                 UserId = x.UserId,
+                BankId = x.BankId,
+                Certificate = x.Certificate,
+                NationalId = x.NationalId,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
-                NationalId = x.NationalId,
-                Certificate = x.Certificate,
-                BankId = x.BankId,
-                AreaId = x.AreaId,
                 GenderId = x.GenderId,
-                Address = x.Address,
-                CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt
             })
-            .AsNoTracking()
             .ApplySorting(model)
             .ApplyPagination(model)
             .ToListAsync();
@@ -100,51 +88,20 @@ public class ServantsRepository : IServantsRepository
 
     public Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId)
     {
-        var query = _context.Servants
-            .Where(x => x.AreaId == userAreaId);
+        var query = _context.Servants.Where(x => x.AreaId == userAreaId)
+            .ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
 
         query = CheckForSearchField(query, model);
 
-        if (model.IncompleteOnly)
-            query = query
-                .Where(x =>
-                    (x.FirstName == null ||
-                     x.LastName == null ||
-                     x.NationalId == null ||
-                     x.Certificate == null ||
-                     x.BankId == null ||
-                     x.GenderId == null ||
-                     x.Address == null ||
-                     _context.Documents
-                         .Where(d => d.ModelId == x.UserId)
-                         .Count(d => d.ModelType == @"App\Models\Servant") < 5
-                     ||
-                     !_context.Documents
-                         .Where(d => d.ModelType == @"App\Models\Servant")
-                         .Any(d => d.ModelId == x.UserId)
-                    ) && x.DeletedAt == null
-                );
-
-        return query
-            .ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
-            .AsNoTracking()
-            .CountAsync();
+        return query.CountAsync();
     }
 
-    public async void CreateServant(ServantDto servant)
+    public async Task<Servant> CreateServant(ServantDto servant)
     {
         var newServant = _mapper.Map<Servant>(servant);
         await _context.Servants.AddAsync(newServant);
-    }
 
-    public Task<ServantDto?> GetServantByUserId(ulong userId, ulong areaId)
-    {
-        return _context.Servants
-            .Where(x => x.AreaId == areaId)
-            .Where(x => x.UserId == userId)
-            .Include(x => x.ServantScores)
-            .ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync();
+        return newServant;
     }
 
     private async Task<(List<Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(
@@ -206,7 +163,13 @@ public class ServantsRepository : IServantsRepository
         return (tasks, dailyStatistics);
     }
 
-    private IQueryable<Servant> CheckForSearchField(IQueryable<Servant> query, ListServantRequest model)
+    public Task<ServantDto?> GetServantById(int id, ulong areaId)
+    {
+        return _context.Servants.Where(x => x.AreaId == areaId).Where(x => x.Id == id)
+            .ProjectTo<ServantDto?>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
+    }
+
+    private IQueryable<ServantDto> CheckForSearchField(IQueryable<ServantDto> query, ListServantRequest model)
     {
         if (model.SearchField is null || model.SearchValue is null)
             return query;
@@ -216,7 +179,8 @@ public class ServantsRepository : IServantsRepository
             "Name" => query.Where(
                 x => x.FirstName.Contains(model.SearchValue) || x.LastName.Contains(model.SearchValue)),
             "NationalId" => query.Where(x => x.NationalId.Contains(model.SearchValue)),
-            "PhoneNumber" => query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue))
+            "PhoneNumber" => query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue)),
+            _ => throw new ArgumentOutOfRangeException()
         };
     }
 }

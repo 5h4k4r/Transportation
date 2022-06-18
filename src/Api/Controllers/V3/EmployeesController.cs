@@ -1,8 +1,8 @@
 using System.Net.Mime;
-using Core.Interfaces;
 using Core.Models.Common;
 using Core.Models.Requests;
 using Infra.Authentication;
+using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
@@ -26,7 +26,8 @@ public class EmployeesController : ControllerBase
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpPatch("change-language")]
-    public async Task<IActionResult> ChangeLanguage(ChangeEmployeeLanguageRequest model, [FromServices] UserAuthContext authContext)
+    public async Task<IActionResult> ChangeLanguage(ChangeEmployeeLanguageRequest model,
+        [FromServices] UserAuthContext authContext)
     {
         var authUser = authContext.GetAuthUser();
 
@@ -55,7 +56,6 @@ public class EmployeesController : ControllerBase
             var sqlException = _unitOfWork.GetException<MySqlException>(e);
 
             return BadRequest(sqlException?.Message ?? e.Message);
-
         }
     }
 }

@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var config = builder.Configuration;
 // Add services to the container.
+
 services
     .AddControllers(opt => opt.UseDateOnlyTimeOnlyStringConverters())
     .AddJsonOptions(x =>
@@ -30,7 +31,9 @@ services
     .ConfigureDatabase(config)
     .AddEndpointsApiExplorer()
     .ConfigureSwaggerGenerator(config)
-    .ConfigureRepositoryWrapper().AddTransient<ErrorHandlingMiddleware>()
+    .ConfigureCacheService(config)
+    .ConfigureRepositoryWrapper()
+    .AddTransient<ErrorHandlingMiddleware>()
     .AddScoped<UserAuthContext>()
     .AddAuthentication(x =>
     {
@@ -55,6 +58,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-if (app.Environment.IsProduction()) app.UseMiddleware<ErrorHandlingMiddleware>();
+// if (app.Environment.IsProduction()) app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.Run();
