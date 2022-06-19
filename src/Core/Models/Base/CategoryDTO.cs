@@ -7,5 +7,5 @@ public class CategoryDto
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 
-    public ICollection<CategoryTranslationDto>? CategoryTranslations { get; set; }
+    public ICollection<CategoryTranslationDto?>? CategoryTranslations { get; set; }
 }

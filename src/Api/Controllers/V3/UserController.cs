@@ -41,14 +41,20 @@ public class UserController : Controller
         if (user is null)
             throw new NotFoundException();
 
-        ServantDto servant = null;
+        ServantDto? servant = null;
 
         servant = await _unitOfWork.Servants.GetServantByUserId(user.Id, user.AreaId ?? 0);
 
         if (servant is not null)
-            response.IsServant = true;
-        else
+        {
             response.IsUser = true;
+            response.IsServant = true;
+        }
+        else
+        {
+            response.IsUser = true;
+        }
+
         response.User = user;
 
         return Ok(response);
