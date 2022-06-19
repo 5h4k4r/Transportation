@@ -20,7 +20,6 @@ public class AreaInfosController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
 
-
     public AreaInfosController(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
