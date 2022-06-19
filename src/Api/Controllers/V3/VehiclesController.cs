@@ -7,7 +7,6 @@ using Core.Models.Common;
 using Core.Models.Exceptions;
 using Core.Models.Requests;
 using Core.Models.Responses;
-using Infra.Entities;
 using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -103,13 +102,13 @@ public class VehiclesController : ControllerBase
         await _unitOfWork.Save();
 
         //Add vehicles documents
-        var documents = new List<Document>();
+        var documents = new List<DocumentDto>();
         var namingPolicy = new SnakeCaseNamingPolicy();
         for (var index = 0; index < request.GetType().GetProperties().Length; index++)
         {
             var p = request.GetType().GetProperties()[index];
             if (p.Name is "CarCard" or "CarCardBack" or "TechDiagnosis" or "Insurance")
-                documents.Add(new Document
+                documents.Add(new DocumentDto
                 {
                     Type = namingPolicy.ConvertName(p.Name),
                     Path = p.GetValue(request, null)?.ToString()
@@ -120,7 +119,7 @@ public class VehiclesController : ControllerBase
         await _unitOfWork.Save();
 
         _unitOfWork.EndTransaction();
-        
+
         return Ok(addedVehicle);
     }
 

@@ -8,6 +8,6 @@ namespace Infra.Interfaces;
 public interface IDocumentRepository
 {
     Task<List<DocumentDto>> ListDocumentsByModel(string modelType, ulong modelId);
-    Task AddDocuments(List<UpdateDocumentsRequest> documents, string modelType, ulong modelId);
-    Task<List<Document>> UpdateDocuments(List<UpdateDocumentsRequest> documents, string modelType, ulong modelId);
+    Task AddDocuments(List<DocumentDto> documents, string modelType, ulong modelId);
+    Task<List<Document>> UpdateDocuments(List<DocumentDto> documents, string modelType, ulong modelId);
 }

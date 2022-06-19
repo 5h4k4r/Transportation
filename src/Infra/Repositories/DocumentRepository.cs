@@ -30,7 +30,7 @@ public class DocumentRepository : IDocumentRepository
             .ToListAsync();
     }
 
-    public Task AddDocuments(List<UpdateDocumentsRequest> docs, string modelType, ulong modelId)
+    public Task AddDocuments(List<DocumentDto> docs, string modelType, ulong modelId)
     {
         var requestDocs = PrepareDocuments(docs.Select(x => x.Path));
 
@@ -46,7 +46,7 @@ public class DocumentRepository : IDocumentRepository
         return _context.Documents.AddRangeAsync(requestDocs);
     }
 
-    public async Task<List<Document>> UpdateDocuments(List<UpdateDocumentsRequest> documents, string modelType,
+    public async Task<List<Document>> UpdateDocuments(List<DocumentDto> documents, string modelType,
         ulong modelId)
     {
         var requestDocs = PrepareDocuments(documents.Select(x => x.Path));
