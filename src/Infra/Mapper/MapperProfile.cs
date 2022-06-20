@@ -17,8 +17,8 @@ public class MapperProfile : Profile
         CreateMap<Vehicle, VehicleDto>().ReverseMap();
         CreateMap<VehicleDetailDto, CreateVehicleRequest>().ReverseMap();
         CreateMap<VehicleDto, CreateVehicleRequest>().ReverseMap();
-        CreateMap<VehicleDto, UpdateVehicleRequest>().ReverseMap()
-            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+        CreateMap<VehicleDto, UpdateVehicleRequest>().ReverseMap();
+        CreateMap<CreateVehicleRequest, UpdateVehicleRequest>().ReverseMap();
         CreateMap<Service, ServiceDto>().ReverseMap();
         CreateMap<Service, ListServicesResponses>().ReverseMap();
         CreateMap<ServiceAreaType, ServiceAreaTypeDto>().ReverseMap();

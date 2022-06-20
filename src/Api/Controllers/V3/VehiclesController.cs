@@ -102,25 +102,15 @@ public class VehiclesController : ControllerBase
 
         await _unitOfWork.Save();
 
-        //Add vehicles documents
-        var documents = new List<Document>();
-        var namingPolicy = new SnakeCaseNamingPolicy();
-        for (var index = 0; index < request.GetType().GetProperties().Length; index++)
-        {
-            var p = request.GetType().GetProperties()[index];
-            if (p.Name is "CarCard" or "CarCardBack" or "TechDiagnosis" or "Insurance")
-                documents.Add(new Document
-                {
-                    Type = namingPolicy.ConvertName(p.Name),
-                    Path = p.GetValue(request, null)?.ToString()
-                });
-        }
+        //prepare documents model for vehicle
+        var documents = PrepareDocuments(request);
 
+        //Add vehicles documents
         _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Vehicle", addedVehicle.Id);
         await _unitOfWork.Save();
 
         _unitOfWork.EndTransaction();
-        
+
         return Ok(addedVehicle);
     }
 
@@ -157,9 +147,12 @@ public class VehiclesController : ControllerBase
             vehicleDetail.InsuranceExpire = reqVehicleDetail.InsuranceExpire ?? vehicleDetail.InsuranceExpire;
         }
 
-        var updatedVehicle = await _unitOfWork.Vehicles.UpdateVehicle(vehicle);
+        var mappedRequestToDocuments = _mapper.Map<CreateVehicleRequest>(request);
 
+        var updatedVehicle = await _unitOfWork.Vehicles.UpdateVehicle(vehicle);
         await _unitOfWork.Save();
+        
+        var documents = PrepareDocuments(mappedRequestToDocuments);
 
         var response = _mapper.Map<VehicleDto>(updatedVehicle);
 
@@ -209,5 +202,23 @@ public class VehiclesController : ControllerBase
         await _unitOfWork.Save();
 
         return Ok(BasicResponse.Successful);
+    }
+
+    private List<Document> PrepareDocuments(CreateVehicleRequest request)
+    {
+        var documents = new List<Document>();
+        var namingPolicy = new SnakeCaseNamingPolicy();
+        for (var index = 0; index < request.GetType().GetProperties().Length; index++)
+        {
+            var p = request.GetType().GetProperties()[index];
+            if (p.Name is "CarCard" or "CarCardBack" or "TechDiagnosis" or "Insurance")
+                documents.Add(new Document
+                {
+                    Type = namingPolicy.ConvertName(p.Name),
+                    Path = p.GetValue(request, null)?.ToString()
+                });
+        }
+
+        return documents;
     }
 }
