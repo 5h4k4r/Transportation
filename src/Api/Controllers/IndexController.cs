@@ -23,7 +23,7 @@ public class IndexController : ControllerBase
             new AuthEndpoint { Address = "swagger", Method = "get" },
             new AuthEndpoint { Address = "/swagger/index.html", Method = "get" },
             new AuthEndpoint { Address = "swagger/index.html", Method = "get" },
-            new AuthEndpoint { Address = "/v3", Method = "get" },
+            new AuthEndpoint { Address = "/v3", Method = "get" }
         };
 
 
@@ -35,6 +35,5 @@ public class IndexController : ControllerBase
                 Block = new List<AuthEndpoint>()
             }
         });
-
     }
 }
