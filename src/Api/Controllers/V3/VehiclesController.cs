@@ -151,8 +151,10 @@ public class VehiclesController : ControllerBase
 
         var updatedVehicle = await _unitOfWork.Vehicles.UpdateVehicle(vehicle);
         await _unitOfWork.Save();
-        
+
         var documents = PrepareDocuments(mappedRequestToDocuments);
+
+        //TODO: update documents in document repository
 
         var response = _mapper.Map<VehicleDto>(updatedVehicle);
 
