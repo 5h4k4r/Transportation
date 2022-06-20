@@ -112,7 +112,6 @@ public class ServantsRepository : IServantsRepository
         if (servant is null)
             throw new NotFoundException("Servant not found");
 
-
         servant.Address = model.Address ?? servant.Address;
         servant.Certificate = model.Certificate ?? servant.Certificate;
         servant.GenderId = model.GenderId ?? servant.GenderId;
