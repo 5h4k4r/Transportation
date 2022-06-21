@@ -62,7 +62,7 @@ public class ServantsController : ControllerBase
     }
 
     /// <summary>
-    ///     List Servants
+    ///     Get Servant by Id
     /// </summary>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]

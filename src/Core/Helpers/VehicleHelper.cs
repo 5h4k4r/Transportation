@@ -1,10 +1,13 @@
 using System.Text.Json;
+using Core.Helpers;
 using Core.Models.Responses;
 
 namespace Api.Helpers;
 
 public static class VehicleHelper
 {
+    private static readonly SnakeCaseNamingPolicy SnakeCasePolicy = new();
+
     public static PlaqueDtoResponse? PreparePlaque(string? plaque)
     {
         var deserializationOptions = new JsonSerializerOptions
@@ -19,7 +22,8 @@ public static class VehicleHelper
     {
         var serializationOptions = new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = SnakeCasePolicy
         };
         var plaqueString = JsonSerializer.Serialize(plaque, serializationOptions);
         return plaqueString;

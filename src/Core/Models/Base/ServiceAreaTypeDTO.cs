@@ -9,7 +9,7 @@ public class ServiceAreaTypeDto
     public ulong? TypeId { get; set; }
     public ulong? UsageId { get; set; }
     public string Params { get; set; } = null!;
-    public string Currency { get; set; } = null!;
+    public string? Currency { get; set; } = null!;
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
