@@ -28,6 +28,7 @@ public class UserAuthHandler : AuthenticationHandler<UserAuthOptions>
         _jsonSerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     }
 
+
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var authHeader = Request.Headers["user"].FirstOrDefault();
