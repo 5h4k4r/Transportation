@@ -199,13 +199,14 @@ public class ServantsController : ControllerBase
         var user = await _unitOfWork.User.GetUserById(request.UserId);
 
         await _unitOfWork.Save();
-
+        
+        
+        //prepare document for servant
         var documentsToPrepare = new List<string>
             { "Certificate", "CertificateBack", "NationalCardBack", "Avatar", "NationalCard" };
-
         var documents = PrepareDocuments(request, documentsToPrepare);
 
-
+        //add documents
         await _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Servant", request.UserId);
 
         if (!User.HasRole(Role.Servant))
@@ -247,6 +248,7 @@ public class ServantsController : ControllerBase
         if (request.AreaId.HasValue && await _unitOfWork.AreaInfos.GetAreaInfoById(request.AreaId.Value) is null)
             throw new NotFoundException("The Area you are trying to assign the servant to does not exist");
 
+        _unitOfWork.BeginTransaction();
 
         var updatedServant = await _unitOfWork.Servants.UpdateServant(request, id);
 
@@ -263,6 +265,8 @@ public class ServantsController : ControllerBase
 
 
         await _unitOfWork.Save();
+
+        _unitOfWork.EndTransaction();
 
 
         return Ok(request);
