@@ -127,7 +127,7 @@ public class VehiclesRepository : IVehiclesRepository
         return newVehicleDetail;
     }
 
-    public Task<VehicleDtoResponse?> GetVehicleById(ulong id)
+    public Task<VehicleDtoResponse?> GetDetailedVehicleById(ulong id)
     {
         var query = _context.Vehicles.Where(v => v.Id == id)
             .ProjectTo<VehicleDto>(_mapper.ConfigurationProvider)
@@ -192,6 +192,11 @@ public class VehiclesRepository : IVehiclesRepository
         return Task.FromResult(query);
     }
 
+    public async Task<Vehicle?> GetVehicleById(ulong id)
+    {
+        return await _context.Vehicles.Where(v => v.Id == id).Include(v => v.VehicleDetails).FirstOrDefaultAsync();
+    }
+
 
     public Task<List<UserDto>> GetVehicleOwners(ulong id)
     {
@@ -213,11 +218,10 @@ public class VehiclesRepository : IVehiclesRepository
             .ToListAsync();
     }
 
-    public Task<Vehicle> UpdateVehicle(VehicleDto vehicle)
+    public Task<Vehicle> UpdateVehicle(Vehicle vehicle)
     {
-        var vehicleToUpdate = _mapper.Map<Vehicle>(vehicle);
-        _context.Vehicles.Update(vehicleToUpdate);
-        return Task.FromResult(vehicleToUpdate);
+        _context.Vehicles.Update(vehicle);
+        return Task.FromResult(vehicle);
     }
 
     public async Task AddServantToVehicle(ulong vehicleId, ulong servantUserId)
@@ -267,8 +271,9 @@ public class VehiclesRepository : IVehiclesRepository
         return Task.CompletedTask;
     }
 
-    public async Task SubscribeVehicleToService(ulong vehicleId, ICollection<ulong> serviceIds)
+    public async Task SubscribeToService(ulong vehicleId, ICollection<ulong> serviceIds, ulong? servantId = null)
     {
+        var services = new List<ServiceSubscriber>();
         foreach (var serviceId in serviceIds)
         {
             var vehicleService = new ServiceSubscriber
@@ -280,8 +285,75 @@ public class VehiclesRepository : IVehiclesRepository
                 ModelId = vehicleId,
                 ServiceAreaTypeId = serviceId
             };
-            await _context.ServiceSubscribers.AddAsync(vehicleService);
+            services.Add(vehicleService);
+            if (servantId.HasValue)
+            {
+                var servantService = new ServiceSubscriber
+                {
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    IsSubscribed = true,
+                    ModelType = "App\\Models\\Servant",
+                    ModelId = (ulong)servantId,
+                    ServiceAreaTypeId = serviceId
+                };
+                services.Add(servantService);
+            }
+
+
+            await _context.ServiceSubscribers.AddRangeAsync(services);
         }
+    }
+
+    public async Task AddOwnerToVehicle(ulong vehicleId, ulong servantUserId)
+    {
+        var vehicle = _context.Vehicles.SingleOrDefault(v => v.Id == vehicleId);
+        var servant = _context.Servants.SingleOrDefault(s => s.UserId == servantUserId);
+
+        if (vehicle is null || servant is null)
+            throw new NotFoundException("Vehicle or Servant not found");
+
+        var dbVehicleOwner = new VehicleOwner
+        {
+            VehicleId = vehicleId,
+            UserId = servantUserId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+        var vehicleOwner =
+            _context.VehicleOwners
+                .SingleOrDefault(v => v.VehicleId == vehicleId && v.UserId == servantUserId);
+
+        if (vehicleOwner is null)
+            await _context.VehicleOwners.AddAsync(dbVehicleOwner);
+        else
+            throw new DuplicateException("Record Already Exists");
+    }
+
+    public async Task AddUserToVehicle(ulong vehicleId, ulong servantUserId)
+    {
+        var vehicle = _context.Vehicles.SingleOrDefault(v => v.Id == vehicleId);
+        var servant = _context.Servants.SingleOrDefault(s => s.UserId == servantUserId);
+
+        if (vehicle is null || servant is null)
+            throw new NotFoundException("Vehicle or Servant not found");
+
+        var dbVehicleUser = new VehicleUser
+        {
+            VehicleId = vehicleId,
+            UserId = servantUserId,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        var vehicleUser =
+            _context.VehicleUsers
+                .SingleOrDefault(v => v.VehicleId == vehicleId && v.UserId == servantUserId);
+
+        if (vehicleUser is null)
+            await _context.VehicleUsers.AddAsync(dbVehicleUser);
+        else
+            throw new DuplicateException("Record Already Exists");
     }
 }
 

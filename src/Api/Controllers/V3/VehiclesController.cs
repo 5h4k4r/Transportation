@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Api.Helpers;
 using AutoMapper;
+using Core.Helpers;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
@@ -44,7 +45,7 @@ public class VehiclesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetVehicle(ulong id)
     {
-        var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
+        var vehicle = await _unitOfWork.Vehicles.GetDetailedVehicleById(id);
         if (vehicle is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
@@ -84,15 +85,41 @@ public class VehiclesController : ControllerBase
 
         newVehicleDetail.Vehicle = newVehicle;
 
+        _unitOfWork.BeginTransaction();
+        // Create vehicle and vehicle detail
         var addedVehicle = await _unitOfWork.Vehicles.AddVehicleDetail(newVehicleDetail);
-
-        //TODO: Add vehicle documents
-
         await _unitOfWork.Save();
+
+        //if servantId is presented add (user,owner) to Vehicle 
+        if (request.ServantId is { } or > 0)
+            await _unitOfWork.Vehicles.AddServantToVehicle(addedVehicle.Id, (ulong)request.ServantId);
+
+        //subscribe servant and vehicle to service
         if (request.ServiceAreaTypes != null && request.ServiceAreaTypes.Count > 0)
-            await _unitOfWork.Vehicles.SubscribeVehicleToService(addedVehicle.VehicleId, request.ServiceAreaTypes);
+            await _unitOfWork.Vehicles.SubscribeToService(addedVehicle.VehicleId, request.ServiceAreaTypes,
+                request.ServantId);
 
         await _unitOfWork.Save();
+
+        //Add vehicles documents
+        var documents = new List<DocumentDto>();
+        var namingPolicy = new SnakeCaseNamingPolicy();
+        for (var index = 0; index < request.GetType().GetProperties().Length; index++)
+        {
+            var p = request.GetType().GetProperties()[index];
+            if (p.Name is "CarCard" or "CarCardBack" or "TechDiagnosis" or "Insurance")
+                documents.Add(new DocumentDto
+                {
+                    Type = namingPolicy.ConvertName(p.Name),
+                    Path = p.GetValue(request, null)?.ToString()
+                });
+        }
+
+        _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Vehicle", addedVehicle.Id);
+        await _unitOfWork.Save();
+
+        _unitOfWork.EndTransaction();
+
         return Ok(addedVehicle);
     }
 
@@ -102,34 +129,34 @@ public class VehiclesController : ControllerBase
     public async Task<IActionResult> UpdateVehicle(ulong id, [FromBody] UpdateVehicleRequest request)
     {
         var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
-
         if (vehicle is null)
             throw new NotFoundException();
+        //setting new vehicle values
+        vehicle.Title = request.Title ?? vehicle.Title;
+        vehicle.UsageId = request.UsageId ?? vehicle.UsageId;
+        vehicle.UpdatedAt = DateTime.UtcNow;
 
+        // setting new vehicleDetail values if exists
+        if (request.VehicleDetails != null && request.VehicleDetails.Any())
+        {
+            var reqVehicleDetail = request.VehicleDetails.First();
+            var plaqueDtoResponse = reqVehicleDetail.Plaque;
+            string? plaqueString = null;
+            if (plaqueDtoResponse != null) plaqueString = VehicleHelper.PlaqueToString(plaqueDtoResponse);
 
-        var newVehicle = _mapper.Map<VehicleDto>(request);
-        newVehicle.CreatedAt = vehicle.CreatedAt;
-        newVehicle.UpdatedAt = DateTime.UtcNow;
-        newVehicle.Id = id;
-        if (newVehicle.VehicleDetails != null && newVehicle.VehicleDetails.Count > 0)
-            if (vehicle.VehicleDetail != null)
-            {
-                var plaqueString = VehicleHelper.PlaqueToString(request.VehicleDetails.First().Plaque);
-                var vehicleDetailDto = vehicle.VehicleDetail;
+            var vehicleDetail = vehicle.VehicleDetails.First();
 
+            vehicleDetail.UpdatedAt = DateTime.UtcNow;
+            vehicleDetail.Plaque = plaqueString ?? vehicleDetail.Plaque;
+            vehicleDetail.Color = reqVehicleDetail.Color ?? vehicleDetail.Color;
+            vehicleDetail.Model = reqVehicleDetail.Model ?? vehicleDetail.Model;
+            vehicleDetail.Tip = reqVehicleDetail.Tip ?? vehicleDetail.Tip;
+            vehicleDetail.Vin = reqVehicleDetail.Vin ?? vehicleDetail.Vin;
+            vehicleDetail.InsuranceNo = reqVehicleDetail.InsuranceNo ?? vehicleDetail.InsuranceNo;
+            vehicleDetail.InsuranceExpire = reqVehicleDetail.InsuranceExpire ?? vehicleDetail.InsuranceExpire;
+        }
 
-                var newVehicleDetailDto = newVehicle.VehicleDetails.First();
-                newVehicleDetailDto.VehicleId = id;
-                newVehicleDetailDto.Id = vehicleDetailDto.Id;
-                newVehicleDetailDto.CreatedAt = vehicleDetailDto.CreatedAt;
-                newVehicleDetailDto.UpdatedAt = DateTime.UtcNow;
-                newVehicleDetailDto.Plaque = plaqueString;
-
-                newVehicle.VehicleDetails = new List<VehicleDetailDto> { newVehicleDetailDto };
-            }
-
-        var updatedVehicle = await _unitOfWork.Vehicles.UpdateVehicle(newVehicle);
-
+        var updatedVehicle = await _unitOfWork.Vehicles.UpdateVehicle(vehicle);
 
         await _unitOfWork.Save();
 
@@ -144,6 +171,28 @@ public class VehiclesController : ControllerBase
     public async Task<IActionResult> AddSeravntToVehicle([FromBody] AddServantToVehicleRequest request)
     {
         await _unitOfWork.Vehicles.AddServantToVehicle(request.VehicleId, request.UserId);
+        await _unitOfWork.Save();
+
+        return Ok(BasicResponse.Successful);
+    }
+
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [HttpPost("owner")]
+    public async Task<IActionResult> AddOwnerToVehicle([FromBody] AddServantToVehicleRequest request)
+    {
+        await _unitOfWork.Vehicles.AddOwnerToVehicle(request.VehicleId, request.UserId);
+        await _unitOfWork.Save();
+
+        return Ok(BasicResponse.Successful);
+    }
+
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [HttpPost("user")]
+    public async Task<IActionResult> AddUserToVehicle([FromBody] AddServantToVehicleRequest request)
+    {
+        await _unitOfWork.Vehicles.AddUserToVehicle(request.VehicleId, request.UserId);
         await _unitOfWork.Save();
 
         return Ok(BasicResponse.Successful);
