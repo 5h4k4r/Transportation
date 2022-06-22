@@ -7,6 +7,7 @@ using Core.Models.Common;
 using Core.Models.Exceptions;
 using Core.Models.Requests;
 using Core.Models.Responses;
+using Infra.Entities;
 using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -101,21 +102,12 @@ public class VehiclesController : ControllerBase
 
         await _unitOfWork.Save();
 
-        //Add vehicles documents
-        var documents = new List<DocumentDto>();
-        var namingPolicy = new SnakeCaseNamingPolicy();
-        for (var index = 0; index < request.GetType().GetProperties().Length; index++)
-        {
-            var p = request.GetType().GetProperties()[index];
-            if (p.Name is "CarCard" or "CarCardBack" or "TechDiagnosis" or "Insurance")
-                documents.Add(new DocumentDto
-                {
-                    Type = namingPolicy.ConvertName(p.Name),
-                    Path = p.GetValue(request, null)?.ToString()
-                });
-        }
+        //prepare documents model for vehicle
+        var documentToPrepare = new List<string> { "CarCard", "CarCardBack", "TechDiagnosis", "Insurance" };
+        var documents = PrepareDocuments(request, documentToPrepare);
 
-        _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Vehicle", addedVehicle.Id);
+        //Add vehicles documents
+        await _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Vehicle", addedVehicle.Id);
         await _unitOfWork.Save();
 
         _unitOfWork.EndTransaction();
@@ -128,6 +120,7 @@ public class VehiclesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateVehicle(ulong id, [FromBody] UpdateVehicleRequest request)
     {
+        _unitOfWork.BeginTransaction();
         var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
         if (vehicle is null)
             throw new NotFoundException();
@@ -156,9 +149,21 @@ public class VehiclesController : ControllerBase
             vehicleDetail.InsuranceExpire = reqVehicleDetail.InsuranceExpire ?? vehicleDetail.InsuranceExpire;
         }
 
-        var updatedVehicle = await _unitOfWork.Vehicles.UpdateVehicle(vehicle);
 
+        var updatedVehicle = await _unitOfWork.Vehicles.UpdateVehicle(vehicle);
         await _unitOfWork.Save();
+
+
+        //prepare documents model for vehicle
+        var mappedRequestToDocuments = _mapper.Map<CreateVehicleRequest>(request);
+        var documentToPrepare = new List<string> { "CarCard", "CarCardBack", "TechDiagnosis", "Insurance" };
+        var documents = PrepareDocuments(mappedRequestToDocuments, documentToPrepare);
+
+        //update documents
+        await _unitOfWork.Document.UpdateDocuments(documents, "App\\Models\\Vehicle", updatedVehicle.Id);
+        await _unitOfWork.Save();
+
+        _unitOfWork.EndTransaction();
 
         var response = _mapper.Map<VehicleDto>(updatedVehicle);
 
@@ -208,5 +213,30 @@ public class VehiclesController : ControllerBase
         await _unitOfWork.Save();
 
         return Ok(BasicResponse.Successful);
+    }
+
+    private List<Document> PrepareDocuments(CreateVehicleRequest request, List<string> documentsToPrepare)
+    {
+        var documents = new List<Document>();
+        var namingPolicy = new SnakeCaseNamingPolicy();
+        for (var index = 0; index < request.GetType().GetProperties().Length; index++)
+        {
+            var p = request.GetType().GetProperties()[index];
+            foreach (var doc in documentsToPrepare)
+                if (p.Name == doc)
+                    documents.Add(new Document
+                    {
+                        Type = namingPolicy.ConvertName(p.Name),
+                        Path = p.GetValue(request, null)?.ToString()
+                    });
+            // if (p.Name is "CarCard" or "CarCardBack" or "TechDiagnosis" or "Insurance")
+            //     documents.Add(new Document
+            //     {
+            //         Type = namingPolicy.ConvertName(p.Name),
+            //         Path = p.GetValue(request, null)?.ToString()
+            //     });
+        }
+
+        return documents;
     }
 }

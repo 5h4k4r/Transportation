@@ -11,6 +11,14 @@ public class UpdateVehicleRequest
     [JsonIgnore] public DateTime? CreatedAt { get; set; }
     [JsonIgnore] public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
+    public string? CarCard { get; set; }
+
+    public string? CarCardBack { get; set; }
+
+    public string? TechDiagnosis { get; set; }
+
+    public string? Insurance { get; set; }
+
     // public VehicleDetailDTO? VehicleDetail { get; set; }
     public IEnumerable<UpdateVehicleDetailRequest>? VehicleDetails { get; set; } = null!;
 }

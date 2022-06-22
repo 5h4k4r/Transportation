@@ -26,13 +26,13 @@ public class CreateVehicleRequest
 
     public ICollection<ulong>? Options { get; set; }
 
-    public string CarCard { get; set; } = string.Empty;
+    public string? CarCard { get; set; }
 
-    public string CarCardBack { get; set; } = string.Empty;
+    public string? CarCardBack { get; set; }
 
-    public string TechDiagnosis { get; set; } = string.Empty;
+    public string? TechDiagnosis { get; set; }
 
-    public string Insurance { get; set; } = string.Empty;
+    public string? Insurance { get; set; }
 
     [JsonIgnore] public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

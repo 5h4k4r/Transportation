@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using Api.Extensions;
+using Core.Models.Authentication;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Requests;
@@ -40,13 +41,14 @@ public class AreaInfosController : ControllerBase
 
         var areaList = new List<AreaInfoDto>();
 
-        if (mySqlUser.HasRole("superadmin"))
+        if (mySqlUser.HasRole(Roles.SuperAdmin))
         {
             areaList = await _unitOfWork.AreaInfos.ListAreaInfos(model);
         }
 
         else
         {
+            
             // TODO: this can be done with a join with area_infos table if area_id in employee table was foreign key
 
             var employee = await _unitOfWork.Employees.GetEmployeeByUserId(mySqlUser.Id);

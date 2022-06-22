@@ -2,7 +2,6 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Helpers;
 using Core.Models.Base;
-using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -30,28 +29,22 @@ public class DocumentRepository : IDocumentRepository
             .ToListAsync();
     }
 
-    public Task AddDocuments(List<DocumentDto> docs, string modelType, ulong modelId)
+    public Task AddDocuments(List<Document> docs, string modelType, ulong modelId)
     {
-        var requestDocs = PrepareDocuments(docs.Select(x => x.Path));
-
-        var docsToUpdate = requestDocs.Where(x => x.Path != null);
-
-        requestDocs.ForEach(doc =>
+        docs.ForEach(doc =>
         {
             doc.CreatedAt = DateTime.UtcNow;
             doc.UpdatedAt = DateTime.UtcNow;
             doc.ModelId = modelId;
             doc.ModelType = modelType;
         });
-        return _context.Documents.AddRangeAsync(requestDocs);
+        return _context.Documents.AddRangeAsync(docs);
     }
 
-    public async Task<List<Document>> UpdateDocuments(List<DocumentDto> documents, string modelType,
+    public async Task<List<Document>> UpdateDocuments(List<Document> documents, string modelType,
         ulong modelId)
     {
-        var requestDocs = PrepareDocuments(documents.Select(x => x.Path));
-
-        var docsToUpdate = requestDocs.Where(x => x.Path != null);
+        var docsToUpdate = documents.Where(x => x.Path != null);
 
         var databaseDocs = await _context.Documents
             .Where(x => x.ModelType == modelType && x.ModelId == modelId)

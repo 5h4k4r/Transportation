@@ -100,4 +100,12 @@ public class ServicesRepository : IServiceRepository
 
         return Task.FromResult(serviceAreaType);
     }
+
+    public Task<ServiceAreaType> CreateServiceAreaType(ServiceAreaTypeDto serviceAreaType)
+    {
+        var serviceAreaTypeEntity = _mapper.Map<ServiceAreaType>(serviceAreaType);
+        var service = _context.ServiceAreaTypes.Add(serviceAreaTypeEntity);
+
+        return Task.FromResult(service.Entity);
+    }
 }

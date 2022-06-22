@@ -6,6 +6,7 @@ namespace Infra.Interfaces;
 public interface IAreaInfosRepository
 {
     Task<AreaInfoDto?> GetAreaInfoById(ulong id);
+    Task<AreaInfoDto?> GetAreaInfoByAreaId(string id);
 
     Task<AreaInfoDto?> GetAreaInfoByUser(UserDto user);
     Task<AreaInfoDto?> GetAreaInfoByTitle(string title);

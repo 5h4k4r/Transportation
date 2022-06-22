@@ -1,6 +1,7 @@
 using System.Net.Mime;
 using Api.Extensions;
 using AutoMapper;
+using Core.Helpers;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
@@ -61,7 +62,7 @@ public class ServantsController : ControllerBase
     }
 
     /// <summary>
-    ///     List Servants
+    ///     Get Servant by Id
     /// </summary>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
@@ -198,9 +199,15 @@ public class ServantsController : ControllerBase
         var user = await _unitOfWork.User.GetUserById(request.UserId);
 
         await _unitOfWork.Save();
+        
+        
+        //prepare document for servant
+        var documentsToPrepare = new List<string>
+            { "Certificate", "CertificateBack", "NationalCardBack", "Avatar", "NationalCard" };
+        var documents = PrepareDocuments(request, documentsToPrepare);
 
-
-        _unitOfWork.Document.AddDocuments(request.Documents, "App\\Models\\Servant", request.UserId);
+        //add documents
+        await _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Servant", request.UserId);
 
         if (!User.HasRole(Role.Servant))
             await _unitOfWork.RoleUsers.AddRoleUser(new RoleUserDto
@@ -241,17 +248,52 @@ public class ServantsController : ControllerBase
         if (request.AreaId.HasValue && await _unitOfWork.AreaInfos.GetAreaInfoById(request.AreaId.Value) is null)
             throw new NotFoundException("The Area you are trying to assign the servant to does not exist");
 
+        _unitOfWork.BeginTransaction();
 
         var updatedServant = await _unitOfWork.Servants.UpdateServant(request, id);
 
         await _unitOfWork.Save();
 
-        var docs = await _unitOfWork.Document.UpdateDocuments(request.Documents, "App\\Models\\Servant", id);
+        var documentsToPrepare = new List<string>
+            { "Certificate", "CertificateBack", "NationalCardBack", "Avatar", "NationalCard" };
+
+        var mappedRequest = _mapper.Map<CreateServantRequest>(request);
+
+        var documents = PrepareDocuments(mappedRequest, documentsToPrepare);
+
+        var docs = await _unitOfWork.Document.UpdateDocuments(documents, "App\\Models\\Servant", id);
 
 
         await _unitOfWork.Save();
 
+        _unitOfWork.EndTransaction();
+
 
         return Ok(request);
+    }
+
+    private List<Document> PrepareDocuments(CreateServantRequest request, List<string> documentsToPrepare)
+    {
+        var documents = new List<Document>();
+        var namingPolicy = new SnakeCaseNamingPolicy();
+        for (var index = 0; index < request.GetType().GetProperties().Length; index++)
+        {
+            var p = request.GetType().GetProperties()[index];
+            foreach (var doc in documentsToPrepare)
+                if (p.Name == doc)
+                    documents.Add(new Document
+                    {
+                        Type = namingPolicy.ConvertName(p.Name),
+                        Path = p.GetValue(request, null)?.ToString()
+                    });
+            // if (p.Name is "CarCard" or "CarCardBack" or "TechDiagnosis" or "Insurance")
+            //     documents.Add(new Document
+            //     {
+            //         Type = namingPolicy.ConvertName(p.Name),
+            //         Path = p.GetValue(request, null)?.ToString()
+            //     });
+        }
+
+        return documents;
     }
 }
