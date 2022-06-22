@@ -2,6 +2,7 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Extensions;
 using Core.Models.Base;
+using Core.Models.Exceptions;
 using Core.Models.Repositories;
 using Core.Models.Requests;
 using Infra.Entities;
@@ -102,6 +103,30 @@ public class ServantsRepository : IServantsRepository
         await _context.Servants.AddAsync(newServant);
 
         return newServant;
+    }
+
+    public async Task<Servant> UpdateServant(UpdateServantRequest model, ulong userId)
+    {
+        var servant = await _context.Servants.FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (servant is null)
+            throw new NotFoundException("Servant not found");
+
+
+        servant.Address = model.Address ?? servant.Address;
+        servant.Certificate = model.Certificate ?? servant.Certificate;
+        servant.GenderId = model.GenderId ?? servant.GenderId;
+        servant.FirstName = model.FirstName ?? servant.FirstName;
+        servant.LastName = model.LastName ?? servant.LastName;
+        servant.NationalId = model.NationalId ?? servant.NationalId;
+        servant.UpdatedAt = DateTime.UtcNow;
+
+        if (model.AreaId.HasValue)
+            servant.AreaId = model.AreaId.Value;
+
+        var response = _context.Servants.Update(servant).Entity;
+
+        return response;
     }
 
     private async Task<(List<Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(

@@ -111,7 +111,7 @@ public class VehiclesController : ControllerBase
         await _unitOfWork.Save();
 
         _unitOfWork.EndTransaction();
-
+        
         return Ok(addedVehicle);
     }
 
