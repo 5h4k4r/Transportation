@@ -103,7 +103,8 @@ public class VehiclesController : ControllerBase
         await _unitOfWork.Save();
 
         //prepare documents model for vehicle
-        var documents = PrepareDocuments(request);
+        var documentToPrepare = new List<string> { "CarCard", "CarCardBack", "TechDiagnosis", "Insurance" };
+        var documents = PrepareDocuments(request, documentToPrepare);
 
         //Add vehicles documents
         _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Vehicle", addedVehicle.Id);
@@ -152,7 +153,8 @@ public class VehiclesController : ControllerBase
         var updatedVehicle = await _unitOfWork.Vehicles.UpdateVehicle(vehicle);
         await _unitOfWork.Save();
 
-        var documents = PrepareDocuments(mappedRequestToDocuments);
+        var documentToPrepare = new List<string> { "CarCard", "CarCardBack", "TechDiagnosis", "Insurance" };
+        var documents = PrepareDocuments(mappedRequestToDocuments, documentToPrepare);
 
         //TODO: update documents in document repository
 
@@ -206,19 +208,26 @@ public class VehiclesController : ControllerBase
         return Ok(BasicResponse.Successful);
     }
 
-    private List<Document> PrepareDocuments(CreateVehicleRequest request)
+    private List<Document> PrepareDocuments(CreateVehicleRequest request, List<string> documentsToPrepare)
     {
         var documents = new List<Document>();
         var namingPolicy = new SnakeCaseNamingPolicy();
         for (var index = 0; index < request.GetType().GetProperties().Length; index++)
         {
             var p = request.GetType().GetProperties()[index];
-            if (p.Name is "CarCard" or "CarCardBack" or "TechDiagnosis" or "Insurance")
-                documents.Add(new Document
-                {
-                    Type = namingPolicy.ConvertName(p.Name),
-                    Path = p.GetValue(request, null)?.ToString()
-                });
+            foreach (var doc in documentsToPrepare)
+                if (p.Name == doc)
+                    documents.Add(new Document
+                    {
+                        Type = namingPolicy.ConvertName(p.Name),
+                        Path = p.GetValue(request, null)?.ToString()
+                    });
+            // if (p.Name is "CarCard" or "CarCardBack" or "TechDiagnosis" or "Insurance")
+            //     documents.Add(new Document
+            //     {
+            //         Type = namingPolicy.ConvertName(p.Name),
+            //         Path = p.GetValue(request, null)?.ToString()
+            //     });
         }
 
         return documents;
