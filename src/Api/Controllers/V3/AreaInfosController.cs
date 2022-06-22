@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using Api.Extensions;
+using Core.Models.Authentication;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Requests;
@@ -40,7 +41,7 @@ public class AreaInfosController : ControllerBase
 
         var areaList = new List<AreaInfoDto>();
 
-        if (mySqlUser.HasRole("superadmin"))
+        if (mySqlUser.HasRole(Roles.SuperAdmin))
         {
             areaList = await _unitOfWork.AreaInfos.ListAreaInfos(model);
         }
