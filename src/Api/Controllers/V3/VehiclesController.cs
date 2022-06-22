@@ -107,11 +107,11 @@ public class VehiclesController : ControllerBase
         var documents = PrepareDocuments(request, documentToPrepare);
 
         //Add vehicles documents
-        _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Vehicle", addedVehicle.Id);
+        await _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Vehicle", addedVehicle.Id);
         await _unitOfWork.Save();
 
         _unitOfWork.EndTransaction();
-        
+
         return Ok(addedVehicle);
     }
 
@@ -120,6 +120,7 @@ public class VehiclesController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateVehicle(ulong id, [FromBody] UpdateVehicleRequest request)
     {
+        _unitOfWork.BeginTransaction();
         var vehicle = await _unitOfWork.Vehicles.GetVehicleById(id);
         if (vehicle is null)
             throw new NotFoundException();
@@ -148,15 +149,21 @@ public class VehiclesController : ControllerBase
             vehicleDetail.InsuranceExpire = reqVehicleDetail.InsuranceExpire ?? vehicleDetail.InsuranceExpire;
         }
 
-        var mappedRequestToDocuments = _mapper.Map<CreateVehicleRequest>(request);
 
         var updatedVehicle = await _unitOfWork.Vehicles.UpdateVehicle(vehicle);
         await _unitOfWork.Save();
 
+
+        //prepare documents model for vehicle
+        var mappedRequestToDocuments = _mapper.Map<CreateVehicleRequest>(request);
         var documentToPrepare = new List<string> { "CarCard", "CarCardBack", "TechDiagnosis", "Insurance" };
         var documents = PrepareDocuments(mappedRequestToDocuments, documentToPrepare);
 
-        //TODO: update documents in document repository
+        //update documents
+        await _unitOfWork.Document.UpdateDocuments(documents, "App\\Models\\Vehicle", updatedVehicle.Id);
+        await _unitOfWork.Save();
+
+        _unitOfWork.EndTransaction();
 
         var response = _mapper.Map<VehicleDto>(updatedVehicle);
 
