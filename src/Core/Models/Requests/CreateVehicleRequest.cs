@@ -19,7 +19,7 @@ public class CreateVehicleRequest
 
     public string Vin { get; set; } = string.Empty;
 
-
+    public ulong? ServantId { get; set; }
     public PlaqueDtoResponse Plaque { get; set; }
 
     public ICollection<ulong>? ServiceAreaTypes { get; set; }
@@ -30,9 +30,9 @@ public class CreateVehicleRequest
 
     public string CarCardBack { get; set; } = string.Empty;
 
-    public string TechInsuransis { get; set; } = string.Empty;
+    public string TechDiagnosis { get; set; } = string.Empty;
 
-    public string Incurance { get; set; } = string.Empty;
+    public string Insurance { get; set; } = string.Empty;
 
     [JsonIgnore] public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

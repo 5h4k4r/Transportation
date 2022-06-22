@@ -11,7 +11,9 @@ public interface IVehiclesRepository
     Task<List<VehicleDtoResponse>> ListVehicle(ListVehiclesRequest model);
     Task<int> ListVehicleCount(ListVehiclesRequest model);
 
-    public Task<VehicleDtoResponse?> GetVehicleById(ulong id);
+    public Task<VehicleDtoResponse?> GetDetailedVehicleById(ulong id);
+
+    public Task<Vehicle?> GetVehicleById(ulong id);
 
     public Task<Vehicle> AddVehicle(VehicleDto vehicle);
 
@@ -20,11 +22,15 @@ public interface IVehiclesRepository
     public Task<List<UserDto>> GetVehicleOwners(ulong id);
 
     public Task<List<UserDto>> GetVehicleUsers(ulong id);
-    public Task<Vehicle> UpdateVehicle(VehicleDto vehicle);
+    public Task<Vehicle> UpdateVehicle(Vehicle vehicle);
 
     public Task AddServantToVehicle(ulong vehicleId, ulong servantId);
 
+    public Task AddUserToVehicle(ulong vehicleId, ulong servantUserId);
+
+    public Task AddOwnerToVehicle(ulong vehicleId, ulong servantUserId);
+
     public Task DeleteVehicle(ulong id);
 
-    public Task SubscribeVehicleToService(ulong vehicleId, ICollection<ulong> serviceIds);
+    public Task SubscribeToService(ulong vehicleId, ICollection<ulong> serviceIds, ulong? servantId = null);
 }

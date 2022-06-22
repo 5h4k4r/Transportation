@@ -5,9 +5,9 @@ namespace Core.Models.Requests;
 
 public class UpdateVehicleRequest
 {
-    public string Title { get; set; } = null!;
+    public string? Title { get; set; }
     public ulong? UsageId { get; set; }
-    public IEnumerable<ulong> ServiceAreaTypes { get; set; } = null!;
+    public IEnumerable<ulong>? ServiceAreaTypes { get; set; }
     [JsonIgnore] public DateTime? CreatedAt { get; set; }
     [JsonIgnore] public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
 
