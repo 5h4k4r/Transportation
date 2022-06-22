@@ -2,7 +2,6 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Core.Helpers;
 using Core.Models.Base;
-using Core.Models.Requests;
 using Infra.Entities;
 using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +29,7 @@ public class DocumentRepository : IDocumentRepository
             .ToListAsync();
     }
 
-    public Task AddDocuments(List<DocumentDto> docs, string modelType, ulong modelId)
+    public Task AddDocuments(List<Document> docs, string modelType, ulong modelId)
     {
         var requestDocs = PrepareDocuments(docs.Select(x => x.Path));
 
@@ -46,7 +45,7 @@ public class DocumentRepository : IDocumentRepository
         return _context.Documents.AddRangeAsync(requestDocs);
     }
 
-    public async Task<List<Document>> UpdateDocuments(List<DocumentDto> documents, string modelType,
+    public async Task<List<Document>> UpdateDocuments(List<Document> documents, string modelType,
         ulong modelId)
     {
         var requestDocs = PrepareDocuments(documents.Select(x => x.Path));

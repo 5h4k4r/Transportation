@@ -27,6 +27,14 @@ public class AreaInfosRepository : IAreaInfosRepository
             .FirstOrDefaultAsync();
     }
 
+    public Task<AreaInfoDto?> GetAreaInfoByAreaId(string id)
+    {
+        return _context.AreaInfos
+            .ProjectTo<AreaInfoDto>(_mapper.ConfigurationProvider)
+            .Where(x => x.AreaId == id)
+            .FirstOrDefaultAsync();
+    }
+
 
     public Task<AreaInfoDto?> GetAreaInfoByUser(UserDto user)
     {
