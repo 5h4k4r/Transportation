@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Core.Models.Requests;
@@ -15,6 +16,5 @@ public class CreateServantRequest
     public byte? GenderId { get; set; }
     public string Address { get; set; } = null!;
 
-
-    public List<UpdateDocumentsRequest>? Documents { get; set; }
+    [MinLength(5)] public List<KeyValuePair<string?, string>>? Documents { get; set; }
 }
