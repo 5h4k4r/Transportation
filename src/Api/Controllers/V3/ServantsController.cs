@@ -198,9 +198,9 @@ public class ServantsController : ControllerBase
         var createdServant = await _unitOfWork.Servants.CreateServant(servant);
         var user = await _unitOfWork.User.GetUserById(request.UserId);
 
-        await _unitOfWork.Save();
-        
-        
+        // await _unitOfWork.Save();
+
+
         //prepare document for servant
         var documentsToPrepare = new List<string>
             { "Certificate", "CertificateBack", "NationalCardBack", "Avatar", "NationalCard" };
@@ -216,12 +216,12 @@ public class ServantsController : ControllerBase
                 UserId = request.UserId
             });
 
-        await _unitOfWork.Save();
+        // await _unitOfWork.Save();
 
         var model = new AddServantToWalletServiceRequest
         {
             group = "driver",
-            userId = user.AuthId,
+            userId = "608560b2a9ac9b001092bd97",
             IBan = null
         };
 
@@ -270,6 +270,28 @@ public class ServantsController : ControllerBase
 
 
         return Ok(request);
+    }
+
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteServant(ulong id)
+    {
+        if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
+            throw new UnauthorizedException();
+
+
+        var servant = await _unitOfWork.Servants.GetServantByUserId(id, User.GetAreaId().Value);
+
+        if (servant is null)
+            throw new NotFoundException($"No servant found with id {id}");
+
+        if (await _unitOfWork.Servants.ServantActiveTask(id) is not null)
+            throw new OperationCannotBeDone("Servant still has an active task");
+
+        _unitOfWork.Servants.DeleteServant(servant);
+
+        return Ok(BasicResponse.Successful);
     }
 
     private List<Document> PrepareDocuments(CreateServantRequest request, List<string> documentsToPrepare)

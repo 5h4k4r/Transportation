@@ -1,5 +1,6 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using Core.Constants;
 using Core.Extensions;
 using Core.Models.Base;
 using Core.Models.Exceptions;
@@ -33,7 +34,6 @@ public class ServantsRepository : IServantsRepository
             .ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
     }
-
 
     public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int servantId,
         ulong servantUserId)
@@ -111,7 +111,7 @@ public class ServantsRepository : IServantsRepository
 
         if (servant is null)
             throw new NotFoundException("Servant not found");
-        
+
         servant.Address = model.Address ?? servant.Address;
         servant.Certificate = model.Certificate ?? servant.Certificate;
         servant.GenderId = model.GenderId ?? servant.GenderId;
@@ -126,6 +126,30 @@ public class ServantsRepository : IServantsRepository
         var response = _context.Servants.Update(servant).Entity;
 
         return response;
+    }
+
+    public async Task<ServantDto> DeleteServant(ServantDto servant)
+    {
+        servant.DeletedAt = DateTime.UtcNow;
+        var mappedServant = _mapper.Map<Servant>(servant);
+
+        _context.Servants.Update(mappedServant);
+        return servant;
+    }
+
+    public Task<TaskDto?> ServantActiveTask(ulong id)
+    {
+        return _context.Tasks
+            .Where(x => x.ServantId == id)
+            .Where(x => x.Status > (byte)JobStatus.TaskStatus.Accept)
+            .ProjectTo<TaskDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(x => x.Status < (byte)JobStatus.TaskStatus.EndDestination);
+    }
+
+    public Task<ServantDto?> GetServantById(int id, ulong areaId)
+    {
+        return _context.Servants.Where(x => x.AreaId == areaId).Where(x => x.Id == id)
+            .ProjectTo<ServantDto?>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
     }
 
     private async Task<(List<Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(
@@ -187,11 +211,6 @@ public class ServantsRepository : IServantsRepository
         return (tasks, dailyStatistics);
     }
 
-    public Task<ServantDto?> GetServantById(int id, ulong areaId)
-    {
-        return _context.Servants.Where(x => x.AreaId == areaId).Where(x => x.Id == id)
-            .ProjectTo<ServantDto?>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
-    }
 
     private IQueryable<ServantDto> CheckForSearchField(IQueryable<ServantDto> query, ListServantRequest model)
     {
