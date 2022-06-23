@@ -230,7 +230,6 @@ public class ServantsController : ControllerBase
         // TODO: Fix integrating the api with wallet
         var response = await _curl.Send($"{wallet.ServerUrl}/service/user-groups/store", true, true, model, true, true);
 
-
         _unitOfWork.EndTransaction();
 
         return Ok(BasicResponse.Successful);
