@@ -17,4 +17,6 @@ public interface IServantsRepository
 
     Task<Servant> CreateServant(ServantDto servant);
     Task<Servant> UpdateServant(UpdateServantRequest model, ulong userId);
+    Task<ServantDto> DeleteServant(ServantDto servant);
+    Task<TaskDto?> ServantActiveTask(ulong id);
 }
