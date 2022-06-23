@@ -232,6 +232,7 @@ public class ServantsController : ControllerBase
 
         _unitOfWork.EndTransaction();
 
+
         return Ok(BasicResponse.Successful);
     }
 
