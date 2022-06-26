@@ -18,7 +18,8 @@ public interface IUnitOfWork : IDisposable
     IRolesRepository Roles { get; }
     IServiceRepository Services { get; }
     IUsagesRepository Usages { get; }
-
+    ICommissionRepository Commissions { get; }
+    IDiscountsRepository Discounts { get; }
     IGendersRepository Genders { get; }
 
     IDiscountCodeRepository DiscountCodes { get; }
