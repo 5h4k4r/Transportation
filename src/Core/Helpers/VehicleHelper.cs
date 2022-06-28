@@ -1,8 +1,7 @@
 using System.Text.Json;
-using Core.Helpers;
 using Core.Models.Responses;
 
-namespace Api.Helpers;
+namespace Core.Helpers;
 
 public static class VehicleHelper
 {

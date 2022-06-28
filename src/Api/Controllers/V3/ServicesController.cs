@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using AutoMapper;
 using Core.Helpers;
 using Core.Models.Base;
 using Core.Models.Common;
@@ -19,13 +18,11 @@ namespace Api.Controllers.V3;
 [Route("v3/services")]
 public class ServicesController : ControllerBase
 {
-    private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ServicesController(IUnitOfWork unitOfWork, IMapper mapper)
+    public ServicesController(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
 
     [HttpGet]
@@ -116,8 +113,6 @@ public class ServicesController : ControllerBase
 
         var service = await _unitOfWork.Services.CreateServiceAreaType(serviceAreaType);
         await _unitOfWork.Save();
-        if (service == null)
-            return NotFound(new BasicResponse("No service found"));
 
         var response = new CreateServiceAreaTypeResponse
         {

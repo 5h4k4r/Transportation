@@ -25,21 +25,21 @@ public static class DateIntervalHelpers
         if (rangeStart > rangeEnd) rangeEnd = rangeEnd.AddDays(1);
 
         var interval = new Interval(startDate, endDate);
-        var totalHours = interval.durationInSeconds() / 3600;
+        var totalHours = interval.DurationInSeconds() / 3600;
         for (var i = 0; i < loopTimes; i++)
         {
             var excludingRange = new Interval(rangeStart.AddDays(i), rangeEnd.AddDays(i));
 
-            if (excludingRange.contains(interval)) return 0;
+            if (excludingRange.Contains(interval)) return 0;
 
-            if (interval.contains(excludingRange))
+            if (interval.Contains(excludingRange))
             {
-                totalHours -= excludingRange.durationInSeconds() / 3600;
+                totalHours -= excludingRange.DurationInSeconds() / 3600;
             }
-            else if (interval.cross(excludingRange))
+            else if (interval.Cross(excludingRange))
             {
-                var intersection = interval.intersection(excludingRange);
-                totalHours -= intersection.durationInSeconds() / 3600;
+                var intersection = interval.Intersection(excludingRange);
+                totalHours -= intersection.DurationInSeconds() / 3600;
             }
         }
 
@@ -58,30 +58,30 @@ internal class Interval
         _end = end;
     }
 
-    public double durationInSeconds()
+    public double DurationInSeconds()
     {
         return _end.Subtract(_start).TotalSeconds;
     }
 
-    public bool cross(Interval other)
+    public bool Cross(Interval other)
     {
-        return includes(other._start) || includes(other._end);
+        return Includes(other._start) || Includes(other._end);
     }
 
-    public bool contains(Interval interval)
+    public bool Contains(Interval interval)
     {
-        return includes(interval._start) && includes(interval._end);
+        return Includes(interval._start) && Includes(interval._end);
     }
 
 
-    public bool includes(DateTime date)
+    public bool Includes(DateTime date)
     {
         return date >= _start && date <= _end;
     }
 
-    public Interval intersection(Interval other)
+    public Interval Intersection(Interval other)
     {
-        if (cross(other))
+        if (Cross(other))
             return _start >= other._start
                 ? new Interval(_start, other._end)
                 : new Interval(other._start, _end);
@@ -91,6 +91,6 @@ internal class Interval
 
     public override string ToString()
     {
-        return $"{_start} => {_end} : {durationInSeconds()}";
+        return $"{_start} => {_end} : {DurationInSeconds()}";
     }
 }
