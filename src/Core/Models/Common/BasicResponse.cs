@@ -74,6 +74,9 @@ public sealed class BasicResponse
     public static readonly BasicResponse ResourceAlreadyExists =
         new(ErrorCode.ResourceAlreadyExists, "Resource already exists");
 
+    public static readonly BasicResponse BadRequest =
+        new(ErrorCode.ResourceAlreadyExists, "Resource already exists");
+
     public static readonly BasicResponse PermissionDenied =
         new(ErrorCode.PermissionDenied, "Permission denied");
 

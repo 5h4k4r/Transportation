@@ -30,7 +30,7 @@ public class IndexController : ControllerBase
         {
             Data = new AuthEndpoints
             {
-                Exclude = new List<AuthEndpoint>(),
+                Exclude = exclude,
                 Block = new List<AuthEndpoint>()
             }
         });

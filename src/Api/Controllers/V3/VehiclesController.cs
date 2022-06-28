@@ -158,9 +158,18 @@ public class VehiclesController : ControllerBase
         var mappedRequestToDocuments = _mapper.Map<CreateVehicleRequest>(request);
         var documentToPrepare = new List<string> { "CarCard", "CarCardBack", "TechDiagnosis", "Insurance" };
         var documents = PrepareDocuments(mappedRequestToDocuments, documentToPrepare);
+        var docsToUpdate = documents.Where(x => x.Path != null);
 
-        //update documents
-        await _unitOfWork.Document.UpdateDocuments(documents, "App\\Models\\Vehicle", updatedVehicle.Id);
+        var databaseDocs = await _unitOfWork.Document.ListDocumentsByModel("App\\Models\\Vehicle", updatedVehicle.Id);
+
+        foreach (var documentDto in databaseDocs)
+        {
+            documentDto.UpdatedAt = DateTime.UtcNow;
+            documentDto.Path = docsToUpdate.First(x => x.Type == documentDto.Type).Path;
+        }
+
+        
+        _unitOfWork.Document.UpdateDocuments(documents);
         await _unitOfWork.Save();
 
         _unitOfWork.EndTransaction();
@@ -215,16 +224,16 @@ public class VehiclesController : ControllerBase
         return Ok(BasicResponse.Successful);
     }
 
-    private List<Document> PrepareDocuments(CreateVehicleRequest request, List<string> documentsToPrepare)
+    private List<DocumentDto> PrepareDocuments(CreateVehicleRequest request, List<string> documentsToPrepare)
     {
-        var documents = new List<Document>();
+        var documents = new List<DocumentDto>();
         var namingPolicy = new SnakeCaseNamingPolicy();
         for (var index = 0; index < request.GetType().GetProperties().Length; index++)
         {
             var p = request.GetType().GetProperties()[index];
             foreach (var doc in documentsToPrepare)
                 if (p.Name == doc)
-                    documents.Add(new Document
+                    documents.Add(new DocumentDto
                     {
                         Type = namingPolicy.ConvertName(p.Name),
                         Path = p.GetValue(request, null)?.ToString()

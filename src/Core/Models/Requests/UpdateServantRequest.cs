@@ -13,5 +13,5 @@ public class UpdateServantRequest
     public byte? GenderId { get; set; }
     public string? Address { get; set; } = null!;
     [JsonIgnore] public DateTime? UpdateAt { get; set; } = DateTime.UtcNow;
-    public List<UpdateDocumentsRequest>? Documents { get; set; }
+    public List<KeyValuePair<string,string>>? Documents { get; set; }
 }
