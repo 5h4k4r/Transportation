@@ -44,6 +44,7 @@ public class ServicesRepository : IServiceRepository
                             {
                                 new()
                                 {
+                                    //TODO: change language Id to user language
                                     Id = s.ServiceAreaTypes.FirstOrDefault()!.Category.CategoryTranslations
                                         .FirstOrDefault(x => x.LanguageId == 2)!.Id,
                                     CategoryId = s.ServiceAreaTypes.FirstOrDefault()!.Category.CategoryTranslations

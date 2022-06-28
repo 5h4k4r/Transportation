@@ -144,6 +144,7 @@ public class VehiclesRepository : IVehiclesRepository
                 areaId = serviceAreaType.AreaId,
                 typeId = serviceAreaType.TypeId
             })
+            //TODO: change language Id to user language
             .Join(_context.BaseTypeTranslations.Where(x => x.LanguageId == 2),
                 x => x.typeId,
                 bt => bt.BaseTypeId,
