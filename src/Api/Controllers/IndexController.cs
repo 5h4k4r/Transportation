@@ -25,7 +25,8 @@ public class IndexController : ControllerBase
             new AuthEndpoint { Address = "swagger/index.html", Method = "get" },
             new AuthEndpoint { Address = "/v3", Method = "get" }
         };
-        
+
+
         return Ok(new
         {
             Data = new AuthEndpoints
