@@ -15,6 +15,9 @@ public class ServiceAreaTypeDto
     public DateTime? DeletedAt { get; set; }
 
     public CategoryDto? Category { get; set; }
+
+    public ICollection<CommissionDto> Commissions { get; set; }
+    public ICollection<DiscountDto> Discounts { get; set; }
     public ServiceDto? Service { get; set; }
     public UsageDto Usage { get; set; } = null!;
 }

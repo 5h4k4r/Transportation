@@ -44,6 +44,7 @@ public class ServicesRepository : IServiceRepository
                             {
                                 new()
                                 {
+                                    //TODO: change language Id to user language
                                     Id = s.ServiceAreaTypes.FirstOrDefault()!.Category.CategoryTranslations
                                         .FirstOrDefault(x => x.LanguageId == 2)!.Id,
                                     CategoryId = s.ServiceAreaTypes.FirstOrDefault()!.Category.CategoryTranslations
@@ -62,30 +63,27 @@ public class ServicesRepository : IServiceRepository
         return Task.FromResult(services);
     }
 
-    public Task<ServiceAreaTypeDto?> GetServiceById(uint id, uint? serviceId = null)
+    public Task<ServiceAreaType?> GetServiceById(ulong id)
     {
-        var query = _context.ServiceAreaTypes.AsQueryable().Where(x => x.Id == id).AsNoTracking();
+        var query = _context.ServiceAreaTypes.Where(x => x.Id == id).AsNoTracking();
 
-        if (serviceId.HasValue)
-            query = query.Where(x => x.ServiceId == serviceId);
-
-        var serviceAreaType = query.Select(s => new ServiceAreaTypeDto
+        var serviceAreaType = query.Select(s => new ServiceAreaType
         {
             Id = s.Id,
             AreaId = s.AreaId,
             ServiceId = s.ServiceId,
             Params = s.Params,
-            Service = new ServiceDto
+            Service = new Service
             {
                 Id = s.Service.Id,
                 Pin = s.Service.Pin,
                 CreatedAt = s.Service.CreatedAt,
                 UpdatedAt = s.Service.UpdatedAt
             },
-            Category = new CategoryDto
+            Category = new Category
             {
                 Id = s.Category.Id,
-                CategoryTranslations = new List<CategoryTranslationDto>
+                CategoryTranslations = new List<CategoryTranslation>
                 {
                     new()
                     {
@@ -94,7 +92,26 @@ public class ServicesRepository : IServiceRepository
                         LanguageId = s.Category.CategoryTranslations.FirstOrDefault(x => x.LanguageId == 2)!.LanguageId,
                         Title = s.Category.CategoryTranslations.FirstOrDefault(x => x.LanguageId == 2)!.Title
                     }
-                }!
+                }
+            },
+            Commissions = new List<Commission>
+            {
+                new()
+                {
+                    Id = s.Commissions.FirstOrDefault(x => x.DeletedAt == null)!.Id,
+                    Value = s.Commissions.FirstOrDefault(x => x.DeletedAt == null)!.Value,
+                    IsWithdrawFromGift = s.Commissions.FirstOrDefault(x => x.DeletedAt == null)!.IsWithdrawFromGift
+                }
+            },
+            Discounts = new List<Discount>
+            {
+                new()
+                {
+                    Id = s.Discounts.FirstOrDefault(x => x.DeletedAt == null)!.Id,
+                    Value = s.Discounts.FirstOrDefault(x => x.DeletedAt == null)!.Value,
+                    Limit = s.Discounts.FirstOrDefault(x => x.DeletedAt == null)!.Limit,
+                    Periods = s.Discounts.FirstOrDefault(x => x.DeletedAt == null)!.Periods
+                }
             }
         }).FirstOrDefault();
 
@@ -107,5 +124,19 @@ public class ServicesRepository : IServiceRepository
         var service = _context.ServiceAreaTypes.Add(serviceAreaTypeEntity);
 
         return Task.FromResult(service.Entity);
+    }
+
+    public Task<ServiceAreaType?> GetServiceAreaTypeById(uint id)
+    {
+        var serviceAreaType = _context.ServiceAreaTypes.Where(x => x.Id == id)
+            .Include(x => x.Commissions.Where(c => c.DeletedAt == null))
+            .Include(x => x.Discounts.Where(d => d.DeletedAt == null)).FirstOrDefault();
+        return Task.FromResult(serviceAreaType);
+    }
+
+    public Task<ServiceAreaType> UpdateServiceAreaType(ServiceAreaType serviceAreaType)
+    {
+        var updatedEntity = _context.ServiceAreaTypes.Update(serviceAreaType);
+        return Task.FromResult(updatedEntity.Entity);
     }
 }

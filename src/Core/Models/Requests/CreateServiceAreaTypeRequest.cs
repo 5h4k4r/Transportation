@@ -28,7 +28,7 @@ public class ServiceAreaTypeParams
     public double BasePrice { get; set; }
     public double BaseTime { get; set; }
     public double BaseStop { get; set; }
-    public double BaseStopDistance { get; set; }
+    public double BaseStopTime { get; set; }
     public double BaseDistance { get; set; }
     public double MinPrice { get; set; }
     public double BaseNight { get; set; }
