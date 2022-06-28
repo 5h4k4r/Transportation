@@ -56,8 +56,7 @@ public class ServantsController : ControllerBase
         // The servant we get from database
         var items = await _unitOfWork.Servants.ListServants(model, User.GetAreaId()!.Value);
         var count = await _unitOfWork.Servants.ListServantsCount(model, User.GetAreaId()!.Value);
-
-
+        
         return Ok(new PaginatedResponse<ServantDto>(count, model, items));
     }
 
@@ -211,7 +210,6 @@ public class ServantsController : ControllerBase
             if (documents.Count < 5)
                 throw new BadRequestException(
                     "Documents must include Certificate, CertificateBack, NationalCardBack, Avatar, NationalCard");
-            //add documents
             await _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Servant", request.UserId);
         }
 
@@ -267,7 +265,7 @@ public class ServantsController : ControllerBase
         {
             var documents = PrepareDocuments(request.Documents, documentsToPrepare);
 
-            var docs = await _unitOfWork.Document.UpdateDocuments(documents, "App\\Models\\Servant", id);
+            var docs =  _unitOfWork.Document.UpdateDocuments(documents);
         }
 
 
@@ -281,6 +279,7 @@ public class ServantsController : ControllerBase
 
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteServant(ulong id)
     {
@@ -301,21 +300,52 @@ public class ServantsController : ControllerBase
         return Ok(BasicResponse.Successful);
     }
 
-    private List<Document> PrepareDocuments(List<KeyValuePair<string,string>> docs, List<string> documentsToPrepare)
+    [ProducesResponseType(typeof(ServiceResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [HttpGet("{id}/services")]
+    public async Task<IActionResult> ListServiceSubscribers(ulong id)
     {
-        var documents = new List<Document>();
+        var langId = User.GetLanguageId() ?? 2;
+        var services = await _unitOfWork.Servants.GetServantsServices(id, langId);
+
+        return Ok(services);
+    }
+
+    [ProducesResponseType(typeof(ListServantsWithTheirStatusesResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status401Unauthorized)]
+    [HttpGet("servant-statuses")]
+    public async Task<IActionResult> ListServantsWithTheirStatuses(
+        [FromQuery] ListServantsWithTheirStatusesRequest model)
+    {
+        if ((!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin)) || !User.HasRole(Role.Employee))
+            throw new UnauthorizedException();
+
+        var self = await _unitOfWork.Employees.GetEmployeeByUserId(User.UserId()!.Value);
+
+        var servants = await _unitOfWork.Servants.ListServantsWithTheirStatuses(User.GetAreaId()!.Value, model);
+
+        if (servants is null)
+            throw new NotFoundException($"No servants found with this status : {model.Status}");
+
+        return Ok(servants);
+    }
+
+
+    private List<DocumentDto> PrepareDocuments(List<KeyValuePair<string, string>> docs, List<string> documentsToPrepare)
+    {
+        var documents = new List<DocumentDto>();
         var namingPolicy = new SnakeCaseNamingPolicy();
         for (var index = 0; index < docs.Count; index++)
-        {
-            if (documentsToPrepare?.Count(x => string.Equals(x, docs[index].Key)) > 0) 
+            if (documentsToPrepare?.Count(x => string.Equals(x, docs[index].Key)) > 0)
                 documents.Add(
-                    new Document
+                    new DocumentDto
                     {
                         Type = docs[index].Key,
                         Path = docs[index].Value
                     }
                 );
-        }
 
         return documents;
     }
