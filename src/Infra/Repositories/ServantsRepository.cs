@@ -6,6 +6,7 @@ using Core.Models.Base;
 using Core.Models.Exceptions;
 using Core.Models.Repositories;
 using Core.Models.Requests;
+using Core.Models.Responses;
 using Infra.Entities;
 using Infra.Extensions;
 using Infra.Interfaces;
@@ -38,8 +39,8 @@ public class ServantsRepository : IServantsRepository
     public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int servantId,
         ulong servantUserId)
     {
-        var (_, dailyStatistics) = await FilterTasksAndStatistics(servantUserId, model);
-        await _context.ServantScores.Where(x => x.ServantId == (ulong)servantId).Select(x => x.Score).ToListAsync();
+        var (tasks, dailyStatistics) = await FilterTasksAndStatistics(servantUserId, model);
+        // await _context.ServantScores.Where(x => x.ServantId == (ulong)servantId).Select(x => x.Score).ToListAsync();
 
         ServantPerformance servantPerformance = new()
         {
@@ -47,7 +48,7 @@ public class ServantsRepository : IServantsRepository
                                dailyStatistics.Sum(x => x.RejectedRequest),
             DeliveredRequests = dailyStatistics.Sum(x => x.DeliveredRequest),
             RejectedRequests = dailyStatistics.Sum(x => x.RejectedRequest),
-            SuccessTasks = dailyStatistics.Sum(x => x.SuccessTask),
+            SuccessTasks = tasks.Count(x => x.Status == (sbyte)JobStatus.TaskStatus.End),
             RejectedTasks = dailyStatistics.Sum(x => x.RejectedTask),
             OnlineDurations = dailyStatistics.Sum(x => (int)x.OnlineDuration),
             DurationOnTasks = dailyStatistics.Sum(x => (int)x.DurationOnTask),
@@ -146,15 +147,81 @@ public class ServantsRepository : IServantsRepository
             .FirstOrDefaultAsync(x => x.Status < (byte)JobStatus.TaskStatus.EndDestination);
     }
 
+    public async Task<ListServantsWithTheirStatusesResponse> ListServantsWithTheirStatuses(ulong areaId,
+        ListServantsWithTheirStatusesRequest model)
+    {
+        var list = await GetServantsWithTheirStatusesItemsQuery(areaId, model.Status).ToListAsync();
+        var offlineCount = await GetServantsWithTheirStatusesItemsQuery(areaId, "offline").CountAsync();
+        var onlineCount = await GetServantsWithTheirStatusesItemsQuery(areaId, "online").CountAsync();
+        var passiveCount = await GetServantsWithTheirStatusesItemsQuery(areaId, "passive").CountAsync();
+        var blockCount = await GetServantsWithTheirStatusesItemsQuery(areaId, "block").CountAsync();
+        var inTripCount = await _context.Tasks.Where(x =>
+                x.Status >= (sbyte)JobStatus.TaskStatus.Accept && x.Status < (sbyte)JobStatus.TaskStatus.End)
+            .CountAsync();
+
+        return new ListServantsWithTheirStatusesResponse
+        {
+            Offline = offlineCount,
+            Online = onlineCount,
+            Passive = passiveCount,
+            InTrip = inTripCount,
+            Block = blockCount,
+            Items = list
+        };
+    }
+
+    public Task<ServiceResponse?> GetServantsServices(ulong id, ulong langId)
+    {
+        return _context.Servants.Where(v => v.UserId == id)
+            .Join(_context.ServiceSubscribers,
+                servant => servant.UserId,
+                serviceSubscriber => serviceSubscriber.ModelId,
+                (vehicle, service) => new
+                {
+                    vehicle,
+                    service.ServiceAreaTypeId
+                })
+            .Join(_context.ServiceAreaTypes, v => v.ServiceAreaTypeId, sat => sat.Id, (vs, serviceAreaType) => new
+            {
+                vs.vehicle,
+                serviceAreaTypeId = serviceAreaType.Id,
+                service = serviceAreaType.Service.Pin, // Taxi
+                areaId = serviceAreaType.AreaId,
+                typeId = serviceAreaType.TypeId
+            })
+            .Join(_context.BaseTypeTranslations.Where(x => x.LanguageId == langId),
+                x => x.typeId,
+                bt => bt.BaseTypeId,
+                (vs, bt) => new
+                {
+                    vs,
+                    bt.Title // gunjaw w xera
+                }).Join(_context.AreaInfos, vs => vs.vs.areaId, aInfo => aInfo.AreaId, (vsa, area) => new
+            {
+                vsa,
+                area.Title //Sulaimani
+            })
+            .Select(x => new ServiceResponse
+                {
+                    Id = x.vsa.vs.serviceAreaTypeId,
+                    Title = $"{x.vsa.vs.service} {x.vsa.Title} {x.Title}"
+                }
+            ).FirstOrDefaultAsync();
+    }
+
     public Task<ServantDto?> GetServantById(int id, ulong areaId)
     {
         return _context.Servants.Where(x => x.AreaId == areaId).Where(x => x.Id == id)
             .ProjectTo<ServantDto?>(_mapper.ConfigurationProvider).SingleOrDefaultAsync();
     }
 
+
     private async Task<(List<Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(
         ulong servantUserId, ServantPerformanceRequest model)
     {
+        model.StartAt = model.StartAt?.ToUniversalTime();
+        model.EndAt = model.EndAt?.ToUniversalTime();
+
         var tasksQuery = _context.Tasks.Where(x => x.ServantId == servantUserId);
         var dailyTasksQuery = _context.ServantDailyStatistics.Where(x => x.ServantId == servantUserId);
 
@@ -193,7 +260,9 @@ public class ServantsRepository : IServantsRepository
         }
         else if (model.StartAt != null && model.EndAt != null)
         {
-            tasks = await tasksQuery.Where(x => x.CreatedAt >= model.StartAt).Where(x => x.CreatedAt <= model.EndAt)
+            tasks = await tasksQuery
+                .Where(x => x.CreatedAt >= model.StartAt)
+                .Where(x => x.CreatedAt <= model.EndAt)
                 .ToListAsync();
 
             var startDate = DateOnly.FromDateTime(model.StartAt ?? today.StartOfDay());
@@ -225,5 +294,38 @@ public class ServantsRepository : IServantsRepository
             "PhoneNumber" => query.Include(x => x.User).Where(x => x.User.Mobile.Contains(model.SearchValue)),
             _ => throw new ArgumentOutOfRangeException()
         };
+    }
+
+    private IQueryable<ListServantsWithTheirStatusesItem> GetServantsWithTheirStatusesItemsQuery(ulong areaId,
+        string status)
+    {
+        return _context.ServantStatuses
+            .Where(x => x.Status.Equals(status))
+            .Include(x => x.Service)
+            .Include(x => x.Servant)
+            .ThenInclude(x => x.User)
+            .OrderByDescending(x => x.UpdatedAt)
+            .Where(x => x.Servant.AreaId == areaId)
+            .Select(x => new ListServantsWithTheirStatusesItem
+            {
+                Location = new ListServantsWithTheirStatusesLocation
+                {
+                    Lat = x.Lat,
+                    Lng = x.Lng,
+                    Bearing = 0
+                },
+                User = new ListServantsWithTheirStatusesUser
+                {
+                    Id = x.Servant.User.Id,
+                    FirstName = x.Servant.FirstName,
+                    LastName = x.Servant.LastName,
+                    Mobile = x.Servant.User.Mobile
+                },
+                Service = new ListServantsWithTheirStatusesService
+                {
+                    Id = x.Service.Id,
+                    Pin = x.Service.Pin
+                }
+            });
     }
 }
