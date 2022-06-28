@@ -2,6 +2,25 @@ namespace Core.Constants;
 
 public static class JobStatus
 {
+    public enum DestinationStatus
+    {
+        Canceled = -1,
+        Active = 1,
+        Switched = 2,
+        SwitchedDestination = 3,
+        Stop = 5,
+        Arrived = 10
+    }
+
+    public enum RequestStatus
+    {
+        Waiting = 1,
+        Reserve = 2,
+        Doing = 3,
+        Complete = 10,
+        Negatives = 0
+    }
+
     public enum TaskStatus
     {
         Reserve = 1,
@@ -14,22 +33,10 @@ public static class JobStatus
         Negatives = 0
     }
 
-    public enum RequestStatus
+    public class ServantStatus
     {
-        Waiting = 1,
-        Reserve = 2,
-        Doing = 3,
-        Complete = 10,
-        Negatives = 0
-    }
-
-    public enum DestinationStatus
-    {
-        Canceled = -1,
-        Active = 1,
-        Switched = 2,
-        SwitchedDestination = 3,
-        Stop = 5,
-        Arrived = 10
+        public const string Online = "online";
+        public const string Offline = "offline";
+        public const string Passive = "passive";
     }
 }

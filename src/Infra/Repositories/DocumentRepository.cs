@@ -27,39 +27,50 @@ public class DocumentRepository : IDocumentRepository
             .Where(x => x.ModelType == modelType && x.ModelId == modelId)
             .ProjectTo<DocumentDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
-    }
-
-    public Task AddDocuments(List<Document> docs, string modelType, ulong modelId)
+    } 
+    public Task<List<DocumentDto>> ListDocumentsByIds(List<ulong> documentIds)
     {
-        docs.ForEach(doc =>
-        {
-            doc.CreatedAt = DateTime.UtcNow;
-            doc.UpdatedAt = DateTime.UtcNow;
-            doc.ModelId = modelId;
-            doc.ModelType = modelType;
-        });
-        return _context.Documents.AddRangeAsync(docs);
-    }
-
-    public async Task<List<Document>> UpdateDocuments(List<Document> documents, string modelType,
-        ulong modelId)
-    {
-        var docsToUpdate = documents.Where(x => x.Path != null);
-
-        var databaseDocs = await _context.Documents
-            .Where(x => x.ModelType == modelType && x.ModelId == modelId)
+        return _context.Documents
+            .Where(x=>documentIds.Any(s=>x.Id == s))
+            .ProjectTo<DocumentDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
-
-        foreach (var documentDto in databaseDocs)
-        {
-            documentDto.UpdatedAt = DateTime.UtcNow;
-            documentDto.Path = docsToUpdate.First(x => x.Type == documentDto.Type).Path;
-        }
-
-        _context.Documents.UpdateRange(databaseDocs);
-
-        return databaseDocs;
     }
+
+    public Task AddDocuments(List<DocumentDto> docs, string modelType, ulong modelId)
+    {
+        if (docs == null) throw new ArgumentNullException(nameof(docs));
+        
+        var documents = docs.Select(document => _mapper.Map<Document>(new DocumentDto
+            {
+                CreatedAt = DateTime.UtcNow, 
+                UpdatedAt = DateTime.UtcNow, 
+                ModelId = modelId, 
+                ModelType = modelType,
+                Path = document.Path,
+                Type = document.Type
+            }))
+            .ToList();
+
+        return _context.Documents.AddRangeAsync(documents);
+    }
+
+        
+    
+
+    public List<DocumentDto> UpdateDocuments(List<DocumentDto> documentsDto)
+    {
+        var documents = new List<Document>();
+        foreach (var document in documentsDto) documents.Add(_mapper.Map<Document>(document));
+
+        _context.Documents.UpdateRange(documents);
+
+        return documentsDto;
+    }
+
+    // public async Task VerifyDocuments(VerifyDocumentsRequest model)
+    // {
+    //     var query = 
+    // }
 
     private List<Document?> PrepareDocuments(IEnumerable<string> docs)
     {
