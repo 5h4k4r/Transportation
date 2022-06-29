@@ -16,6 +16,7 @@ public class UnitOfWork : IUnitOfWork
     private IAreaInfosRepository? _areaInfos;
     private ICacheRepository? _cache;
     private IDepartmentsRepository? _departments;
+    private IDiscountCodeRepository _discountCode;
     private IDocumentRepository? _documents;
     private IEmployeesRepository? _employees;
     private IGendersRepository? _gender;
@@ -24,13 +25,13 @@ public class UnitOfWork : IUnitOfWork
     private IRolesRepository? _roles;
     private IRoleUsersRepository? _roleUsers;
     private IServantsRepository? _servants;
+    private IServantStatus? _servantStatus;
     private IServantWorkDaysRepository? _servantWorkDays;
     private IServiceRepository? _services;
     private ITasksRepository? _tasks;
     private IUsagesRepository? _usages;
     private IUsersRepository? _user;
     private IVehiclesRepository? _vehicles;
-    private IDiscountCodeRepository _discountCode;
 
     public UnitOfWork(TransportationContext repositoryContext, IMapper mapper, IRedisClientsManagerAsync cacheService,
         ICurl curl)
@@ -40,6 +41,9 @@ public class UnitOfWork : IUnitOfWork
         _cacheService = cacheService;
         _curl = curl;
     }
+
+    public IServantStatus ServantStatuses =>
+        _servantStatus ??= new ServantStatusRepository(_repoContext, _mapper);
 
     public ICacheRepository Cache => _cache ??= new RedisCacheRepository(_repoContext, _mapper, _cacheService);
     public IServantsRepository Servants => _servants ??= new ServantsRepository(_repoContext, _mapper);
@@ -67,6 +71,7 @@ public class UnitOfWork : IUnitOfWork
 
     public IUsagesRepository Usages => _usages ??= new UsagesRepository(_repoContext, _mapper);
     public IDocumentRepository Document => _documents ??= new DocumentRepository(_repoContext, _mapper);
+    public IServantStatus ServantStatus =>  _servantStatus ??= new ServantStatusRepository(_repoContext, _mapper);
 
     public void BeginTransaction()
     {

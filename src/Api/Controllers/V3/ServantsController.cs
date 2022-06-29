@@ -55,7 +55,7 @@ public class ServantsController : ControllerBase
         // The servant we get from database
         var items = await _unitOfWork.Servants.ListServants(model, User.GetAreaId()!.Value);
         var count = await _unitOfWork.Servants.ListServantsCount(model, User.GetAreaId()!.Value);
-        
+
         return Ok(new PaginatedResponse<ServantDto>(count, model, items));
     }
 
@@ -330,6 +330,33 @@ public class ServantsController : ControllerBase
 
         return Ok(servants);
     }
+
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [HttpPost("{id}/change-status")]
+    public async Task<IActionResult> ChangeServantStatus(ulong id, ChangeServantStatusRequest model)
+    {
+        if ((!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin)) || !User.HasRole(Role.Employee))
+            throw new UnauthorizedException();
+
+        var servant = await _unitOfWork.Servants.GetServantByUserId(id, User.GetAreaId()!.Value);
+
+        if (servant is null)
+            throw new NotFoundException($"No servant found with id: {id}");
+
+        var servantStatus = await _unitOfWork.ServantStatus.GetServantStatus(id);
+
+        if (servantStatus is null)
+            throw new NotFoundException($"No Servant Status found for servant id: {id}");
+        
+        
+        _unitOfWork.ServantStatus.ChangeServantStatus(servantStatus, model.Status);
+        
+        await _unitOfWork.Save();
+        
+        return Ok();
+    }
+
 
     private List<DocumentDto> PrepareDocuments(List<KeyValuePair<string, string>> docs, List<string> documentsToPrepare)
     {
