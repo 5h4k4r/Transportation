@@ -25,13 +25,13 @@ public class RoleUserRepository : IRoleUsersRepository
         //  Task.FromResult(_mapper.Map<RoleUserDTO?>(_context.RoleUsers.Where(x => x.UserId == userId).SingleOrDefaultAsync()));
     }
 
-    public Task<RoleUser> AddRoleUser(RoleUserDto roleUser)
+    public async Task<RoleUser> AddRoleUser(RoleUserDto roleUser)
     {
         var mappedModel = _mapper.Map<RoleUser>(roleUser);
         mappedModel.CreatedAt = DateTime.UtcNow;
         mappedModel.UpdatedAt = DateTime.UtcNow;
 
-        _context.RoleUsers.AddAsync(mappedModel);
-        return Task.FromResult(mappedModel);
+        await _context.RoleUsers.AddAsync(mappedModel);
+        return mappedModel;
     }
 }
