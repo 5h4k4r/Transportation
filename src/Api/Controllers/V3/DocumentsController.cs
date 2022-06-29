@@ -1,6 +1,5 @@
 using System.Net.Mime;
 using Api.Extensions;
-using AutoMapper;
 using Core.Models.Authentication;
 using Core.Models.Common;
 using Core.Models.Exceptions;
@@ -18,12 +17,10 @@ namespace Api.Controllers.V3;
 [Route("v3/documents")]
 public class DocumentsController : ControllerBase
 {
-    private readonly IMapper _mapper;
     private readonly IUnitOfWork _unitOfWork;
 
-    public DocumentsController(IUnitOfWork unitOfWork, IMapper mapper)
+    public DocumentsController(IUnitOfWork unitOfWork)
     {
-        _mapper = mapper;
         _unitOfWork = unitOfWork;
     }
 

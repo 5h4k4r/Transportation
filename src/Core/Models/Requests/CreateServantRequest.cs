@@ -16,5 +16,5 @@ public class CreateServantRequest
     public byte? GenderId { get; set; }
     public string Address { get; set; } = null!;
 
-    [MinLength(5)] public List<KeyValuePair<string?, string>>? Documents { get; set; }
+    [MinLength(5)] public List<KeyValuePair<string, string>>? Documents { get; set; }
 }

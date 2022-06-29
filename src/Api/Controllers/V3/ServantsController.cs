@@ -1,7 +1,6 @@
 using System.Net.Mime;
 using Api.Extensions;
 using AutoMapper;
-using Core.Helpers;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
@@ -56,7 +55,7 @@ public class ServantsController : ControllerBase
         // The servant we get from database
         var items = await _unitOfWork.Servants.ListServants(model, User.GetAreaId()!.Value);
         var count = await _unitOfWork.Servants.ListServantsCount(model, User.GetAreaId()!.Value);
-        
+
         return Ok(new PaginatedResponse<ServantDto>(count, model, items));
     }
 
@@ -194,8 +193,8 @@ public class ServantsController : ControllerBase
 
         _unitOfWork.BeginTransaction();
         var servant = _mapper.Map<ServantDto>(request);
-        var createdServant = await _unitOfWork.Servants.CreateServant(servant);
-        var user = await _unitOfWork.User.GetUserById(request.UserId);
+        await _unitOfWork.Servants.CreateServant(servant);
+        await _unitOfWork.User.GetUserById(request.UserId);
 
         // await _unitOfWork.Save();
 
@@ -225,13 +224,13 @@ public class ServantsController : ControllerBase
         {
             group = "driver",
             userId = "608560b2a9ac9b001092bd97",
-            IBan = null
+            IBan = ""
         };
 
         var wallet = _serviceProvider.GetRequiredService<IOptions<WalletOptions>>().Value;
 
         // TODO: Fix integrating the api with wallet
-        var response = await _curl.Send($"{wallet.ServerUrl}/service/user-groups/store", true, true, model, true, true);
+        await _curl.Send($"{wallet.ServerUrl}/service/user-groups/store", true, true, model, true, true);
 
 
         await _unitOfWork.Save();
@@ -255,7 +254,7 @@ public class ServantsController : ControllerBase
 
         _unitOfWork.BeginTransaction();
 
-        var updatedServant = await _unitOfWork.Servants.UpdateServant(request, id);
+        await _unitOfWork.Servants.UpdateServant(request, id);
 
         // await _unitOfWork.Save();
 
@@ -266,7 +265,7 @@ public class ServantsController : ControllerBase
         {
             var documents = PrepareDocuments(request.Documents, documentsToPrepare);
 
-            var docs =  _unitOfWork.Document.UpdateDocuments(documents);
+            _unitOfWork.Document.UpdateDocuments(documents);
         }
 
 
@@ -323,7 +322,7 @@ public class ServantsController : ControllerBase
         if ((!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin)) || !User.HasRole(Role.Employee))
             throw new UnauthorizedException();
 
-        var self = await _unitOfWork.Employees.GetEmployeeByUserId(User.UserId()!.Value);
+        await _unitOfWork.Employees.GetEmployeeByUserId(User.UserId()!.Value);
 
         var servants = await _unitOfWork.Servants.ListServantsWithTheirStatuses(User.GetAreaId()!.Value, model);
 
@@ -333,11 +332,36 @@ public class ServantsController : ControllerBase
         return Ok(servants);
     }
 
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [HttpPost("{id}/change-status")]
+    public async Task<IActionResult> ChangeServantStatus(ulong id, ChangeServantStatusRequest model)
+    {
+        if ((!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin)) || !User.HasRole(Role.Employee))
+            throw new UnauthorizedException();
+
+        var servant = await _unitOfWork.Servants.GetServantByUserId(id, User.GetAreaId()!.Value);
+
+        if (servant is null)
+            throw new NotFoundException($"No servant found with id: {id}");
+
+        var servantStatus = await _unitOfWork.ServantStatus.GetServantStatus(id);
+
+        if (servantStatus is null)
+            throw new NotFoundException($"No Servant Status found for servant id: {id}");
+        
+        
+        _unitOfWork.ServantStatus.ChangeServantStatus(servantStatus, model.Status);
+        
+        await _unitOfWork.Save();
+        
+        return Ok();
+    }
+
 
     private List<DocumentDto> PrepareDocuments(List<KeyValuePair<string, string>> docs, List<string> documentsToPrepare)
     {
         var documents = new List<DocumentDto>();
-        var namingPolicy = new SnakeCaseNamingPolicy();
         for (var index = 0; index < docs.Count; index++)
             if (documentsToPrepare?.Count(x => string.Equals(x, docs[index].Key)) > 0)
                 documents.Add(

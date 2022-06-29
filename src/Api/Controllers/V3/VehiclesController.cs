@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using Api.Helpers;
 using AutoMapper;
 using Core.Helpers;
 using Core.Models.Base;
@@ -7,7 +6,6 @@ using Core.Models.Common;
 using Core.Models.Exceptions;
 using Core.Models.Requests;
 using Core.Models.Responses;
-using Infra.Entities;
 using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
