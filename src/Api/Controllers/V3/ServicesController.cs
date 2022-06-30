@@ -36,7 +36,7 @@ public class ServicesController : ControllerBase
     [ProducesResponseType(typeof(List<ListServicesResponses>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListServices()
     {
-        var services = await _unitOfWork.Services.ListServices(User.LanguageId());
+        var services = await _unitOfWork.Services.ListServices(User.GetLanguageId());
         if (services.Count == 0)
             return NotFound(new BasicResponse("No services found"));
 

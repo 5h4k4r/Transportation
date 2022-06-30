@@ -1,6 +1,5 @@
 using System.Net.Mime;
 using Api.Extensions;
-using Api.Helpers;
 using AutoMapper;
 using Core.Helpers;
 using Core.Models.Base;
@@ -8,7 +7,6 @@ using Core.Models.Common;
 using Core.Models.Exceptions;
 using Core.Models.Requests;
 using Core.Models.Responses;
-using Infra.Entities;
 using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,7 +45,7 @@ public class VehiclesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetVehicle(ulong id)
     {
-        var vehicle = await _unitOfWork.Vehicles.GetDetailedVehicleById(id, User.LanguageId());
+        var vehicle = await _unitOfWork.Vehicles.GetDetailedVehicleById(id, User.GetLanguageId());
         if (vehicle is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
@@ -169,7 +167,7 @@ public class VehiclesController : ControllerBase
             documentDto.Path = docsToUpdate.First(x => x.Type == documentDto.Type).Path;
         }
 
-        
+
         _unitOfWork.Document.UpdateDocuments(documents);
         await _unitOfWork.Save();
 
