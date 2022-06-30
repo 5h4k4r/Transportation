@@ -11,7 +11,7 @@ public interface IVehiclesRepository
     Task<List<VehicleDtoResponse>> ListVehicle(ListVehiclesRequest model);
     Task<int> ListVehicleCount(ListVehiclesRequest model);
 
-    public Task<VehicleDtoResponse?> GetDetailedVehicleById(ulong id);
+    public Task<VehicleDtoResponse?> GetDetailedVehicleById(ulong id, ulong? languageId = 2);
 
     public Task<Vehicle?> GetVehicleById(ulong id);
 

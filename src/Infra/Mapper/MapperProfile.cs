@@ -3,6 +3,7 @@ using Core.Models.Base;
 using Core.Models.Requests;
 using Core.Models.Responses;
 using Infra.Entities;
+using File = Infra.Entities.File;
 using Task = Infra.Entities.Task;
 
 namespace Infra.Mapper;
@@ -59,5 +60,7 @@ public class MapperProfile : Profile
         CreateMap<Destination, DestinationDto>().ReverseMap();
         CreateMap<Commission, CommissionDto>().ReverseMap();
         CreateMap<Discount, DiscountDto>().ReverseMap();
+        CreateMap<File, FileDto>().ReverseMap();
+        CreateMap<ClientFileDto, ClientFile>().ReverseMap();
     }
 }

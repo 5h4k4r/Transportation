@@ -1,4 +1,5 @@
 using System.Net.Mime;
+using Api.Extensions;
 using Api.Helpers;
 using AutoMapper;
 using Core.Helpers;
@@ -46,7 +47,7 @@ public class VehiclesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetVehicle(ulong id)
     {
-        var vehicle = await _unitOfWork.Vehicles.GetDetailedVehicleById(id);
+        var vehicle = await _unitOfWork.Vehicles.GetDetailedVehicleById(id, User.LanguageId());
         if (vehicle is null)
             return NotFound(BasicResponse.ResourceNotFound);
 

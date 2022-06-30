@@ -6,7 +6,7 @@ namespace Infra.Interfaces;
 
 public interface IServiceRepository
 {
-    public Task<List<ListServicesResponses>> ListServices();
+    public Task<List<ListServicesResponses>> ListServices(ulong? languageId = 2);
     public Task<ServiceAreaType?> GetServiceById(ulong id);
 
     Task<ServiceAreaType> CreateServiceAreaType(ServiceAreaTypeDto serviceAreaType);
