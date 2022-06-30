@@ -36,7 +36,7 @@ public class ServantsRepository : IServantsRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<ServantPerformance?> GetServantPerformance(ServantPerformanceRequest model, int servantId,
+    public async Task<ServantPerformance?> GetServantPerformance(GetServantPerformanceRequest model, int servantId,
         ulong servantUserId)
     {
         var (tasks, dailyStatistics) = await FilterTasksAndStatistics(servantUserId, model);
@@ -59,14 +59,51 @@ public class ServantsRepository : IServantsRepository
         return servantPerformance;
     }
 
+    public async Task<List<ListServantsPerformances>> ListServantPerformances(ListServantPerformancesRequest model)
+    {
+        model.StartAt = model.StartAt?.ToUniversalTime();
+        model.EndAt = model.EndAt?.ToUniversalTime();
+        var servantsQuery = _context.Tasks.AsQueryable();
+
+        if (model.StartAt.HasValue)
+            servantsQuery = servantsQuery.Where(x => x.CreatedAt >= model.StartAt.Value);
+
+        if (model.EndAt.HasValue)
+            servantsQuery = servantsQuery.Where(x => x.CreatedAt <= model.EndAt.Value);
+        
+        var response = await servantsQuery.GroupBy(x => x.ServantId).Select(x=> new ListServantsPerformances
+        {
+            Servant = new ServantPerformed
+            {
+                Id = (int)x.Key,
+                Address = x.First().Servant.Address,
+                Certificate = x.First().Servant.Certificate,
+                NationalId = x.First().Servant.NationalId,
+                UserId = x.First().Servant.UserId,
+                FirstName = x.First().Servant.FirstName,
+                LastName = x.First().Servant.LastName,
+                AreaId = (uint)(x.First().Servant.User.AreaId  ?? 0) ,
+                BankId = x.First().Servant.BankId,
+                Rating = x.First().Servant.ServantScores.Select(x => x.Score).FirstOrDefault()
+            },
+            SuccessTasks = x.Count(t => t.Status == (sbyte)JobStatus.TaskStatus.End),
+            
+        })
+            .OrderByDescending(x=>x.SuccessTasks)
+            .ApplyPagination(model)
+            .ToListAsync();
+
+        return response;
+    }
+
     public Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId)
     {
         var query = _context.Servants.Where(x => x.AreaId == userAreaId)
+            .Include(x=>x.ServantScores)
             .ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
 
         query = CheckForSearchField(query, model);
-
-
+        
         return query
             .Select(x => new ServantDto
             {
@@ -81,7 +118,8 @@ public class ServantsRepository : IServantsRepository
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 GenderId = x.GenderId,
-                UpdatedAt = x.UpdatedAt
+                UpdatedAt = x.UpdatedAt,
+                ServantScores = x.ServantScores
             })
             .ApplySorting(model)
             .ApplyPagination(model)
@@ -91,6 +129,7 @@ public class ServantsRepository : IServantsRepository
     public Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId)
     {
         var query = _context.Servants.Where(x => x.AreaId == userAreaId)
+            .Include(x=>x.ServantScores)
             .ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
 
         query = CheckForSearchField(query, model);
@@ -217,7 +256,7 @@ public class ServantsRepository : IServantsRepository
 
 
     private async Task<(List<Task> Tasks, List<ServantDailyStatistic> DailyStatistics)> FilterTasksAndStatistics(
-        ulong servantUserId, ServantPerformanceRequest model)
+        ulong servantUserId, GetServantPerformanceRequest model)
     {
         model.StartAt = model.StartAt?.ToUniversalTime();
         model.EndAt = model.EndAt?.ToUniversalTime();
@@ -233,50 +272,45 @@ public class ServantsRepository : IServantsRepository
 
         if (model.StartAt is null)
         {
-            tasks = await tasksQuery
+            tasksQuery = tasksQuery
                 .Where(x => x.CreatedAt <= today.StartOfDay())
-                .Where(x => x.CreatedAt >= today.EndOfDay())
-                .ToListAsync();
+                .Where(x => x.CreatedAt >= today.EndOfDay());
 
-            dailyStatistics = await dailyTasksQuery
+            dailyTasksQuery = dailyTasksQuery
                 .Where(x => x.Day != null)
-                .Where(x => x.Day!.Date == DateOnly.FromDateTime(today))
-                .ToListAsync();
+                .Where(x => x.Day!.Date == DateOnly.FromDateTime(today));
         }
         else if (model.StartAt != null && model.EndAt == null)
         {
-            tasks = await tasksQuery
+            tasksQuery = tasksQuery
                 .Where(x => x.CreatedAt >= model.StartAt)
-                .Where(x => x.CreatedAt <= today.EndOfDay())
-                .ToListAsync();
+                .Where(x => x.CreatedAt <= today.EndOfDay());
 
-            dailyStatistics =
-                await dailyTasksQuery
+            dailyTasksQuery = dailyTasksQuery
                     .Where(x => x.Day != null)
                     .Where(x => x.Day!.Date >= DateOnly.FromDateTime(model.StartAt ?? today.StartOfDay()))
-                    .Where(x => x.Day!.Date <= DateOnly.FromDateTime(today.EndOfDay()))
-                    .ToListAsync()
-                ;
+                    .Where(x => x.Day!.Date <= DateOnly.FromDateTime(today.EndOfDay()));
         }
         else if (model.StartAt != null && model.EndAt != null)
         {
-            tasks = await tasksQuery
+            tasksQuery = tasksQuery
                 .Where(x => x.CreatedAt >= model.StartAt)
-                .Where(x => x.CreatedAt <= model.EndAt)
-                .ToListAsync();
+                .Where(x => x.CreatedAt <= model.EndAt);
 
             var startDate = DateOnly.FromDateTime(model.StartAt ?? today.StartOfDay());
             var endDate = DateOnly.FromDateTime(model.EndAt ?? today.EndOfDay());
 
-            dailyStatistics = await dailyTasksQuery
+            dailyTasksQuery = dailyTasksQuery
                 .OrderBy(x => x.DayId)
                 .Where(x => x.Day != null)
                 .Where(x => x.Day!.Date >= startDate)
-                .Where(x => x.Day!.Date <= endDate)
-                .ToListAsync();
+                .Where(x => x.Day!.Date <= endDate);
+
+
         }
 
-
+        dailyStatistics = await dailyTasksQuery.ToListAsync();
+        tasks = await tasksQuery.ToListAsync();
         return (tasks, dailyStatistics);
     }
 

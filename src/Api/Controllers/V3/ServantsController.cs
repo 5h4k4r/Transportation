@@ -87,7 +87,7 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(ServantPerformanceWithUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model)
+    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] GetServantPerformanceRequest model)
     {
         if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
@@ -123,6 +123,23 @@ public class ServantsController : ControllerBase
             Performance = servantPerformance,
             Servant = responseServant
         };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    ///     Lists servants' performances
+    /// </summary>
+    [HttpGet("performances")]
+    [ProducesResponseType(typeof(List<ListServantsPerformances>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> ListServantPerformances([FromQuery] ListServantPerformancesRequest model)
+    {
+        if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
+            throw new UnauthorizedException();
+
+        var response = await _unitOfWork.Servants.ListServantPerformances(model);
 
         return Ok(response);
     }
@@ -188,15 +205,21 @@ public class ServantsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateServant([FromBody] CreateServantRequest request)
     {
+        var requestServant = _mapper.Map<ServantDto>(request);
+        var servantsUser = await _unitOfWork.User.GetUserById(requestServant.UserId);
+        
         if (await _unitOfWork.AreaInfos.GetAreaInfoById(request.AreaId) is null)
             throw new NotFoundException("The Area you are trying to assign the servant to does not exist");
+       
+        if (servantsUser is null)
+            throw new NotFoundException($"No User found with UserId: {requestServant.UserId}");
 
         _unitOfWork.BeginTransaction();
-        var servant = _mapper.Map<ServantDto>(request);
-        await _unitOfWork.Servants.CreateServant(servant);
+        
+        await _unitOfWork.Servants.CreateServant(requestServant);
         await _unitOfWork.User.GetUserById(request.UserId);
 
-        // await _unitOfWork.Save();
+        await _unitOfWork.Save();
 
 
         //prepare document for servant
@@ -208,11 +231,11 @@ public class ServantsController : ControllerBase
             var documents = PrepareDocuments(request.Documents, documentsToPrepare);
             if (documents.Count < 5)
                 throw new BadRequestException(
-                    "Documents must include Certificate, CertificateBack, NationalCardBack, Avatar, NationalCard");
+                    "Documents must include certificate, certificate_back, national_card_back, avatar, national_card");
             await _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Servant", request.UserId);
         }
 
-        if (!User.HasRole(Role.Servant))
+        if (servantsUser != null && servantsUser.RoleUsers.All(x => x.RoleId != (int)Role.Servant))
             await _unitOfWork.RoleUsers.AddRoleUser(new RoleUserDto
             {
                 RoleId = (byte)Role.Servant,
