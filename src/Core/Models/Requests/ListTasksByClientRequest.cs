@@ -9,9 +9,6 @@ namespace Core.Models.Requests;
 public class ListTasksByClientRequest : IPagingOptions, ISortOptions, IValidatableObject
 {
     private string? _sortField;
-
-    [Required] public ulong? ClientId { get; set; }
-
     public ulong? ServantId { get; set; }
     public DateTime? TaskCreatedFrom { get; set; }
     public DateTime? TaskCreatedTo { get; set; }
@@ -48,8 +45,8 @@ public class ListTasksByClientRequest : IPagingOptions, ISortOptions, IValidatab
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (ClientId is null)
-            yield return new ValidationResult($"The field {nameof(ClientId)} is required", new[] { nameof(ClientId) });
+        // if (ClientId is null)
+        //     yield return new ValidationResult($"The field {nameof(ClientId)} is required", new[] { nameof(ClientId) });
 
 
         if (TaskCreatedFrom > TaskCreatedTo)
