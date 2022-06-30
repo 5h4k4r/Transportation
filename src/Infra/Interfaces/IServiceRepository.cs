@@ -7,7 +7,11 @@ namespace Infra.Interfaces;
 public interface IServiceRepository
 {
     public Task<List<ListServicesResponses>> ListServices();
-    public Task<ServiceAreaTypeDto?> GetServiceById(uint id, uint? serviceId = null);
+    public Task<ServiceAreaType?> GetServiceById(ulong id);
 
     Task<ServiceAreaType> CreateServiceAreaType(ServiceAreaTypeDto serviceAreaType);
+
+    Task<ServiceAreaType?> GetServiceAreaTypeById(uint id);
+
+    Task<ServiceAreaType> UpdateServiceAreaType(ServiceAreaType serviceAreaType);
 }

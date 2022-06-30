@@ -70,26 +70,25 @@ public class ServantsRepository : IServantsRepository
 
         if (model.EndAt.HasValue)
             servantsQuery = servantsQuery.Where(x => x.CreatedAt <= model.EndAt.Value);
-        
-        var response = await servantsQuery.GroupBy(x => x.ServantId).Select(x=> new ListServantsPerformances
-        {
-            Servant = new ServantPerformed
+
+        var response = await servantsQuery.GroupBy(x => x.ServantId).Select(x => new ListServantsPerformances
             {
-                Id = (int)x.Key,
-                Address = x.First().Servant.Address,
-                Certificate = x.First().Servant.Certificate,
-                NationalId = x.First().Servant.NationalId,
-                UserId = x.First().Servant.UserId,
-                FirstName = x.First().Servant.FirstName,
-                LastName = x.First().Servant.LastName,
-                AreaId = (uint)(x.First().Servant.User.AreaId  ?? 0) ,
-                BankId = x.First().Servant.BankId,
-                Rating = x.First().Servant.ServantScores.Select(x => x.Score).FirstOrDefault()
-            },
-            SuccessTasks = x.Count(t => t.Status == (sbyte)JobStatus.TaskStatus.End),
-            
-        })
-            .OrderByDescending(x=>x.SuccessTasks)
+                Servant = new ServantPerformed
+                {
+                    Id = (int)x.Key,
+                    Address = x.First().Servant.Address,
+                    Certificate = x.First().Servant.Certificate,
+                    NationalId = x.First().Servant.NationalId,
+                    UserId = x.First().Servant.UserId,
+                    FirstName = x.First().Servant.FirstName,
+                    LastName = x.First().Servant.LastName,
+                    AreaId = (uint)(x.First().Servant.User.AreaId ?? 0),
+                    BankId = x.First().Servant.BankId,
+                    Rating = x.First().Servant.ServantScores.Select(x => x.Score).FirstOrDefault()
+                },
+                SuccessTasks = x.Count(t => t.Status == (sbyte)JobStatus.TaskStatus.End)
+            })
+            .OrderByDescending(x => x.SuccessTasks)
             .ApplyPagination(model)
             .ToListAsync();
 
@@ -99,12 +98,15 @@ public class ServantsRepository : IServantsRepository
     public Task<List<ServantDto>> ListServants(ListServantRequest model, ulong userAreaId)
     {
         var query = _context.Servants.Where(x => x.AreaId == userAreaId)
-            .Include(x=>x.ServantScores)
-            .ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
+            .Include(x => x.ServantScores)
+            .Include(x=>x.ServantStatuses)
+            .AsNoTracking();
 
-        query = CheckForSearchField(query, model);
-        
+        query = GetListServantsQuery(query, model);
+
+
         return query
+            .ProjectTo<ServantDto>(_mapper.ConfigurationProvider)
             .Select(x => new ServantDto
             {
                 Address = x.Address,
@@ -119,7 +121,8 @@ public class ServantsRepository : IServantsRepository
                 LastName = x.LastName,
                 GenderId = x.GenderId,
                 UpdatedAt = x.UpdatedAt,
-                ServantScores = x.ServantScores
+                ServantScores = x.ServantScores,
+                ServantStatuses = x.ServantStatuses
             })
             .ApplySorting(model)
             .ApplyPagination(model)
@@ -129,12 +132,12 @@ public class ServantsRepository : IServantsRepository
     public Task<int> ListServantsCount(ListServantRequest model, ulong userAreaId)
     {
         var query = _context.Servants.Where(x => x.AreaId == userAreaId)
-            .Include(x=>x.ServantScores)
-            .ProjectTo<ServantDto>(_mapper.ConfigurationProvider).AsNoTracking();
+            .Include(x => x.ServantScores)
+            .AsNoTracking();
 
-        query = CheckForSearchField(query, model);
+        query = GetListServantsQuery(query, model);
 
-        return query.CountAsync();
+        return query.ProjectTo<ServantDto>(_mapper.ConfigurationProvider).CountAsync();
     }
 
     public async Task<Servant> CreateServant(ServantDto servant)
@@ -287,9 +290,9 @@ public class ServantsRepository : IServantsRepository
                 .Where(x => x.CreatedAt <= today.EndOfDay());
 
             dailyTasksQuery = dailyTasksQuery
-                    .Where(x => x.Day != null)
-                    .Where(x => x.Day!.Date >= DateOnly.FromDateTime(model.StartAt ?? today.StartOfDay()))
-                    .Where(x => x.Day!.Date <= DateOnly.FromDateTime(today.EndOfDay()));
+                .Where(x => x.Day != null)
+                .Where(x => x.Day!.Date >= DateOnly.FromDateTime(model.StartAt ?? today.StartOfDay()))
+                .Where(x => x.Day!.Date <= DateOnly.FromDateTime(today.EndOfDay()));
         }
         else if (model.StartAt != null && model.EndAt != null)
         {
@@ -305,8 +308,6 @@ public class ServantsRepository : IServantsRepository
                 .Where(x => x.Day != null)
                 .Where(x => x.Day!.Date >= startDate)
                 .Where(x => x.Day!.Date <= endDate);
-
-
         }
 
         dailyStatistics = await dailyTasksQuery.ToListAsync();
@@ -315,8 +316,15 @@ public class ServantsRepository : IServantsRepository
     }
 
 
-    private IQueryable<ServantDto> CheckForSearchField(IQueryable<ServantDto> query, ListServantRequest model)
+    private IQueryable<Servant> GetListServantsQuery(IQueryable<Servant> query, ListServantRequest model)
     {
+        if (model.AreaId.HasValue)
+            query = query.Where(x => x.AreaId == model.AreaId!.Value);
+
+        if (model.Status != null)
+            query = query.Where(x => x.ServantStatuses.First().Status == model.Status.ToString());
+
+
         if (model.SearchField is null || model.SearchValue is null)
             return query;
 

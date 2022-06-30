@@ -21,6 +21,14 @@ public static class JobStatus
         Negatives = 0
     }
 
+    public enum ServantStatus
+    {
+        online,
+        offline,
+        passive,
+        block
+    }
+
     public enum TaskStatus
     {
         Reserve = 1,
@@ -31,12 +39,5 @@ public static class JobStatus
         EndDestination = 10,
         End = 20,
         Negatives = 0
-    }
-
-    public class ServantStatus
-    {
-        public const string Online = "online";
-        public const string Offline = "offline";
-        public const string Passive = "passive";
     }
 }

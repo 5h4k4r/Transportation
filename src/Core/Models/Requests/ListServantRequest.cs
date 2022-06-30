@@ -13,6 +13,8 @@ public class ListServantRequest : IPagingOptions, ISortOptions, IValidatableObje
     [AllowedValues("Name", "NationalId", "PhoneNumber", "Id")]
     public string? SearchField { get; set; }
 
+    public ulong? AreaId { get; set; }
+    public JobStatus.ServantStatus? Status { get; set; }
     public string? SearchValue { get; set; }
     public bool IncompleteOnly { get; set; } = false;
     public int? Page { get; set; } = 0;

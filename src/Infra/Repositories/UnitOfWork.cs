@@ -15,9 +15,11 @@ public class UnitOfWork : IUnitOfWork
     private IAreaDepartmentsRepository? _areaDepartments;
     private IAreaInfosRepository? _areaInfos;
     private ICacheRepository? _cache;
+    private ICommissionRepository? _commissions;
     private IDepartmentsRepository? _departments;
-    private IDiscountCodeRepository _discountCode;
     private IDocumentRepository? _documents;
+    private IDiscountCodeRepository? _discountCode;
+    private IDiscountsRepository? _discounts;
     private IEmployeesRepository? _employees;
     private IGendersRepository? _gender;
     private IJobRepository? _jobs;
@@ -51,10 +53,16 @@ public class UnitOfWork : IUnitOfWork
     public IVehiclesRepository Vehicles => _vehicles ??= new VehiclesRepository(_repoContext, _mapper);
     public IUsersRepository User => _user ??= new UsersRepository(_repoContext, _mapper);
 
+    public ICommissionRepository Commissions => _commissions ??= new CommissionRepository(_repoContext, _mapper);
+    public IDiscountsRepository Discounts => _discounts ??= new DiscountsRepository(_repoContext, _mapper);
+
     public IGendersRepository Genders => _gender ??= new GendersRepository(_repoContext, _mapper);
     public ITasksRepository Tasks => _tasks ??= new TasksRepository(_repoContext, _mapper);
     public IRoleUsersRepository RoleUsers => _roleUsers ??= new RoleUserRepository(_repoContext, _mapper);
-    public IDiscountCodeRepository DiscountCodes => _discountCode ?? new DiscountCodesRepository(_repoContext, _mapper);
+
+    public IDiscountCodeRepository DiscountCodes =>
+        _discountCode ??= new DiscountCodesRepository(_repoContext, _mapper);
+
     public IRolesRepository Roles => _roles ??= new RolesRepository(_repoContext, _mapper);
     public IAreaInfosRepository AreaInfos => _areaInfos ??= new AreaInfosRepository(_repoContext, _mapper);
 

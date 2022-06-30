@@ -11,6 +11,4 @@ public class DiscountDto
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
-
-    public virtual ServiceAreaTypeDto ServiceAreaType { get; set; } = null!;
 }
