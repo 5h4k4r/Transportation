@@ -1,5 +1,6 @@
 using System.Net.Mime;
 using System.Text.Json;
+using Api.Extensions;
 using AutoMapper;
 using Core.Helpers;
 using Core.Models.Base;
@@ -35,7 +36,7 @@ public class ServicesController : ControllerBase
     [ProducesResponseType(typeof(List<ListServicesResponses>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListServices()
     {
-        var services = await _unitOfWork.Services.ListServices();
+        var services = await _unitOfWork.Services.ListServices(User.GetLanguageId());
         if (services.Count == 0)
             return NotFound(new BasicResponse("No services found"));
 
@@ -70,9 +71,15 @@ public class ServicesController : ControllerBase
         if (area == null)
             throw new NotFoundException("AreaId is invalid");
 
-        //TODO: check CategoryId
 
-        //TODO: check BaseTypeId
+        var category = await _unitOfWork.Categories.GetCategoryById(request.CategoryId);
+        if (category == null)
+            throw new NotFoundException("CategoryId is invalid");
+
+
+        var baseTypes = await _unitOfWork.BaseTypes.GetBaseTypeById(request.BaseTypeId);
+        if (baseTypes == null)
+            throw new NotFoundException("BaseTypeId is invalid");
 
         //check UsageId
         var usage = await _unitOfWork.Usages.GetUsageById(request.UsageId);

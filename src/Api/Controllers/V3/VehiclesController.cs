@@ -1,4 +1,5 @@
 using System.Net.Mime;
+using Api.Extensions;
 using AutoMapper;
 using Core.Helpers;
 using Core.Models.Base;
@@ -44,7 +45,7 @@ public class VehiclesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetVehicle(ulong id)
     {
-        var vehicle = await _unitOfWork.Vehicles.GetDetailedVehicleById(id);
+        var vehicle = await _unitOfWork.Vehicles.GetDetailedVehicleById(id, User.GetLanguageId());
         if (vehicle is null)
             return NotFound(BasicResponse.ResourceNotFound);
 
@@ -166,7 +167,7 @@ public class VehiclesController : ControllerBase
             documentDto.Path = docsToUpdate.First(x => x.Type == documentDto.Type).Path;
         }
 
-        
+
         _unitOfWork.Document.UpdateDocuments(documents);
         await _unitOfWork.Save();
 

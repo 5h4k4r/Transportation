@@ -12,7 +12,6 @@ using Infra.Extensions;
 using Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Task = Infra.Entities.Task;
-using ServiceStack;
 
 namespace Infra.Repositories;
 
@@ -83,9 +82,9 @@ public class TasksRepository : ITasksRepository
         return response.ToList();
     }
 
-    public async Task<List<ListTasksByClient>> ListTasksByClient(ListTasksByClientRequest model)
+    public async Task<List<ListTasksByClientResponse>> ListTasksByClient(ulong clientId, ListTasksByClientRequest model)
     {
-        var tasks = await ListTasksByClientRequestQuery(model)
+        var tasks = await ListTasksByClientRequestQuery(clientId, model)
             .ApplySorting(model)
             .ApplyPagination(model)
             .AsNoTracking()
@@ -99,9 +98,9 @@ public class TasksRepository : ITasksRepository
         return GetListTasksQuery(model).CountAsync();
     }
 
-    public Task<int> CountClientTasks(ListTasksByClientRequest model)
+    public Task<int> CountClientTasks(ulong clientId, ListTasksByClientRequest model)
     {
-        return ListTasksByClientRequestQuery(model).CountAsync();
+        return ListTasksByClientRequestQuery(clientId, model).CountAsync();
     }
 
     public async Task<TaskWithDistanceMemberTaxiMeter?> GetActiveTaskByServiceId(ulong userId, uint serviceTypeId)
@@ -144,7 +143,7 @@ public class TasksRepository : ITasksRepository
                     TaxiMeter = _mapper.Map<TaxiMeterDto>(all.meter),
                     Member = _mapper.Map<MemberDto>(all.member),
                     DiscountCodeUser = _mapper.Map<DiscountCodeUserDto>(discountCodeUser),
-                    Requester = new Requester()
+                    Requester = new Requester
                     {
                         Id = all.task.MemberPaymentTypes.First().Member.Id,
                         Mobile = all.task.MemberPaymentTypes.First().Member.User.Mobile,
@@ -166,7 +165,7 @@ public class TasksRepository : ITasksRepository
                 )
                 .ProjectTo<DestinationDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
-    
+
 
         tasks.DestinationDtos = destinationDtos;
         return tasks;
@@ -197,7 +196,7 @@ public class TasksRepository : ITasksRepository
         return model.Status.HasValue ? query.Where(x => x.Status == (sbyte)model.Status) : query;
     }
 
-    private IQueryable<ListTasksByClient> ListTasksByClientRequestQuery(ListTasksByClientRequest model)
+    private IQueryable<ListTasksByClientResponse> ListTasksByClientRequestQuery(ulong clientId, ListTasksByClientRequest model)
     {
         var tasksQuery = _context.Tasks;
 
@@ -218,7 +217,7 @@ public class TasksRepository : ITasksRepository
             {
                 Task = task, Member = member
             }
-        ).Where(x => x.Member.ModelType.Contains("Task") && x.Member.UserId == model.ClientId);
+        ).Where(x => x.Member.ModelType.Contains("Task") && x.Member.UserId == clientId);
 
         if (model.Status.HasValue)
             query = query.Where(x => x.Task.Status == (sbyte)model.Status);
@@ -227,7 +226,7 @@ public class TasksRepository : ITasksRepository
             query = query.Where(x => x.Task.ServantId == model.ServantId);
 
         return query.Select(x =>
-            new ListTasksByClient
+            new ListTasksByClientResponse
             {
                 Client = _mapper.Map<MemberDto>(x.Member),
                 Task = new TaskResponse

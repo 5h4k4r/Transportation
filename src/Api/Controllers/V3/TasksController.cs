@@ -54,15 +54,12 @@ public class TasksController : ControllerBase
     /// </summary>
     [HttpGet("client/{clientId}")]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(PaginatedResponse<ListTasksByClient>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedResponse<ListTasksByClientResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> ListTasksByClient(ulong clientId, [FromQuery] ListTasksByClientRequest model)
     {
-        // TODO: Fix this(remove clientId from model)
-        model.ClientId = clientId;
+        var items = await _unitOfWork.Tasks.ListTasksByClient(clientId, model);
+        var count = await _unitOfWork.Tasks.CountClientTasks(clientId, model);
 
-        var items = await _unitOfWork.Tasks.ListTasksByClient(model);
-        var count = await _unitOfWork.Tasks.CountClientTasks(model);
-
-        return Ok(new PaginatedResponse<ListTasksByClient>(count, model, items));
+        return Ok(new PaginatedResponse<ListTasksByClientResponse>(count, model, items));
     }
 }

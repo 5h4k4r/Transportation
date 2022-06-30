@@ -127,7 +127,7 @@ public class VehiclesRepository : IVehiclesRepository
         return newVehicleDetail;
     }
 
-    public Task<VehicleDtoResponse?> GetDetailedVehicleById(ulong id)
+    public Task<VehicleDtoResponse?> GetDetailedVehicleById(ulong id, ulong? languageId = 2)
     {
         var query = _context.Vehicles.Where(v => v.Id == id)
             .ProjectTo<VehicleDto>(_mapper.ConfigurationProvider)
@@ -144,8 +144,7 @@ public class VehiclesRepository : IVehiclesRepository
                 areaId = serviceAreaType.AreaId,
                 typeId = serviceAreaType.TypeId
             })
-            //TODO: change language Id to user language
-            .Join(_context.BaseTypeTranslations.Where(x => x.LanguageId == 2),
+            .Join(_context.BaseTypeTranslations.Where(x => x.LanguageId == languageId),
                 x => x.typeId,
                 bt => bt.BaseTypeId,
                 (vs, bt) => new

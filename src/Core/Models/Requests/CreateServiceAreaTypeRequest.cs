@@ -5,7 +5,6 @@ public class CreateServiceAreaTypeRequest
     public ulong? Icon { get; set; }
     public string AreaId { get; set; }
     public ulong CategoryId { get; set; }
-    public ulong ShippingId { get; set; }
     public ulong BaseTypeId { get; set; }
     public ulong PersonTypeId { get; set; }
     public double BasePrice { get; set; }

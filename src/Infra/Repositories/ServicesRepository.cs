@@ -19,7 +19,7 @@ public class ServicesRepository : IServiceRepository
         _mapper = mapper;
     }
 
-    public Task<List<ListServicesResponses>> ListServices()
+    public Task<List<ListServicesResponses>> ListServices(ulong? languageId = 2)
     {
         var services = _context.Services
             .Include(x => x.ServiceAreaTypes)
@@ -44,15 +44,14 @@ public class ServicesRepository : IServiceRepository
                             {
                                 new()
                                 {
-                                    //TODO: change language Id to user language
                                     Id = s.ServiceAreaTypes.FirstOrDefault()!.Category.CategoryTranslations
-                                        .FirstOrDefault(x => x.LanguageId == 2)!.Id,
+                                        .FirstOrDefault(x => x.LanguageId == languageId)!.Id,
                                     CategoryId = s.ServiceAreaTypes.FirstOrDefault()!.Category.CategoryTranslations
-                                        .FirstOrDefault(x => x.LanguageId == 2)!.CategoryId,
+                                        .FirstOrDefault(x => x.LanguageId == languageId)!.CategoryId,
                                     LanguageId = s.ServiceAreaTypes.FirstOrDefault().Category.CategoryTranslations
-                                        .FirstOrDefault(x => x.LanguageId == 2)!.LanguageId,
+                                        .FirstOrDefault(x => x.LanguageId == languageId)!.LanguageId,
                                     Title = s.ServiceAreaTypes.FirstOrDefault()!.Category.CategoryTranslations
-                                        .FirstOrDefault(x => x.LanguageId == 2)!.Title
+                                        .FirstOrDefault(x => x.LanguageId == languageId)!.Title
                                 }
                             }
                         }
