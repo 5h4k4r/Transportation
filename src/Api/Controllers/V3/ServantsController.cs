@@ -52,6 +52,9 @@ public class ServantsController : ControllerBase
         if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
 
+        if (User.GetAreaId().HasValue && model.AreaId == null && !User.HasRole(Role.SuperAdmin))
+            model.AreaId = User.GetAreaId()!.Value;
+
         // The servant we get from database
         var items = await _unitOfWork.Servants.ListServants(model, User.GetAreaId()!.Value);
         var count = await _unitOfWork.Servants.ListServantsCount(model, User.GetAreaId()!.Value);
@@ -207,15 +210,15 @@ public class ServantsController : ControllerBase
     {
         var requestServant = _mapper.Map<ServantDto>(request);
         var servantsUser = await _unitOfWork.User.GetUserById(requestServant.UserId);
-        
+
         if (await _unitOfWork.AreaInfos.GetAreaInfoById(request.AreaId) is null)
             throw new NotFoundException("The Area you are trying to assign the servant to does not exist");
-       
+
         if (servantsUser is null)
             throw new NotFoundException($"No User found with UserId: {requestServant.UserId}");
 
         _unitOfWork.BeginTransaction();
-        
+
         await _unitOfWork.Servants.CreateServant(requestServant);
         await _unitOfWork.User.GetUserById(request.UserId);
 
@@ -371,12 +374,12 @@ public class ServantsController : ControllerBase
 
         if (servantStatus is null)
             throw new NotFoundException($"No Servant Status found for servant id: {id}");
-        
-        
+
+
         _unitOfWork.ServantStatus.ChangeServantStatus(servantStatus, model.Status);
-        
+
         await _unitOfWork.Save();
-        
+
         return Ok();
     }
 

@@ -18,5 +18,7 @@ public class ServantDto
     public IEnumerable<ServantScoreDto>? ServantScores { get; set; }
 
     public virtual UserDto User { get; set; } = null!;
+    public ICollection<ServantStatusDto> ServantStatuses { get; set; }
+
 
 }
