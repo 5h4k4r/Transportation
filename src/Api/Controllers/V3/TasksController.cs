@@ -38,7 +38,7 @@ public class TasksController : ControllerBase
         if (!User.HasRole(Role.SuperAdmin) && !User.GetAreaId().HasValue)
             throw new UnauthorizedException();
 
-        model.AreaId = User.GetAreaId().Value;
+        model.AreaId = User.GetAreaId()!.Value;
 
         // if ((await _unitOfWork.RoleUsers.GetRoleUserByUserId(user.Id))?.RoleId < 5)
         //     model.AreaId = user.AreaId.Value;

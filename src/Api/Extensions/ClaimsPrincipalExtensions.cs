@@ -31,7 +31,7 @@ public static class ClaimsPrincipalExtensions
         return (ulong)int.Parse(user.FindFirstValue(ClaimTypes.Country));
     }
 
-    public static ulong? LanguageId(this ClaimsPrincipal user)
+    public static ulong? GetLanguageId(this ClaimsPrincipal user)
     {
         return (ulong)int.Parse(user.FindFirstValue(ClaimTypes.Locality));
     }

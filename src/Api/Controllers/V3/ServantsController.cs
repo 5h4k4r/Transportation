@@ -1,7 +1,6 @@
 using System.Net.Mime;
 using Api.Extensions;
 using AutoMapper;
-using Core.Helpers;
 using Core.Models.Base;
 using Core.Models.Common;
 using Core.Models.Exceptions;
@@ -53,10 +52,12 @@ public class ServantsController : ControllerBase
         if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
 
+        if (User.GetAreaId().HasValue && model.AreaId == null && !User.HasRole(Role.SuperAdmin))
+            model.AreaId = User.GetAreaId()!.Value;
+
         // The servant we get from database
         var items = await _unitOfWork.Servants.ListServants(model, User.GetAreaId()!.Value);
         var count = await _unitOfWork.Servants.ListServantsCount(model, User.GetAreaId()!.Value);
-
 
         return Ok(new PaginatedResponse<ServantDto>(count, model, items));
     }
@@ -89,7 +90,7 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(ServantPerformanceWithUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model)
+    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] GetServantPerformanceRequest model)
     {
         if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
@@ -125,6 +126,23 @@ public class ServantsController : ControllerBase
             Performance = servantPerformance,
             Servant = responseServant
         };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    ///     Lists servants' performances
+    /// </summary>
+    [HttpGet("performances")]
+    [ProducesResponseType(typeof(List<ListServantsPerformances>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> ListServantPerformances([FromQuery] ListServantPerformancesRequest model)
+    {
+        if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
+            throw new UnauthorizedException();
+
+        var response = await _unitOfWork.Servants.ListServantPerformances(model);
 
         return Ok(response);
     }
@@ -190,15 +208,21 @@ public class ServantsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateServant([FromBody] CreateServantRequest request)
     {
+        var requestServant = _mapper.Map<ServantDto>(request);
+        var servantsUser = await _unitOfWork.User.GetUserById(requestServant.UserId);
+
         if (await _unitOfWork.AreaInfos.GetAreaInfoById(request.AreaId) is null)
             throw new NotFoundException("The Area you are trying to assign the servant to does not exist");
 
-        _unitOfWork.BeginTransaction();
-        var servant = _mapper.Map<ServantDto>(request);
-        var createdServant = await _unitOfWork.Servants.CreateServant(servant);
-        var user = await _unitOfWork.User.GetUserById(request.UserId);
+        if (servantsUser is null)
+            throw new NotFoundException($"No User found with UserId: {requestServant.UserId}");
 
-        // await _unitOfWork.Save();
+        _unitOfWork.BeginTransaction();
+
+        await _unitOfWork.Servants.CreateServant(requestServant);
+        await _unitOfWork.User.GetUserById(request.UserId);
+
+        await _unitOfWork.Save();
 
 
         //prepare document for servant
@@ -210,12 +234,11 @@ public class ServantsController : ControllerBase
             var documents = PrepareDocuments(request.Documents, documentsToPrepare);
             if (documents.Count < 5)
                 throw new BadRequestException(
-                    "Documents must include Certificate, CertificateBack, NationalCardBack, Avatar, NationalCard");
-            //add documents
+                    "Documents must include certificate, certificate_back, national_card_back, avatar, national_card");
             await _unitOfWork.Document.AddDocuments(documents, "App\\Models\\Servant", request.UserId);
         }
 
-        if (!User.HasRole(Role.Servant))
+        if (servantsUser != null && servantsUser.RoleUsers.All(x => x.RoleId != (int)Role.Servant))
             await _unitOfWork.RoleUsers.AddRoleUser(new RoleUserDto
             {
                 RoleId = (byte)Role.Servant,
@@ -227,13 +250,13 @@ public class ServantsController : ControllerBase
         {
             group = "driver",
             userId = "608560b2a9ac9b001092bd97",
-            IBan = null
+            IBan = ""
         };
 
         var wallet = _serviceProvider.GetRequiredService<IOptions<WalletOptions>>().Value;
 
         // TODO: Fix integrating the api with wallet
-        var response = await _curl.Send($"{wallet.ServerUrl}/service/user-groups/store", true, true, model, true, true);
+        await _curl.Send($"{wallet.ServerUrl}/service/user-groups/store", true, true, model, true, true);
 
 
         await _unitOfWork.Save();
@@ -256,7 +279,7 @@ public class ServantsController : ControllerBase
 
         _unitOfWork.BeginTransaction();
 
-        var updatedServant = await _unitOfWork.Servants.UpdateServant(request, id);
+        await _unitOfWork.Servants.UpdateServant(request, id);
 
         // await _unitOfWork.Save();
 
@@ -267,7 +290,7 @@ public class ServantsController : ControllerBase
         {
             var documents = PrepareDocuments(request.Documents, documentsToPrepare);
 
-            var docs = await _unitOfWork.Document.UpdateDocuments(documents, "App\\Models\\Servant", id);
+            _unitOfWork.Document.UpdateDocuments(documents);
         }
 
 
@@ -281,6 +304,7 @@ public class ServantsController : ControllerBase
 
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteServant(ulong id)
     {
@@ -301,21 +325,77 @@ public class ServantsController : ControllerBase
         return Ok(BasicResponse.Successful);
     }
 
-    private List<Document> PrepareDocuments(List<KeyValuePair<string,string>> docs, List<string> documentsToPrepare)
+    [ProducesResponseType(typeof(ServiceResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [HttpGet("{id}/services")]
+    public async Task<IActionResult> ListServiceSubscribers(ulong id)
     {
-        var documents = new List<Document>();
-        var namingPolicy = new SnakeCaseNamingPolicy();
+        var langId = User.GetLanguageId() ?? 2;
+        var services = await _unitOfWork.Servants.GetServantsServices(id, langId);
+
+        return Ok(services);
+    }
+
+    [ProducesResponseType(typeof(ListServantsWithTheirStatusesResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status401Unauthorized)]
+    [HttpGet("servant-statuses")]
+    public async Task<IActionResult> ListServantsWithTheirStatuses(
+        [FromQuery] ListServantsWithTheirStatusesRequest model)
+    {
+        if ((!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin)) || !User.HasRole(Role.Employee))
+            throw new UnauthorizedException();
+
+        await _unitOfWork.Employees.GetEmployeeByUserId(User.UserId()!.Value);
+
+        var servants = await _unitOfWork.Servants.ListServantsWithTheirStatuses(User.GetAreaId()!.Value, model);
+
+        if (servants is null)
+            throw new NotFoundException($"No servants found with this status : {model.Status}");
+
+        return Ok(servants);
+    }
+
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status400BadRequest)]
+    [HttpPost("{id}/change-status")]
+    public async Task<IActionResult> ChangeServantStatus(ulong id, ChangeServantStatusRequest model)
+    {
+        if ((!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin)) || !User.HasRole(Role.Employee))
+            throw new UnauthorizedException();
+
+        var servant = await _unitOfWork.Servants.GetServantByUserId(id, User.GetAreaId()!.Value);
+
+        if (servant is null)
+            throw new NotFoundException($"No servant found with id: {id}");
+
+        var servantStatus = await _unitOfWork.ServantStatus.GetServantStatus(id);
+
+        if (servantStatus is null)
+            throw new NotFoundException($"No Servant Status found for servant id: {id}");
+
+
+        _unitOfWork.ServantStatus.ChangeServantStatus(servantStatus, model.Status);
+
+        await _unitOfWork.Save();
+
+        return Ok();
+    }
+
+
+    private List<DocumentDto> PrepareDocuments(List<KeyValuePair<string, string>> docs, List<string> documentsToPrepare)
+    {
+        var documents = new List<DocumentDto>();
         for (var index = 0; index < docs.Count; index++)
-        {
-            if (documentsToPrepare?.Count(x => string.Equals(x, docs[index].Key)) > 0) 
+            if (documentsToPrepare?.Count(x => string.Equals(x, docs[index].Key)) > 0)
                 documents.Add(
-                    new Document
+                    new DocumentDto
                     {
                         Type = docs[index].Key,
                         Path = docs[index].Value
                     }
                 );
-        }
 
         return documents;
     }

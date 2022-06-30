@@ -3,6 +3,7 @@ using System.Text.Json;
 using AutoMapper;
 using Core.Models.Base;
 using Core.Models.Common;
+using Core.Models.Exceptions;
 using Core.Models.Requests;
 using Infra.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -69,6 +70,10 @@ public class DiscountCodesController : ControllerBase
         uint userId)
     {
         var users = await _unitOfWork.DiscountCodes.ListUserTasksByDiscountCode(model, codeId, userId);
+        if (users.DiscountCode == null)
+            throw new NotFoundException("No Discount codes found");
+        
+        
         return Ok(new PaginatedResponse<DiscountCodeUserDto>(0, model, users.DiscountCodeUser, users.DiscountCode));
     }
 

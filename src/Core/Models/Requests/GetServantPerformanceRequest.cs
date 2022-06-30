@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Core.Models.Requests;
 
-public class ServantPerformanceRequest : IValidatableObject
+public class GetServantPerformanceRequest : IValidatableObject
 {
     public DateTime? StartAt { get; set; } = DateTime.Today;
     public DateTime? EndAt { get; set; } = DateTime.Today;

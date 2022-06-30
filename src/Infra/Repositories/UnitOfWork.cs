@@ -17,9 +17,9 @@ public class UnitOfWork : IUnitOfWork
     private ICacheRepository? _cache;
     private ICommissionRepository? _commissions;
     private IDepartmentsRepository? _departments;
+    private IDocumentRepository? _documents;
     private IDiscountCodeRepository? _discountCode;
     private IDiscountsRepository? _discounts;
-    private IDocumentRepository? _documents;
     private IEmployeesRepository? _employees;
     private IGendersRepository? _gender;
     private IJobRepository? _jobs;
@@ -27,6 +27,7 @@ public class UnitOfWork : IUnitOfWork
     private IRolesRepository? _roles;
     private IRoleUsersRepository? _roleUsers;
     private IServantsRepository? _servants;
+    private IServantStatus? _servantStatus;
     private IServantWorkDaysRepository? _servantWorkDays;
     private IServiceRepository? _services;
     private ITasksRepository? _tasks;
@@ -42,6 +43,9 @@ public class UnitOfWork : IUnitOfWork
         _cacheService = cacheService;
         _curl = curl;
     }
+
+    public IServantStatus ServantStatuses =>
+        _servantStatus ??= new ServantStatusRepository(_repoContext, _mapper);
 
     public ICacheRepository Cache => _cache ??= new RedisCacheRepository(_repoContext, _mapper, _cacheService);
     public IServantsRepository Servants => _servants ??= new ServantsRepository(_repoContext, _mapper);
@@ -75,6 +79,7 @@ public class UnitOfWork : IUnitOfWork
 
     public IUsagesRepository Usages => _usages ??= new UsagesRepository(_repoContext, _mapper);
     public IDocumentRepository Document => _documents ??= new DocumentRepository(_repoContext, _mapper);
+    public IServantStatus ServantStatus =>  _servantStatus ??= new ServantStatusRepository(_repoContext, _mapper);
 
     public void BeginTransaction()
     {

@@ -59,5 +59,6 @@ public class MapperProfile : Profile
         CreateMap<Destination, DestinationDto>().ReverseMap();
         CreateMap<Commission, CommissionDto>().ReverseMap();
         CreateMap<Discount, DiscountDto>().ReverseMap();
+        CreateMap<ServantStatus, ServantStatusDto>().ReverseMap();
     }
 }

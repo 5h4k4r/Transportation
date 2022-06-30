@@ -27,6 +27,7 @@ public interface IUnitOfWork : IDisposable
     IJobRepository Jobs { get; }
     ICacheRepository Cache { get; }
     IDocumentRepository Document { get; }
+    IServantStatus ServantStatus { get; }
     Task<int> Save();
     void BeginTransaction();
     void EndTransaction();
