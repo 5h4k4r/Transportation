@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace Core.Validations
 {
@@ -21,7 +22,13 @@ namespace Core.Validations
             if (_allowedValues.Contains(value as string))
                 return ValidationResult.Success;
 
-            return new ValidationResult($"{value} is not an allowed value");
+            string allowedValuesAsString = string.Empty;
+
+            foreach (var allowedValue in _allowedValues)
+            {
+                allowedValuesAsString += $"{allowedValue} ";
+            }
+            return new ValidationResult($"{value} is not an allowed value, Allowed Values are: {allowedValuesAsString}" );
         }
     }
 }

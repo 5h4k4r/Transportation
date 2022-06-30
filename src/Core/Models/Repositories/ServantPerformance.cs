@@ -16,6 +16,12 @@ public class ServantPerformance
 
 }
 
+public class ListServantsPerformances
+{
+    public ServantPerformed? Servant { get; set; }
+    public int SuccessTasks { get; set; }
+}
+
 
 public class ServantPerformed
 {
@@ -27,8 +33,8 @@ public class ServantPerformed
     public string? Certificate { get; set; } = string.Empty;
     public string? BankId { get; set; } = string.Empty;
     public uint AreaId { get; set; }
-    public string Address { get; set; } = string.Empty;
-    public string Avatar { get; set; } = string.Empty;
+    public string? Address { get; set; } = string.Empty;
+    public string? Avatar { get; set; } 
     public double? Rating { get; set; }
 
 

@@ -87,7 +87,7 @@ public class ServantsController : ControllerBase
     [ProducesResponseType(typeof(ServantPerformanceWithUserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] ServantPerformanceRequest model)
+    public async Task<ActionResult> ServantPerformance(int id, [FromQuery] GetServantPerformanceRequest model)
     {
         if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
             throw new UnauthorizedException();
@@ -123,6 +123,23 @@ public class ServantsController : ControllerBase
             Performance = servantPerformance,
             Servant = responseServant
         };
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    ///     Lists servants' performances
+    /// </summary>
+    [HttpGet("performances")]
+    [ProducesResponseType(typeof(List<ListServantsPerformances>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(BasicResponse), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> ListServantPerformances([FromQuery] ListServantPerformancesRequest model)
+    {
+        if (!User.GetAreaId().HasValue && !User.HasRole(Role.SuperAdmin))
+            throw new UnauthorizedException();
+
+        var response = await _unitOfWork.Servants.ListServantPerformances(model);
 
         return Ok(response);
     }
