@@ -8,9 +8,9 @@ namespace Infra.Interfaces;
 public interface ITasksRepository
 {
     Task<List<ListTasks>> ListTasks(ListTasksRequest model);
-    Task<List<ListTasksByClient>> ListTasksByClient(ListTasksByClientRequest model);
+    Task<List<ListTasksByClientResponse>> ListTasksByClient(ulong clientId, ListTasksByClientRequest model);
     Task<int> CountTasks(ListTasksRequest model);
-    Task<int> CountClientTasks(ListTasksByClientRequest model);
+    Task<int> CountClientTasks(ulong clientId, ListTasksByClientRequest model);
     Task<TaskWithDistanceMemberTaxiMeter?> GetActiveTaskByServiceId(ulong userId, uint serviceTypeId);
     Task<RounderDto?> GetLatestRounder(Currency currency);
 }

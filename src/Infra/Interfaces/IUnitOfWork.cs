@@ -17,10 +17,13 @@ public interface IUnitOfWork : IDisposable
     IServantWorkDaysRepository ServantWorkDays { get; }
     IRolesRepository Roles { get; }
     IServiceRepository Services { get; }
+    ICategoryRepository Categories { get; }
+    IBaseTypeRepository BaseTypes { get; }
     IUsagesRepository Usages { get; }
     ICommissionRepository Commissions { get; }
     IDiscountsRepository Discounts { get; }
     IGendersRepository Genders { get; }
+    IFileRepository Files { get; }
 
     IDiscountCodeRepository DiscountCodes { get; }
 

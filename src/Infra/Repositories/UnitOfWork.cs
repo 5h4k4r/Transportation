@@ -14,13 +14,17 @@ public class UnitOfWork : IUnitOfWork
     private readonly TransportationContext _repoContext;
     private IAreaDepartmentsRepository? _areaDepartments;
     private IAreaInfosRepository? _areaInfos;
+    private IBaseTypeRepository? _basetypes;
     private ICacheRepository? _cache;
+
+    private ICategoryRepository? _categories;
     private ICommissionRepository? _commissions;
     private IDepartmentsRepository? _departments;
     private IDocumentRepository? _documents;
     private IDiscountCodeRepository? _discountCode;
     private IDiscountsRepository? _discounts;
     private IEmployeesRepository? _employees;
+    private IFileRepository? _files;
     private IGendersRepository? _gender;
     private IJobRepository? _jobs;
     private ILanguagesRepository? _languages;
@@ -52,11 +56,14 @@ public class UnitOfWork : IUnitOfWork
     public IServiceRepository Services => _services ??= new ServicesRepository(_repoContext, _mapper);
     public IVehiclesRepository Vehicles => _vehicles ??= new VehiclesRepository(_repoContext, _mapper);
     public IUsersRepository User => _user ??= new UsersRepository(_repoContext, _mapper);
+    public ICategoryRepository Categories => _categories ??= new CategoryRepository(_repoContext, _mapper);
+    public IBaseTypeRepository BaseTypes => _basetypes ??= new BaseTypeRepository(_repoContext, _mapper);
 
     public ICommissionRepository Commissions => _commissions ??= new CommissionRepository(_repoContext, _mapper);
     public IDiscountsRepository Discounts => _discounts ??= new DiscountsRepository(_repoContext, _mapper);
 
     public IGendersRepository Genders => _gender ??= new GendersRepository(_repoContext, _mapper);
+    public IFileRepository Files => _files ??= new FileRepository(_repoContext, _mapper);
     public ITasksRepository Tasks => _tasks ??= new TasksRepository(_repoContext, _mapper);
     public IRoleUsersRepository RoleUsers => _roleUsers ??= new RoleUserRepository(_repoContext, _mapper);
 
